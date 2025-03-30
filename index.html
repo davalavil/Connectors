@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Emparejar Conectores</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="game-container">
+        <header id="game-info">
+            <div id="score-board">
+                Parejas: <span id="current-score">0</span> / <span id="total-pairs">0</span>
+            </div>
+            <div id="timer-board">
+                Tiempo: <span id="time-left">--:--</span>
+            </div>
+        </header>
+
+        <main id="word-area">
+            <!-- Las palabras se cargarán aquí con JavaScript -->
+        </main>
+
+        <footer id="game-controls">
+            <button id="give-up-btn">¡ME RINDO!</button>
+        </footer>
+
+        <!-- Sección para mostrar resultados (inicialmente oculta) -->
+        <div id="results-overlay" class="hidden">
+            <div id="results-content">
+                <h2>Resultados</h2>
+                <div id="correct-pairs-list">
+                    <!-- Las respuestas correctas se mostrarán aquí -->
+                </div>
+                <button id="play-again-btn">Jugar de Nuevo</button>
+            </div>
+        </div>
+
+         <!-- Sección para configuración inicial (opcional por ahora) -->
+         <div id="setup-overlay" class="hidden">
+             <h2>Configurar Juego</h2>
+             <label for="time-select">Selecciona el tiempo (minutos):</label>
+             <select id="time-select">
+                 <option value="5">5</option>
+                 <option value="10" selected>10</option>
+                 <option value="15">15</option>
+             </select>
+             <button id="start-game-btn">Empezar Juego</button>
+         </div>
+
+    </div>
+
+    <!-- Incluir JavaScript al final -->
+    <script src="js/script.js"></script>
+</body>
+</html>
