@@ -37,21 +37,26 @@
             </div>
         </div>
 
-         <!-- Sección para configuración inicial (opcional por ahora) -->
-         <div id="setup-overlay" class="hidden">
-             <h2>Configurar Juego</h2>
-             <label for="time-select">Selecciona el tiempo (minutos):</label>
-             <select id="time-select">
-                 <option value="5">5</option>
-                 <option value="10" selected>10</option>
-                 <option value="15">15</option>
-             </select>
-             <button id="start-game-btn">Empezar Juego</button>
+         <!-- Sección para configuración inicial -->
+         <div id="setup-overlay"> <!-- Quitamos 'hidden' para que se muestre al inicio -->
+             <div> <!-- Añadido div para aplicar estilos al contenido -->
+                <h2>Configurar Juego</h2>
+                <label for="time-select">Selecciona el tiempo (minutos):</label>
+                <select id="time-select">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="1">1</option> <!-- Opción de 1 minuto para pruebas rápidas -->
+                </select>
+                <button id="start-game-btn">Empezar Juego</button>
+             </div>
          </div>
 
     </div>
 
-    <!-- Incluir JavaScript al final -->
-    <script src="js/script.js"></script>
+    <!-- Scripts -->
+    <script src="js/connectors.js"></script> <!-- Cargar los conectores PRIMERO -->
+    <script src="js/script.js"></script>     <!-- Cargar la lógica del juego DESPUÉS -->
 </body>
 </html>
