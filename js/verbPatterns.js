@@ -51,7 +51,7 @@ const verbPatternData = [
     { id: 45, term: 'decide', category: 'infinitive_to', explanation: 'decidir' },
     { id: 46, term: 'deserve', category: 'infinitive_to', explanation: 'merecer' },
     { id: 47, term: 'expect', category: 'infinitive_to', explanation: 'esperar (que algo ocurra)' },
-    { id: 48, term: 'forget (fail to do something)', category: 'infinitive_to', explanation: 'olvidar (hacer algo que se debía)' },
+    { id: 48, term: 'forget (you forgot to do something)', category: 'infinitive_to', explanation: 'olvidar (hacer algo que se debía)' },
     { id: 49, term: 'happen', category: 'infinitive_to', explanation: 'resultar que, suceder que' },
     { id: 50, term: 'hate (specific situation, often with would)', category: 'infinitive_to', explanation: 'odiar (situación específica, a menudo con would)' },
     { id: 51, term: 'help', category: 'infinitive_to', explanation: 'ayudar' }, // También puede ir sin TO (bare infinitive)
@@ -80,7 +80,7 @@ const verbPatternData = [
     { id: 74, term: 'allow + object', category: 'infinitive_to', explanation: 'permitir a alguien que' },
     { id: 75, term: 'ask + object', category: 'infinitive_to', explanation: 'pedir a alguien que' },
     { id: 76, term: 'invite + object', category: 'infinitive_to', explanation: 'invitar a alguien a' },
-    { id: 77, term: 'need + object', category: 'infinitive_to', explanation: 'necesitar que alguien' },
+    { id: 77, term: 'need (need something)', category: 'infinitive_to', explanation: 'necesitar que alguien' },
     { id: 78, term: 'order + object', category: 'infinitive_to', explanation: 'ordenar a alguien que' },
     { id: 79, term: 'persuade + object', category: 'infinitive_to', explanation: 'persuadir a alguien para' },
     { id: 80, term: 'teach + object', category: 'infinitive_to', explanation: 'enseñar a alguien a' },
@@ -102,7 +102,7 @@ const verbPatternData = [
     { id: 92, term: 'remember (memory of a past action)', category: 'gerund', explanation: 'recordar (haber hecho algo pasado)' }, // Separado de remember to do
     { id: 93, term: 'forget (memory of a past event)', category: 'gerund', explanation: 'olvidar (algo que pasó)' }, // Separado de forget to do
     { id: 94, term: 'try (make an effort)', category: 'infinitive_to', explanation: 'intentar (algo difícil)' }, // Separado de try doing
-    { id: 95, term: 'try (experiment)', category: 'gerund', explanation: 'probar (a hacer algo, experimentar)' }, // Separado de try to do
+    { id: 95, term: 'try (Suggestion or experiment)', category: 'gerund', explanation: 'probar (a hacer algo, experimentar)' }, // Separado de try to do
     { id: 96, term: 'need (passive sense, sth needs doing)', category: 'gerund', explanation: 'necesitar (ser reparado/hecho - pasivo)' }, // Separado de need to do
     { id: 97, term: 'stop (interrupt an action to do sth else)', category: 'infinitive_to', explanation: 'parar(se) para (hacer otra cosa)' }, // Separado de stop doing
 
