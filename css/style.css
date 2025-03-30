@@ -1,0 +1,229 @@
+/* Estilos generales */
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinear arriba para ver el juego entero */
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px; /* Añadir padding para que no pegue a los bordes */
+    box-sizing: border-box; /* Incluir padding en el tamaño total */
+}
+
+#game-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px; /* Limitar ancho máximo en pantallas grandes */
+    box-sizing: border-box;
+}
+
+/* Cabecera con Puntuación y Temporizador */
+#game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 1.1em;
+}
+
+#score-board, #timer-board {
+    background-color: #e7f3fe;
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+/* Área principal de palabras */
+#word-area {
+    display: flex;
+    flex-wrap: wrap; /* Permite que las palabras pasen a la siguiente línea */
+    gap: 10px; /* Espacio entre las píldoras */
+    justify-content: center; /* Centra las píldoras horizontalmente */
+    padding: 15px;
+    min-height: 300px; /* Asegura un espacio mínimo para soltar */
+    border: 1px dashed #ccc; /* Borde para visualizar el área */
+    border-radius: 5px;
+    background-color: #fafafa;
+}
+
+/* Estilo de las píldoras de palabras */
+.word-pill {
+    padding: 8px 15px;
+    background-color: #d1eaff; /* Azul claro por defecto */
+    border: 1px solid #a6cfff;
+    border-radius: 20px; /* Estilo píldora */
+    cursor: grab; /* Indica que se puede arrastrar */
+    user-select: none; /* Evita seleccionar el texto al arrastrar */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.word-pill:active {
+    cursor: grabbing; /* Cambia el cursor mientras se arrastra */
+    transform: scale(1.05); /* Ligeramente más grande al agarrar */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Estilo específico para diferenciar (opcional, pero útil) */
+.word-pill.lang-es {
+    background-color: #ffeacc; /* Naranja claro para español */
+    border-color: #ffd9a8;
+}
+
+/* Estilo para cuando se está arrastrando una píldora */
+.word-pill.dragging {
+    opacity: 0.5; /* Hacerla semitransparente */
+    border-style: dashed;
+}
+
+/* Estilo para indicar una pareja correcta (temporal) */
+.word-pill.correct-match {
+    background-color: #a8e6cf; /* Verde claro */
+    border-color: #7fcdb1;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    opacity: 0; /* Se desvanecerá */
+    transform: scale(0.8); /* Se encogerá */
+}
+
+/* Estilo para indicar un intento incorrecto (temporal) */
+.word-pill.incorrect-match {
+    background-color: #ffcccc; /* Rojo claro */
+    border-color: #ffaaaa;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+
+/* Controles del juego */
+#game-controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#give-up-btn, #play-again-btn, #start-game-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #dc3545; /* Rojo para rendirse */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+#play-again-btn {
+    background-color: #007bff; /* Azul para volver a jugar */
+}
+#start-game-btn {
+     background-color: #28a745; /* Verde para empezar */
+     margin-top: 15px;
+}
+
+#give-up-btn:hover {
+    background-color: #c82333;
+}
+#play-again-btn:hover {
+    background-color: #0056b3;
+}
+#start-game-btn:hover {
+     background-color: #218838;
+}
+
+/* Overlay para resultados y configuración */
+.hidden {
+    display: none !important; /* Ocultar elementos */
+}
+
+#results-overlay, #setup-overlay {
+    position: fixed; /* Se posiciona relativo a la ventana */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+#results-content, #setup-overlay > div /* Estilo para el contenido del overlay */ {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 90%;
+    width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+#setup-overlay > div { /* Ajuste para el div interno del setup */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+
+#correct-pairs-list {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-align: left;
+    max-height: 300px; /* Limitar altura si hay muchas respuestas */
+    overflow-y: auto; /* Añadir scroll si es necesario */
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+#correct-pairs-list div {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+}
+#correct-pairs-list div:last-child {
+    border-bottom: none;
+}
+
+/* --- Responsividad --- */
+@media (max-width: 600px) {
+    body {
+        padding: 10px; /* Menos padding en pantallas pequeñas */
+    }
+
+    #game-container {
+        padding: 15px;
+    }
+
+    #game-info {
+        flex-direction: column; /* Poner puntuación y timer uno encima del otro */
+        align-items: stretch; /* Ocupar todo el ancho */
+        gap: 10px;
+        font-size: 1em; /* Reducir tamaño fuente */
+    }
+    #score-board, #timer-board {
+       text-align: center;
+    }
+
+    .word-pill {
+        padding: 6px 12px;
+        font-size: 0.9em; /* Letra un poco más pequeña */
+    }
+
+    #word-area {
+        min-height: 250px; /* Reducir altura mínima */
+        padding: 10px;
+    }
+
+    #results-content, #setup-overlay > div {
+        padding: 20px;
+        max-width: 95%;
+    }
+}
