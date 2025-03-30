@@ -13,11 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval = null;
     let timeLeft = 0;
     let currentConnectors = [];
-    let score = 0; // Score para matching / Score correcto para fill-blanks
-    let fillBlanksIncorrectScore = 0; // <<< NUEVO: Score incorrecto para fill-blanks
+    let score = 0;
+    let fillBlanksIncorrectScore = 0;
     let fillBlanksFinalized = false;
 
     // --- Elementos del DOM Comunes ---
+    const mainTitle = document.getElementById('main-title'); // <<< AÑADIDO: Referencia al H1
     const gameSelectionDiv = document.getElementById('game-selection');
     const backToSelectionButtons = document.querySelectorAll('.back-to-selection');
 
@@ -28,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const matchingTimeSelect = document.getElementById('matching-time-select');
     const startMatchingBtn = document.getElementById('start-matching-btn');
     const wordArea = document.getElementById('word-area');
-    const currentScoreSpan = document.getElementById('current-score'); // Matching score
-    const totalPairsSpan = document.getElementById('total-pairs'); // Matching total
-    const matchingTimerSpan = document.getElementById('time-left'); // Matching timer
+    const currentScoreSpan = document.getElementById('current-score');
+    const totalPairsSpan = document.getElementById('total-pairs');
+    const matchingTimerSpan = document.getElementById('time-left');
     const giveUpBtn = document.getElementById('give-up-btn');
     const restartMatchingBtn = document.getElementById('restart-matching-btn');
     const resultsOverlay = document.getElementById('results-overlay');
@@ -45,10 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const translationDirectionSelect = document.getElementById('translation-direction');
     const fillBlanksTimeSelect = document.getElementById('fill-blanks-time-select');
     const startFillBlanksBtn = document.getElementById('start-fill-blanks-btn');
-    const fillBlanksTimerSpan = document.getElementById('fill-blanks-time-left'); // Fill timer
-    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score'); // Fill correct score
-    const fillBlanksIncorrectScoreSpan = document.getElementById('fill-blanks-incorrect-score'); // <<< NUEVO: Fill incorrect score span
-    const fillBlanksTotalSpan = document.getElementById('fill-blanks-total'); // Fill total
+    const fillBlanksTimerSpan = document.getElementById('fill-blanks-time-left');
+    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score');
+    const fillBlanksIncorrectScoreSpan = document.getElementById('fill-blanks-incorrect-score');
+    const fillBlanksTotalSpan = document.getElementById('fill-blanks-total');
     const fillBlanksTableBody = document.querySelector('#fill-blanks-table tbody');
     const checkAnswersBtn = document.getElementById('check-answers-btn');
     const restartFillBlanksBtn = document.getElementById('restart-fill-blanks-btn');
@@ -58,8 +59,52 @@ document.addEventListener('DOMContentLoaded', () => {
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
     function formatTime(seconds) { const minutes = Math.floor(seconds / 60); const remainingSeconds = seconds % 60; return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`; }
 
-    // --- Funciones de Control de Visibilidad ---
-    function showScreen(screen) { gameSelectionDiv.classList.add('hidden'); matchingContainer.classList.add('hidden'); fillBlanksContainer.classList.add('hidden'); matchingSetupDiv.classList.add('hidden'); matchingGameDiv.classList.add('hidden'); fillBlanksSetupDiv.classList.add('hidden'); fillBlanksGameDiv.classList.add('hidden'); resultsOverlay.classList.add('hidden'); if (screen === 'selection') { gameSelectionDiv.classList.remove('hidden'); } else if (screen === 'matching-setup') { matchingContainer.classList.remove('hidden'); matchingSetupDiv.classList.remove('hidden'); } else if (screen === 'matching-game') { matchingContainer.classList.remove('hidden'); matchingGameDiv.classList.remove('hidden'); } else if (screen === 'fill-blanks-setup') { fillBlanksContainer.classList.remove('hidden'); fillBlanksSetupDiv.classList.remove('hidden'); } else if (screen === 'fill-blanks-game') { fillBlanksContainer.classList.remove('hidden'); fillBlanksGameDiv.classList.remove('hidden'); } }
+    // --- **Función de Control de Visibilidad (MODIFICADA PARA TÍTULO)** ---
+    function showScreen(screen) {
+        // Ocultar todas las secciones principales primero
+        gameSelectionDiv.classList.add('hidden');
+        matchingContainer.classList.add('hidden');
+        fillBlanksContainer.classList.add('hidden');
+        // Asegurar que las sub-secciones también estén ocultas por defecto
+        matchingSetupDiv.classList.add('hidden');
+        matchingGameDiv.classList.add('hidden');
+        fillBlanksSetupDiv.classList.add('hidden');
+        fillBlanksGameDiv.classList.add('hidden');
+        resultsOverlay.classList.add('hidden'); // Ocultar overlay de resultados
+
+        let titleText = "Conectores"; // Título por defecto
+
+        // Mostrar la pantalla correcta y establecer el título
+        if (screen === 'selection') {
+            gameSelectionDiv.classList.remove('hidden');
+            titleText = "Conectores"; // O "Elige un Juego"
+        } else if (screen === 'matching-setup') {
+            matchingContainer.classList.remove('hidden');
+            matchingSetupDiv.classList.remove('hidden');
+            // Usamos el H2 interno para el setup, mantenemos título principal corto
+            titleText = "Emparejar Conectores";
+        } else if (screen === 'matching-game') {
+            matchingContainer.classList.remove('hidden');
+            matchingGameDiv.classList.remove('hidden');
+            titleText = "Emparejar Conectores"; // Título durante el juego
+        } else if (screen === 'fill-blanks-setup') {
+            fillBlanksContainer.classList.remove('hidden');
+            fillBlanksSetupDiv.classList.remove('hidden');
+             // Usamos el H2 interno para el setup, mantenemos título principal corto
+            titleText = "Rellenar Conectores";
+        } else if (screen === 'fill-blanks-game') {
+            fillBlanksContainer.classList.remove('hidden');
+            fillBlanksGameDiv.classList.remove('hidden');
+            titleText = "Rellenar Conectores"; // Título durante el juego
+        }
+         // Nota: El overlay de resultados no cambia el título principal H1
+
+         // Actualizar el título principal H1
+         if(mainTitle) { // Verificar que el elemento existe
+             mainTitle.textContent = titleText;
+         }
+    }
+
 
     // --- Funciones del Temporizador (Compartidas) ---
     function updateTimerDisplay() { const formattedTime = formatTime(timeLeft); if (currentGameMode === 'matching') { matchingTimerSpan.textContent = formattedTime; } else if (currentGameMode === 'fill-blanks') { fillBlanksTimerSpan.textContent = formattedTime; } }
@@ -78,169 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetMatchingGame(goToSetup = false) { stopTimer(); wordArea.innerHTML = ''; score = 0; currentScoreSpan.textContent = '0'; totalPairsSpan.textContent = '0'; matchingTimerSpan.textContent = '--:--'; resultsOverlay.classList.add('hidden'); giveUpBtn.disabled = false; restartMatchingBtn.disabled = false; wordArea.removeEventListener('dragover', handleDragOver); wordArea.removeEventListener('drop', handleDrop); if (goToSetup) { showScreen('matching-setup'); } else { initializeMatchingGame(); } }
 
     // --- Lógica Juego Rellenar (Fill Blanks) ---
-
-    function renderFillBlanksTable() {
-        fillBlanksTableBody.innerHTML = ''; currentConnectors = shuffleArray([...conectoresOriginal]);
-        score = 0; // <<< Resetear score CORRECTO
-        fillBlanksIncorrectScore = 0; // <<< Resetear score INCORRECTO
-        fillBlanksScoreSpan.textContent = score;
-        fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore; // <<< Mostrar score incorrecto inicial
-        fillBlanksTotalSpan.textContent = currentConnectors.length;
-        translationDirection = translationDirectionSelect.value; fillBlanksFinalized = false;
-        currentConnectors.forEach(pair => {
-            const row = document.createElement('tr'); row.dataset.id = pair.id;
-            const sourceCell = document.createElement('td'); sourceCell.textContent = (translationDirection === 'en-es') ? pair.en : pair.es;
-            const inputCell = document.createElement('td'); const input = document.createElement('input'); input.type = 'text';
-            input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...'; input.dataset.id = pair.id;
-            input.disabled = false; input.addEventListener('blur', handleFillBlanksInputBlur); inputCell.appendChild(input);
-            const feedbackCell = document.createElement('td'); feedbackCell.className = 'feedback'; feedbackCell.textContent = '-';
-            row.appendChild(sourceCell); row.appendChild(inputCell); row.appendChild(feedbackCell); fillBlanksTableBody.appendChild(row); });
-    }
+    function renderFillBlanksTable() { fillBlanksTableBody.innerHTML = ''; currentConnectors = shuffleArray([...conectoresOriginal]); score = 0; fillBlanksIncorrectScore = 0; fillBlanksScoreSpan.textContent = score; fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore; fillBlanksTotalSpan.textContent = currentConnectors.length; translationDirection = translationDirectionSelect.value; fillBlanksFinalized = false; currentConnectors.forEach(pair => { const row = document.createElement('tr'); row.dataset.id = pair.id; const sourceCell = document.createElement('td'); sourceCell.textContent = (translationDirection === 'en-es') ? pair.en : pair.es; const inputCell = document.createElement('td'); const input = document.createElement('input'); input.type = 'text'; input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...'; input.dataset.id = pair.id; input.disabled = false; input.addEventListener('blur', handleFillBlanksInputBlur); inputCell.appendChild(input); const feedbackCell = document.createElement('td'); feedbackCell.className = 'feedback'; feedbackCell.textContent = '-'; row.appendChild(sourceCell); row.appendChild(inputCell); row.appendChild(feedbackCell); fillBlanksTableBody.appendChild(row); }); }
     function checkAnswer(userInput, correctAnswer) { const normalizedInput = userInput.trim().toLowerCase(); if (!normalizedInput) return false; const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase()); if (translationDirection === 'en-es') { const normalizedInputNoAccents = normalizedInput.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); if (correctOptions.some(opt => opt.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalizedInputNoAccents)) { return true; } } return correctOptions.includes(normalizedInput); }
     function handleFillBlanksInputBlur(event) { if (fillBlanksFinalized) return; checkSingleAnswerAndUpdate(event.target); }
-
-    // Actualiza UNA fila y AMBOS scores dinámicos
-    function checkSingleAnswerAndUpdate(inputElement) {
-        const row = inputElement.closest('tr'); if (!row) return; const feedbackCell = row.cells[2]; const id = row.dataset.id;
-        const connectorPair = conectoresOriginal.find(p => p.id == id); if (!connectorPair || !feedbackCell) return;
-
-        const userAnswer = inputElement.value;
-        const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-
-        // Estado ANTES del cambio
-        const wasCorrectBefore = feedbackCell.classList.contains('correct');
-        const wasIncorrectBefore = feedbackCell.classList.contains('incorrect');
-
-        // Estado DESPUÉS del cambio
-        const isCorrectNow = checkAnswer(userAnswer, correctAnswer);
-        const isIncorrectNow = !isCorrectNow && userAnswer.trim() !== ''; // Incorrecto solo si no es correcto y tiene texto
-
-        let scoreChanged = false;
-        let incorrectScoreChanged = false;
-
-        // --- Actualizar UI de la celda ---
-        feedbackCell.classList.remove('correct', 'incorrect'); // Limpiar clases
-        if (isCorrectNow) {
-            feedbackCell.textContent = 'Correcto';
-            feedbackCell.classList.add('correct');
-        } else if (isIncorrectNow) {
-            feedbackCell.textContent = 'Incorrecto';
-            feedbackCell.classList.add('incorrect');
-        } else {
-            feedbackCell.textContent = '-';
-        }
-         if (!feedbackCell.classList.contains('feedback')) { feedbackCell.classList.add('feedback'); } // Asegurar base
-
-        // --- Actualizar score CORRECTO ---
-        if (isCorrectNow && !wasCorrectBefore) { score++; scoreChanged = true; }
-        else if (!isCorrectNow && wasCorrectBefore) { score--; scoreChanged = true; }
-
-        // --- Actualizar score INCORRECTO ---
-        if (isIncorrectNow && !wasIncorrectBefore) { fillBlanksIncorrectScore++; incorrectScoreChanged = true; }
-        else if (!isIncorrectNow && wasIncorrectBefore) { fillBlanksIncorrectScore--; incorrectScoreChanged = true; }
-
-        // --- Asegurar que scores no sean negativos y actualizar UI ---
-        if (scoreChanged) {
-            score = Math.max(0, score);
-            fillBlanksScoreSpan.textContent = score;
-        }
-        if (incorrectScoreChanged) {
-            fillBlanksIncorrectScore = Math.max(0, fillBlanksIncorrectScore);
-            fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore; // <<< Actualizar span incorrecto
-        }
-    }
-
-    // *** FUNCIÓN FINALIZADORA (BOTÓN / TIEMPO) - RELLENA INPUTS Y CALCULA AMBOS SCORES ***
-    function finalizeFillBlanksGame() {
-        if (fillBlanksFinalized) { console.log("Finalize called on already finalized game."); return; }
-        fillBlanksFinalized = true; stopTimer();
-        console.log("--- Finalizing Fill Blanks Game ---");
-
-        let finalCalculatedCorrectScore = 0; // <<< Score final correcto
-        let finalCalculatedIncorrectScore = 0; // <<< Score final incorrecto
-        const rows = fillBlanksTableBody.querySelectorAll('tr');
-
-        if (rows.length === 0) { console.warn("No rows found in table during finalization."); checkAnswersBtn.disabled = true; return; }
-        console.log(`Finalizing ${rows.length} rows...`);
-
-        rows.forEach((row, index) => {
-            const input = row.querySelector('input[type="text"]');
-            const feedbackCell = row.cells[2]; // Usar índice de celda
-            const id = row.dataset.id;
-            const connectorPair = conectoresOriginal.find(p => p.id == id);
-
-            if (!input || !feedbackCell || !connectorPair) { console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping.`); return; }
-
-            const userAnswer = input.value;
-            const correctAnswerString = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-            const isCorrect = checkAnswer(userAnswer, correctAnswerString);
-            const isIncorrect = !isCorrect && userAnswer.trim() !== ''; // <<< Determinar si es incorrecto
-
-            // --- **ACTUALIZAR INPUT Y FEEDBACK** ---
-            input.value = correctAnswerString; // Rellenar input con respuesta correcta
-            feedbackCell.classList.remove('correct', 'incorrect'); // Limpiar estado previo
-
-            if (isCorrect) {
-                feedbackCell.textContent = 'Correcto';
-                feedbackCell.classList.add('correct');
-                finalCalculatedCorrectScore++; // <<< Sumar a score correcto final
-            } else if (isIncorrect) { // <<< Comprobar si es incorrecto
-                feedbackCell.textContent = 'Incorrecto';
-                feedbackCell.classList.add('incorrect');
-                finalCalculatedIncorrectScore++; // <<< Sumar a score incorrecto final
-            } else {
-                feedbackCell.textContent = '-'; // Si no es correcto ni incorrecto (vacío)
-            }
-             if (!feedbackCell.classList.contains('feedback')) { feedbackCell.classList.add('feedback'); }
-
-            input.disabled = true; // Deshabilitar input
-        });
-
-        // <<< Actualizar AMBOS scores globales y spans con los calculados finales >>>
-        score = finalCalculatedCorrectScore;
-        fillBlanksIncorrectScore = finalCalculatedIncorrectScore;
-        fillBlanksScoreSpan.textContent = score;
-        fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore;
-        console.log(`Final Scores Calculated: Correct=${score}, Incorrect=${fillBlanksIncorrectScore} / Total=${currentConnectors.length}`);
-
-        checkAnswersBtn.disabled = true; // Deshabilitar botón
-        if (document.activeElement instanceof HTMLElement) { document.activeElement.blur(); } // Quitar foco
-
-        console.log("--- Fill Blanks Game Finalized (Inputs Filled, Scores Updated) ---");
-        // --- ALERT ELIMINADO ---
-    }
-
-    function initializeFillBlanksGame() {
-        currentGameMode = 'fill-blanks'; const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
-        score = 0; // <<< Resetear score correcto
-        fillBlanksIncorrectScore = 0; // <<< Resetear score incorrecto
-        fillBlanksFinalized = false;
-        renderFillBlanksTable(); // Esto ya actualiza los spans a 0
-        showScreen('fill-blanks-game'); checkAnswersBtn.disabled = false; restartFillBlanksBtn.disabled = false;
-        fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => { input.disabled = false; input.style.backgroundColor = ''; });
-        startTimer(selectedMinutes * 60);
-    }
-    function resetFillBlanksGame(goToSetup = false) {
-        stopTimer(); fillBlanksTableBody.innerHTML = '';
-        score = 0; // <<< Resetear score correcto
-        fillBlanksIncorrectScore = 0; // <<< Resetear score incorrecto
-        fillBlanksScoreSpan.textContent = '0';
-        fillBlanksIncorrectScoreSpan.textContent = '0'; // <<< Resetear span incorrecto
-        fillBlanksTotalSpan.textContent = '0';
-        fillBlanksTimerSpan.textContent = '--:--'; checkAnswersBtn.disabled = true; restartFillBlanksBtn.disabled = true; fillBlanksFinalized = false;
-        if (goToSetup) { showScreen('fill-blanks-setup'); } else { initializeFillBlanksGame(); }
-    }
+    function checkSingleAnswerAndUpdate(inputElement) { const row = inputElement.closest('tr'); if (!row) return; const feedbackCell = row.cells[2]; const id = row.dataset.id; const connectorPair = conectoresOriginal.find(p => p.id == id); if (!connectorPair || !feedbackCell) return; const userAnswer = inputElement.value; const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en; const wasCorrectBefore = feedbackCell.classList.contains('correct'); const wasIncorrectBefore = feedbackCell.classList.contains('incorrect'); const isCorrectNow = checkAnswer(userAnswer, correctAnswer); const isIncorrectNow = !isCorrectNow && userAnswer.trim() !== ''; let scoreChanged = false; let incorrectScoreChanged = false; feedbackCell.classList.remove('correct', 'incorrect'); if (isCorrectNow) { if (!wasCorrectBefore || feedbackCell.textContent !== 'Correcto') { feedbackCell.textContent = 'Correcto'; feedbackCell.classList.add('correct'); scoreChanged = true; } else { feedbackCell.textContent = 'Correcto'; feedbackCell.classList.add('correct'); } } else if (isIncorrectNow) { if (!wasIncorrectBefore || feedbackCell.textContent !== 'Incorrecto') { feedbackCell.textContent = 'Incorrecto'; feedbackCell.classList.add('incorrect'); incorrectScoreChanged = true; } else { feedbackCell.textContent = 'Incorrecto'; feedbackCell.classList.add('incorrect'); } } else { if (wasCorrectBefore || wasIncorrectBefore || feedbackCell.textContent !== '-') { feedbackCell.textContent = '-'; if (wasIncorrectBefore) { incorrectScoreChanged = true; } if (wasCorrectBefore) { scoreChanged = true; } } else { feedbackCell.textContent = '-'; } } if (!feedbackCell.classList.contains('feedback')) { feedbackCell.classList.add('feedback'); } if (scoreChanged) { if (isCorrectNow && !wasCorrectBefore) { score++; } else if (!isCorrectNow && wasCorrectBefore) { score--; } score = Math.max(0, score); fillBlanksScoreSpan.textContent = score; } if (incorrectScoreChanged) { if (isIncorrectNow && !wasIncorrectBefore) { fillBlanksIncorrectScore++; } else if (!isIncorrectNow && wasIncorrectBefore) { fillBlanksIncorrectScore--; } fillBlanksIncorrectScore = Math.max(0, fillBlanksIncorrectScore); fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore; } }
+    function finalizeFillBlanksGame() { if (fillBlanksFinalized) { console.log("Finalize called on already finalized game."); return; } fillBlanksFinalized = true; stopTimer(); console.log("--- Finalizing Fill Blanks Game ---"); let finalCalculatedCorrectScore = 0; let finalCalculatedIncorrectScore = 0; const rows = fillBlanksTableBody.querySelectorAll('tr'); if (rows.length === 0) { console.warn("No rows found in table during finalization."); checkAnswersBtn.disabled = true; return; } console.log(`Finalizing ${rows.length} rows...`); rows.forEach((row, index) => { const input = row.querySelector('input[type="text"]'); const feedbackCell = row.cells[2]; const id = row.dataset.id; const connectorPair = conectoresOriginal.find(p => p.id == id); if (!input || !feedbackCell || !connectorPair) { console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping.`); return; } const userAnswer = input.value; const correctAnswerString = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en; const isCorrect = checkAnswer(userAnswer, correctAnswerString); const isIncorrect = !isCorrect && userAnswer.trim() !== ''; input.value = correctAnswerString; feedbackCell.classList.remove('correct', 'incorrect'); if (isCorrect) { feedbackCell.textContent = 'Correcto'; feedbackCell.classList.add('correct'); finalCalculatedCorrectScore++; } else if (isIncorrect) { feedbackCell.textContent = 'Incorrecto'; feedbackCell.classList.add('incorrect'); finalCalculatedIncorrectScore++; } else { feedbackCell.textContent = '-'; } if (!feedbackCell.classList.contains('feedback')) { feedbackCell.classList.add('feedback'); } input.disabled = true; }); score = finalCalculatedCorrectScore; fillBlanksIncorrectScore = finalCalculatedIncorrectScore; fillBlanksScoreSpan.textContent = score; fillBlanksIncorrectScoreSpan.textContent = fillBlanksIncorrectScore; console.log(`Final Scores Calculated: Correct=${score}, Incorrect=${fillBlanksIncorrectScore} / Total=${currentConnectors.length}`); checkAnswersBtn.disabled = true; if (document.activeElement instanceof HTMLElement) { document.activeElement.blur(); } console.log("--- Fill Blanks Game Finalized (Inputs Filled, Scores Updated) ---"); }
+    function initializeFillBlanksGame() { currentGameMode = 'fill-blanks'; const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10); score = 0; fillBlanksIncorrectScore = 0; fillBlanksFinalized = false; renderFillBlanksTable(); showScreen('fill-blanks-game'); checkAnswersBtn.disabled = false; restartFillBlanksBtn.disabled = false; fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => { input.disabled = false; input.style.backgroundColor = ''; }); startTimer(selectedMinutes * 60); }
+    function resetFillBlanksGame(goToSetup = false) { stopTimer(); fillBlanksTableBody.innerHTML = ''; score = 0; fillBlanksIncorrectScore = 0; fillBlanksScoreSpan.textContent = '0'; fillBlanksIncorrectScoreSpan.textContent = '0'; fillBlanksTotalSpan.textContent = '0'; fillBlanksTimerSpan.textContent = '--:--'; checkAnswersBtn.disabled = true; restartFillBlanksBtn.disabled = true; fillBlanksFinalized = false; if (goToSetup) { showScreen('fill-blanks-setup'); } else { initializeFillBlanksGame(); } }
 
     // --- Event Listeners ---
     document.getElementById('select-matching-btn').addEventListener('click', () => showScreen('matching-setup'));
     document.getElementById('select-fill-blanks-btn').addEventListener('click', () => showScreen('fill-blanks-setup'));
-    backToSelectionButtons.forEach(button => { button.addEventListener('click', () => { stopTimer(); showScreen('selection'); }); });
+    backToSelectionButtons.forEach(button => { button.addEventListener('click', () => { stopTimer(); showScreen('selection'); }); }); // <<< Asegurar que al volver, se muestre el título correcto
     startMatchingBtn.addEventListener('click', initializeMatchingGame); giveUpBtn.addEventListener('click', () => showMatchingResults(false));
     playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true)); restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false));
     startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame); checkAnswersBtn.addEventListener('click', finalizeFillBlanksGame);
     restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false));
 
     // --- Inicialización General ---
-    showScreen('selection');
+    showScreen('selection'); // <<< Empezar mostrando la selección y el título por defecto
 
 }); // Fin DOMContentLoaded
