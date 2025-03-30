@@ -1,42 +1,22 @@
+// js/script.js
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Datos del Juego ---
-    const conectoresOriginal = [
-        { id: 1, en: 'However', es: 'sin embargo' },
-        { id: 2, en: 'Whatever', es: 'lo que' },
-        { id: 3, en: 'Although', es: 'a pesar de, aunque' }, // Considerar separar si son conceptos distintos para el juego
-        { id: 4, en: 'So', es: 'entonces' },
-        { id: 5, en: 'Therefore', es: 'por lo tanto' },
-        { id: 6, en: 'As soon as', es: 'tan pronto como' },
-        { id: 7, en: 'Instead of', es: 'en lugar de' },
-        { id: 8, en: 'Then', es: 'luego' },
-        { id: 9, en: 'Once', es: 'una vez' },
-        { id: 10, en: 'While', es: 'mientras' },
-        { id: 11, en: 'But', es: 'pero' },
-        { id: 12, en: 'Because', es: 'porque' },
-        { id: 13, en: 'Even', es: 'incluso' },
-        { id: 14, en: 'Also', es: 'tambien' }, // Nota: typo común es 'también'
-        { id: 15, en: 'Still', es: 'aún' },
-        { id: 16, en: 'Above all', es: 'sobretodo , principalmente' }, // Considerar 'sobre todo' (separado)
-        { id: 17, en: 'Either', es: 'ni tampoco' }, // 'Either' tiene más usos, 'ni tampoco' es más específico de 'neither...nor' o respuesta negativa. Revisar contexto deseado.
-        { id: 18, en: 'Neither', es: 'ni' },
-        { id: 19, en: 'That', es: 'que / ese' },
-        { id: 20, en: 'For while', es: 'por un momento' }, // Podría ser 'For a while'
-        { id: 21, en: 'Meanwhile', es: 'mientras tanto' },
-        { id: 22, en: 'For', es: 'para' }, // 'For' tiene muchos significados.
-        { id: 23, en: 'Moreover', es: 'además de' }, // 'Además' o 'además de'
-        { id: 24, en: 'Because Of', es: 'debido a' },
-        { id: 25, en: 'Due to', es: 'debido a' },
-        { id: 26, en: 'Furthermore', es: 'por otra parte' }, // También 'además'
-        { id: 27, en: 'Such as', es: 'tal como' },
-        { id: 28, en: 'In fact', es: 'de hecho' },
-        { id: 29, en: 'Too', es: 'tambien' } // También 'demasiado'. Cuidado con 'Also' y 'Too'.
-    ];
+    // La variable 'conectoresOriginal' ahora viene del archivo 'js/connectors.js'
+    // Asegúrate de que 'connectors.js' se carga ANTES que este script en el HTML.
+
+    if (typeof conectoresOriginal === 'undefined') {
+        console.error("ERROR: El archivo 'connectors.js' no se ha cargado correctamente o la variable 'conectoresOriginal' no está definida.");
+        alert("Error al cargar los datos del juego. Revisa la consola.");
+        return; // Detener la ejecución si los datos no están disponibles
+    }
+
     let conectores = [...conectoresOriginal]; // Copia para poder reiniciar
     let currentScore = 0;
     let totalPairs = conectores.length;
     let draggedElement = null; // Para guardar el elemento que se está arrastrando
     let timerInterval = null;
-    let timeLeft = 600; // Tiempo por defecto en segundos (10 minutos)
+    let timeLeft = 600; // Tiempo por defecto en segundos (10 minutos) - Se actualizará con la selección del usuario
 
     // --- Elementos del DOM ---
     const wordArea = document.getElementById('word-area');
@@ -66,6 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
         wordArea.innerHTML = ''; // Limpiar área antes de añadir nuevas palabras
         const wordsToRender = [];
 
+        conectores = [...conectoresOriginal]; // Asegurarse de usar la lista fresca al renderizar
+        totalPairs = conectores.length; // Actualizar el total por si cambia en connectors.js
+        totalPairsSpan.textContent = totalPairs;
+        currentScore = 0; // Resetear puntuación
+        currentScoreSpan.textContent = currentScore;
+
+
         conectores.forEach(pair => {
             wordsToRender.push({ id: pair.id, lang: 'en', text: pair.en });
             wordsToRender.push({ id: pair.id, lang: 'es', text: pair.es });
@@ -91,24 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
          // Añadir listeners al contenedor para drop (más fiable que en cada píldora)
          wordArea.addEventListener('dragover', handleDragOver);
          wordArea.addEventListener('drop', handleDrop);
-
-        // Actualizar contadores
-        totalPairs = conectoresOriginal.length; // Usar original para el total
-        totalPairsSpan.textContent = totalPairs;
-        currentScore = 0;
-        currentScoreSpan.textContent = currentScore;
     }
 
     // --- Funciones de Drag & Drop ---
     function handleDragStart(event) {
         // Solo permitir arrastrar si el juego está activo (timer corriendo)
-        if (!timerInterval) return;
+         // Permitir arrastrar incluso si el timer no ha empezado (pero no después de acabar)
+        if (!timerInterval && timeLeft <= 0 && currentScore !== totalPairs) return; // No arrastrar si el tiempo acabó y no se ganó
+        if (resultsOverlay.classList.contains('hidden') === false) return; // No arrastrar si se muestran resultados
+
 
         draggedElement = event.target; // Guardar el elemento que se arrastra
         event.dataTransfer.setData('text/plain', event.target.dataset.id); // Necesario para Firefox
         event.dataTransfer.effectAllowed = 'move';
         setTimeout(() => {
-            event.target.classList.add('dragging'); // Añadir estilo después de un instante
+            // Asegurarse que el elemento todavía existe antes de añadir la clase
+            if(draggedElement) {
+                draggedElement.classList.add('dragging');
+            }
         }, 0);
     }
 
@@ -118,9 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
              draggedElement.classList.remove('dragging');
         }
         draggedElement = null;
-        // Quitar clase de feedback incorrecto si la hubiera
-        const incorrectElements = wordArea.querySelectorAll('.incorrect-match');
-        incorrectElements.forEach(el => el.classList.remove('incorrect-match'));
+        // Quitar clase de feedback incorrecto si la hubiera, con un pequeño retraso
+        // para no quitarla inmediatamente si el drop fue incorrecto
+        setTimeout(() => {
+            const incorrectElements = wordArea.querySelectorAll('.incorrect-match');
+            incorrectElements.forEach(el => el.classList.remove('incorrect-match'));
+        }, 100);
     }
 
     function handleDragOver(event) {
@@ -134,8 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dropTarget = event.target;
 
-        // Asegurarse que se suelta sobre OTRA píldora de palabra, no sobre el fondo o sobre sí misma
-        if (dropTarget.classList.contains('word-pill') && dropTarget !== draggedElement) {
+        // Asegurarse que se suelta sobre OTRA píldora de palabra,
+        // que no esté ya emparejada (oculta o con clase correct-match),
+        // y que no sea sobre sí misma
+        if (dropTarget.classList.contains('word-pill') &&
+            !dropTarget.classList.contains('correct-match') &&
+             dropTarget.style.visibility !== 'hidden' &&
+            dropTarget !== draggedElement)
+        {
             const draggedId = draggedElement.dataset.id;
             const draggedLang = draggedElement.dataset.lang;
             const targetId = dropTarget.dataset.id;
@@ -144,17 +140,24 @@ document.addEventListener('DOMContentLoaded', () => {
             // Comprobar si la pareja es correcta: mismo ID, diferente idioma
             if (draggedId === targetId && draggedLang !== targetLang) {
                 // ¡Pareja Correcta!
+                // Aplicar estilo inmediatamente
                 draggedElement.classList.add('correct-match');
                 dropTarget.classList.add('correct-match');
+                 draggedElement.classList.remove('dragging'); // Quitar estilo dragging
 
                 // Deshabilitar drag & drop para estos elementos
                 draggedElement.draggable = false;
                 dropTarget.draggable = false;
 
-                // Esperar a que termine la animación CSS para ocultarlos del todo
+                // Esperar a que termine la animación CSS para ocultarlos
                 setTimeout(() => {
-                    draggedElement.style.visibility = 'hidden'; // Ocultar en lugar de remover para mantener layout estable
-                    dropTarget.style.visibility = 'hidden';
+                     // Comprobar si los elementos aún existen y tienen la clase antes de ocultar
+                    if (draggedElement && draggedElement.classList.contains('correct-match')) {
+                         draggedElement.style.visibility = 'hidden';
+                    }
+                     if (dropTarget && dropTarget.classList.contains('correct-match')) {
+                         dropTarget.style.visibility = 'hidden';
+                     }
                 }, 500); // Tiempo igual a la transición en CSS
 
                 currentScore++;
@@ -166,17 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 // Pareja Incorrecta
-                draggedElement.classList.add('incorrect-match');
+                if(draggedElement) draggedElement.classList.add('incorrect-match');
                 dropTarget.classList.add('incorrect-match');
-                // Quitar la clase después de un momento
+                // Quitar la clase después de la animación de 'shake'
                 setTimeout(() => {
                      if (draggedElement) draggedElement.classList.remove('incorrect-match');
-                     dropTarget.classList.remove('incorrect-match');
-                }, 500);
+                     // Asegurarse que dropTarget no fue emparejado correctamente mientras tanto
+                     if (!dropTarget.classList.contains('correct-match')) {
+                        dropTarget.classList.remove('incorrect-match');
+                     }
+                }, 500); // Ajustar si la animación 'shake' dura diferente
             }
         }
-         // Si se suelta fuera de una píldora válida, dragend se encargará de limpiar
+        // Si se suelta fuera de una píldora válida, dragend se encargará de limpiar la clase 'dragging'
+         // Ya no necesitamos limpiar 'dragging' aquí explícitamente
     }
+
 
     // --- Funciones del Temporizador ---
     function formatTime(seconds) {
@@ -199,6 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
             timeLeft--;
             updateTimerDisplay();
             if (timeLeft <= 0) {
+                timeLeft = 0; // Asegurarse de que no sea negativo
+                updateTimerDisplay(); // Mostrar 00:00
                 endGame(false); // Se acabó el tiempo
             }
         }, 1000); // Cada segundo
@@ -214,46 +224,85 @@ document.addEventListener('DOMContentLoaded', () => {
         stopTimer();
         correctPairsList.innerHTML = ''; // Limpiar lista anterior
 
+        // Rellenar la lista de respuestas correctas
         conectoresOriginal.forEach(pair => {
             const div = document.createElement('div');
             div.textContent = `${pair.en} = ${pair.es}`;
             correctPairsList.appendChild(div);
         });
 
-        resultsOverlay.querySelector('h2').textContent = won ? "¡Felicidades!" : (timeLeft <= 0 ? "¡Tiempo Agotado!" : "Te Rendiste");
+         // Determinar el título del resultado
+        let resultTitle = "Resultados";
+        if (won) {
+            resultTitle = "¡Felicidades, has ganado!";
+        } else if (timeLeft <= 0) {
+            resultTitle = "¡Se acabó el tiempo!";
+        } else {
+            // Se rindió
+            resultTitle = "Te has rendido";
+        }
+        resultsOverlay.querySelector('h2').textContent = resultTitle;
+
+
+        // Mostrar el overlay de resultados
         resultsOverlay.classList.remove('hidden');
+
+        // Opcional: Ocultar las palabras restantes que no se emparejaron
+        wordArea.querySelectorAll('.word-pill').forEach(pill => {
+             if (!pill.classList.contains('correct-match') && pill.style.visibility !== 'hidden') {
+                 pill.style.opacity = '0.5'; // Atenuar las no emparejadas
+                 pill.draggable = false; // Asegurarse de que no se puedan arrastrar
+             }
+         });
     }
 
     function endGame(won) {
         stopTimer();
         // Deshabilitar drag de píldoras restantes
         wordArea.querySelectorAll('.word-pill').forEach(pill => pill.draggable = false);
-        showResults(won);
-    }
-
-    function giveUp() {
-        if (timerInterval) { // Solo rendirse si el juego está en curso
-             endGame(false);
+        // No llamar a showResults inmediatamente si se ganó, esperar un poco
+        if (won) {
+            setTimeout(() => showResults(true), 600); // Pequeña pausa tras el último acierto
+        } else {
+             showResults(false);
         }
     }
 
+    function giveUp() {
+        // Solo rendirse si el juego ha empezado y no se ha acabado
+         if (timerInterval || (timeLeft > 0 && currentScore < totalPairs)) {
+            endGame(false);
+         }
+    }
+
     function resetGame() {
-        conectores = [...conectoresOriginal]; // Restaurar lista completa
+        // Ocultar resultados y limpiar área de juego
         resultsOverlay.classList.add('hidden');
-        setupOverlay.classList.remove('hidden'); // Mostrar pantalla de configuración
-        wordArea.innerHTML = ''; // Limpiar palabras
+        wordArea.innerHTML = '';
+
+        // Resetear variables de estado
         currentScore = 0;
         currentScoreSpan.textContent = '0';
-        totalPairsSpan.textContent = conectores.length;
+        totalPairsSpan.textContent = conectoresOriginal.length; // Releer por si acaso
         timeLeftSpan.textContent = '--:--'; // Resetear display timer
-         stopTimer(); // Asegurarse que el timer está parado
+        draggedElement = null;
+        stopTimer(); // Asegurarse que el timer está parado
+
+        // Mostrar la pantalla de configuración de nuevo
+        setupOverlay.classList.remove('hidden');
     }
 
      function initializeGame() {
          setupOverlay.classList.add('hidden'); // Ocultar configuración
+
+         // Leer tiempo seleccionado y establecerlo
          const selectedMinutes = parseInt(timeSelect.value, 10);
-         timeLeft = selectedMinutes * 60; // Establecer tiempo seleccionado
+         timeLeft = selectedMinutes * 60;
+
+         // Renderizar las palabras (esto resetea puntuación y total visualmente)
          renderWords();
+
+         // Iniciar el temporizador
          startTimer();
      }
 
@@ -264,9 +313,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Inicio ---
-    // Mostrar la configuración inicial al cargar
+    // Asegurarse de que el overlay de configuración esté visible al cargar
     setupOverlay.classList.remove('hidden');
-    // renderWords(); // No renderizar hasta que se pulse "Empezar"
-    // updateTimerDisplay(); // Muestra el tiempo inicial antes de empezar
+    // Inicializar el display del total de pares
+    totalPairsSpan.textContent = conectoresOriginal.length;
+    // No llamar a renderWords ni startTimer aquí, esperar al botón "Empezar Juego"
 
 }); // Fin del DOMContentLoaded
