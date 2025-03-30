@@ -2,27 +2,75 @@
 body {
     font-family: sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Alinear arriba para ver el juego entero */
+    flex-direction: column; /* Cambiado para alinear selección arriba */
+    align-items: center; /* Centrar contenido horizontalmente */
     min-height: 100vh;
     background-color: #f0f0f0;
     margin: 0;
-    padding: 20px; /* Añadir padding para que no pegue a los bordes */
-    box-sizing: border-box; /* Incluir padding en el tamaño total */
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-#game-container {
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+/* --- Sección Selección de Juego --- */
+#game-selection {
+    display: flex; /* Mostrar botones en línea */
+    gap: 20px; /* Espacio entre botones */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Permitir que bajen en pantallas pequeñas */
+    justify-content: center; /* Centrar botones */
+}
+
+.selection-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.selection-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Contenedores generales de modo de juego y secciones */
+.game-mode-container {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 800px; /* Limitar ancho máximo en pantallas grandes */
+    max-width: 800px; /* Limitar ancho máximo */
     box-sizing: border-box;
+    margin-bottom: 20px; /* Espacio entre contenedores si se muestran varios (aunque no debería pasar) */
 }
 
-/* Cabecera con Puntuación y Temporizador */
-#game-info {
+.setup-section, .game-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre elementos internos */
+}
+
+.setup-section label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.setup-section select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* --- Juego de Emparejar (Matching Game) --- */
+#matching-container header#game-info { /* Estilo más específico */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,133 +79,176 @@ body {
     border-bottom: 1px solid #ccc;
     font-size: 1.1em;
 }
-
-#score-board, #timer-board {
+#score-board, #timer-board,
+#fill-blanks-score-board, #fill-blanks-timer-board {
     background-color: #e7f3fe;
     padding: 8px 15px;
     border-radius: 20px;
 }
 
-/* Área principal de palabras */
 #word-area {
     display: flex;
-    flex-wrap: wrap; /* Permite que las palabras pasen a la siguiente línea */
-    gap: 10px; /* Espacio entre las píldoras */
-    justify-content: center; /* Centra las píldoras horizontalmente */
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
     padding: 15px;
-    min-height: 300px; /* Asegura un espacio mínimo para soltar */
-    border: 1px dashed #ccc; /* Borde para visualizar el área */
+    min-height: 300px;
+    border: 1px dashed #ccc;
     border-radius: 5px;
     background-color: #fafafa;
 }
 
-/* Estilo de las píldoras de palabras */
 .word-pill {
     padding: 8px 15px;
-    background-color: #d1eaff; /* Azul claro por defecto */
+    background-color: #d1eaff;
     border: 1px solid #a6cfff;
-    border-radius: 20px; /* Estilo píldora */
-    cursor: grab; /* Indica que se puede arrastrar */
-    user-select: none; /* Evita seleccionar el texto al arrastrar */
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    border-radius: 20px;
+    cursor: grab;
+    user-select: none;
+    transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.5s ease-out;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     text-align: center;
 }
+.word-pill:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.word-pill.lang-es { background-color: #ffeacc; border-color: #ffd9a8; }
+.word-pill.dragging { opacity: 0.5; border-style: dashed; }
+.word-pill.correct-match { background-color: #a8e6cf; border-color: #7fcdb1; opacity: 0; transform: scale(0.8); cursor: default; }
+.word-pill.incorrect-match { background-color: #ffcccc; border-color: #ffaaaa; animation: shake 0.3s ease-in-out; }
 
-.word-pill:active {
-    cursor: grabbing; /* Cambia el cursor mientras se arrastra */
-    transform: scale(1.05); /* Ligeramente más grande al agarrar */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+/* --- Juego de Rellenar Huecos (Fill Blanks) --- */
+#fill-blanks-area {
+    width: 100%;
+}
+#fill-blanks-area p {
+    text-align: center;
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #555;
 }
 
-/* Estilo específico para diferenciar (opcional, pero útil) */
-.word-pill.lang-es {
-    background-color: #ffeacc; /* Naranja claro para español */
-    border-color: #ffd9a8;
+.table-container {
+    max-height: 400px; /* Altura máxima para la tabla */
+    overflow-y: auto; /* Scroll vertical si es necesario */
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
-/* Estilo para cuando se está arrastrando una píldora */
-.word-pill.dragging {
-    opacity: 0.5; /* Hacerla semitransparente */
-    border-style: dashed;
+#fill-blanks-table {
+    width: 100%;
+    border-collapse: collapse; /* Bordes de tabla unidos */
 }
 
-/* Estilo para indicar una pareja correcta (temporal) */
-.word-pill.correct-match {
-    background-color: #a8e6cf; /* Verde claro */
-    border-color: #7fcdb1;
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-    opacity: 0; /* Se desvanecerá */
-    transform: scale(0.8); /* Se encogerá */
+#fill-blanks-table th,
+#fill-blanks-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle; /* Alinear verticalmente en el medio */
 }
 
-/* Estilo para indicar un intento incorrecto (temporal) */
-.word-pill.incorrect-match {
-    background-color: #ffcccc; /* Rojo claro */
-    border-color: #ffaaaa;
-    animation: shake 0.3s ease-in-out;
+#fill-blanks-table thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    position: sticky; /* Encabezado fijo */
+    top: 0; /* Pegar al top del contenedor scrollable */
+    z-index: 10; /* Asegurar que esté encima del contenido */
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+#fill-blanks-table td:nth-child(1) { /* Columna Conector Original */
+    font-weight: bold;
+    background-color: #f9f9f9;
+    width: 35%;
+}
+#fill-blanks-table td:nth-child(2) { /* Columna Tu Traducción (input) */
+     width: 45%;
+}
+#fill-blanks-table td:nth-child(3) { /* Columna Resultado */
+    text-align: center;
+    font-weight: bold;
+     width: 20%;
 }
 
+#fill-blanks-table input[type="text"] {
+    width: 95%; /* Ocupar casi todo el espacio de la celda */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Incluir padding y borde en el ancho */
+}
+#fill-blanks-table input[type="text"]:disabled {
+    background-color: #eee; /* Indicar que está deshabilitado */
+    cursor: not-allowed;
+}
 
-/* Controles del juego */
-#game-controls {
+#fill-blanks-table td.feedback.correct {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Verde oscuro */
+}
+
+#fill-blanks-table td.feedback.incorrect {
+    background-color: #f8d7da; /* Rojo claro */
+    color: #721c24; /* Rojo oscuro */
+}
+
+/* Controles y Botones */
+#game-controls, #fill-blanks-controls {
     margin-top: 20px;
     text-align: center;
+    display: flex;
+    flex-wrap: wrap; /* Permitir que botones bajen */
+    justify-content: center; /* Centrar botones */
+    gap: 10px; /* Espacio entre botones */
 }
 
-#give-up-btn, #play-again-btn, #start-game-btn {
+/* Estilos comunes para botones */
+button {
     padding: 10px 20px;
     font-size: 1em;
     cursor: pointer;
-    background-color: #dc3545; /* Rojo para rendirse */
-    color: white;
     border: none;
     border-radius: 5px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    color: white;
 }
-#play-again-btn {
-    background-color: #007bff; /* Azul para volver a jugar */
-}
-#start-game-btn {
-     background-color: #28a745; /* Verde para empezar */
-     margin-top: 15px;
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-#give-up-btn:hover {
-    background-color: #c82333;
-}
-#play-again-btn:hover {
-    background-color: #0056b3;
-}
-#start-game-btn:hover {
-     background-color: #218838;
-}
+/* Colores específicos botones */
+#start-matching-btn, #start-fill-blanks-btn { background-color: #28a745; } /* Verde */
+#start-matching-btn:hover, #start-fill-blanks-btn:hover { background-color: #218838; }
 
-/* Overlay para resultados y configuración */
+#give-up-btn { background-color: #dc3545; } /* Rojo */
+#give-up-btn:hover { background-color: #c82333; }
+
+#check-answers-btn { background-color: #ffc107; color: #333; } /* Amarillo */
+#check-answers-btn:hover { background-color: #e0a800; }
+
+#restart-matching-btn, #restart-fill-blanks-btn,
+#play-again-matching-btn { background-color: #17a2b8; } /* Azul verdoso */
+#restart-matching-btn:hover, #restart-fill-blanks-btn:hover,
+#play-again-matching-btn:hover { background-color: #117a8b; }
+
+.back-to-selection { background-color: #6c757d; } /* Gris */
+.back-to-selection:hover { background-color: #5a6268; }
+
+/* Overlay de resultados */
 .hidden {
     display: none !important; /* Ocultar elementos */
 }
 
-#results-overlay, #setup-overlay {
-    position: fixed; /* Se posiciona relativo a la ventana */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de todo */
+#results-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
 }
-
-#results-content, #setup-overlay > div /* Estilo para el contenido del overlay */ {
+#results-content {
     background-color: white;
     padding: 30px;
     border-radius: 8px;
@@ -166,64 +257,34 @@ body {
     width: 500px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
-#setup-overlay > div { /* Ajuste para el div interno del setup */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-
 #correct-pairs-list {
-    margin-top: 15px;
-    margin-bottom: 20px;
+    margin-top: 15px; margin-bottom: 20px;
     text-align: left;
-    max-height: 300px; /* Limitar altura si hay muchas respuestas */
-    overflow-y: auto; /* Añadir scroll si es necesario */
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    max-height: 300px; overflow-y: auto;
+    padding: 10px; border: 1px solid #eee; border-radius: 4px;
 }
-#correct-pairs-list div {
-    padding: 5px 0;
-    border-bottom: 1px dashed #eee;
-}
-#correct-pairs-list div:last-child {
-    border-bottom: none;
-}
+#correct-pairs-list div { padding: 5px 0; border-bottom: 1px dashed #eee; }
+#correct-pairs-list div:last-child { border-bottom: none; }
 
 /* --- Responsividad --- */
 @media (max-width: 600px) {
-    body {
-        padding: 10px; /* Menos padding en pantallas pequeñas */
-    }
+    body { padding: 10px; }
+    .game-mode-container { padding: 15px; }
 
-    #game-container {
-        padding: 15px;
-    }
+    h1 { font-size: 1.5em; }
+    .selection-button { padding: 12px 20px; font-size: 1em; }
 
-    #game-info {
-        flex-direction: column; /* Poner puntuación y timer uno encima del otro */
-        align-items: stretch; /* Ocupar todo el ancho */
-        gap: 10px;
-        font-size: 1em; /* Reducir tamaño fuente */
-    }
-    #score-board, #timer-board {
-       text-align: center;
-    }
+    #matching-container header#game-info { flex-direction: column; align-items: stretch; gap: 10px; font-size: 1em; }
+    #score-board, #timer-board,
+    #fill-blanks-score-board, #fill-blanks-timer-board { text-align: center; }
 
-    .word-pill {
-        padding: 6px 12px;
-        font-size: 0.9em; /* Letra un poco más pequeña */
-    }
+    .word-pill { padding: 6px 12px; font-size: 0.9em; }
+    #word-area { min-height: 250px; padding: 10px; }
 
-    #word-area {
-        min-height: 250px; /* Reducir altura mínima */
-        padding: 10px;
-    }
+    #fill-blanks-table th, #fill-blanks-table td { padding: 8px; font-size: 0.9em; }
+    #fill-blanks-table input[type="text"] { padding: 6px; }
+    .table-container { max-height: 300px; }
 
-    #results-content, #setup-overlay > div {
-        padding: 20px;
-        max-width: 95%;
-    }
+    #results-content { padding: 20px; max-width: 95%; }
+    button { font-size: 0.9em; padding: 8px 15px; }
 }
