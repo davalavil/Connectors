@@ -1,217 +1,123 @@
 // js/script.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Datos del Juego ---
-    // La variable 'conectoresOriginal' ahora viene del archivo 'js/connectors.js'
-    // Asegúrate de que 'connectors.js' se carga ANTES que este script en el HTML.
-
+    // --- Comprobación Inicial ---
     if (typeof conectoresOriginal === 'undefined') {
         console.error("ERROR: El archivo 'connectors.js' no se ha cargado correctamente o la variable 'conectoresOriginal' no está definida.");
         alert("Error al cargar los datos del juego. Revisa la consola.");
-        return; // Detener la ejecución si los datos no están disponibles
+        return;
     }
 
-    let conectores = [...conectoresOriginal]; // Copia para poder reiniciar
-    let currentScore = 0;
-    let totalPairs = conectores.length;
-    let draggedElement = null; // Para guardar el elemento que se está arrastrando
+    // --- Variables Globales ---
+    let currentGameMode = null; // 'matching' or 'fill-blanks'
     let timerInterval = null;
-    let timeLeft = 600; // Tiempo por defecto en segundos (10 minutos) - Se actualizará con la selección del usuario
+    let timeLeft = 0;
+    let currentConnectors = []; // Array de conectores para el juego actual
+    let score = 0;
 
-    // --- Elementos del DOM ---
+    // --- Elementos del DOM Comunes ---
+    const gameSelectionDiv = document.getElementById('game-selection');
+    const backToSelectionButtons = document.querySelectorAll('.back-to-selection');
+
+    // --- Elementos DOM Juego Emparejar (Matching) ---
+    const matchingContainer = document.getElementById('matching-container');
+    const matchingSetupDiv = document.getElementById('matching-setup');
+    const matchingGameDiv = document.getElementById('matching-game');
+    const matchingTimeSelect = document.getElementById('matching-time-select');
+    const startMatchingBtn = document.getElementById('start-matching-btn');
     const wordArea = document.getElementById('word-area');
     const currentScoreSpan = document.getElementById('current-score');
     const totalPairsSpan = document.getElementById('total-pairs');
-    const timeLeftSpan = document.getElementById('time-left');
+    const matchingTimerSpan = document.getElementById('time-left');
     const giveUpBtn = document.getElementById('give-up-btn');
+    const restartMatchingBtn = document.getElementById('restart-matching-btn');
     const resultsOverlay = document.getElementById('results-overlay');
     const correctPairsList = document.getElementById('correct-pairs-list');
-    const playAgainBtn = document.getElementById('play-again-btn');
-    const setupOverlay = document.getElementById('setup-overlay');
-    const startGameBtn = document.getElementById('start-game-btn');
-    const timeSelect = document.getElementById('time-select');
+    const playAgainMatchingBtn = document.getElementById('play-again-matching-btn');
+    let draggedElement = null;
 
-    // --- Funciones del Juego ---
+    // --- Elementos DOM Juego Rellenar (Fill Blanks) ---
+    const fillBlanksContainer = document.getElementById('fill-blanks-container');
+    const fillBlanksSetupDiv = document.getElementById('fill-blanks-setup');
+    const fillBlanksGameDiv = document.getElementById('fill-blanks-game');
+    const translationDirectionSelect = document.getElementById('translation-direction');
+    const fillBlanksTimeSelect = document.getElementById('fill-blanks-time-select');
+    const startFillBlanksBtn = document.getElementById('start-fill-blanks-btn');
+    const fillBlanksTimerSpan = document.getElementById('fill-blanks-time-left');
+    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score');
+    const fillBlanksTotalSpan = document.getElementById('fill-blanks-total');
+    const fillBlanksTableBody = document.querySelector('#fill-blanks-table tbody');
+    const checkAnswersBtn = document.getElementById('check-answers-btn');
+    const restartFillBlanksBtn = document.getElementById('restart-fill-blanks-btn');
+    let translationDirection = 'en-es'; // 'en-es' or 'es-en'
 
-    // Barajar un array (Algoritmo Fisher-Yates)
+    // --- Funciones de Utilidad ---
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]]; // Intercambio de elementos
+            [array[i], array[j]] = [array[j], array[i]];
         }
+        return array; // Devolver el array barajado
     }
 
-    // Crear y mostrar las píldoras de palabras
-    function renderWords() {
-        wordArea.innerHTML = ''; // Limpiar área antes de añadir nuevas palabras
-        const wordsToRender = [];
-
-        conectores = [...conectoresOriginal]; // Asegurarse de usar la lista fresca al renderizar
-        totalPairs = conectores.length; // Actualizar el total por si cambia en connectors.js
-        totalPairsSpan.textContent = totalPairs;
-        currentScore = 0; // Resetear puntuación
-        currentScoreSpan.textContent = currentScore;
-
-
-        conectores.forEach(pair => {
-            wordsToRender.push({ id: pair.id, lang: 'en', text: pair.en });
-            wordsToRender.push({ id: pair.id, lang: 'es', text: pair.es });
-        });
-
-        shuffleArray(wordsToRender); // Barajar todas las píldoras juntas
-
-        wordsToRender.forEach(word => {
-            const pill = document.createElement('div');
-            pill.classList.add('word-pill', `lang-${word.lang}`);
-            pill.textContent = word.text;
-            pill.draggable = true; // Hacer el elemento arrastrable
-            pill.dataset.id = word.id; // Guardar el ID en el dataset
-            pill.dataset.lang = word.lang; // Guardar el idioma en el dataset
-
-            // Añadir event listeners para drag & drop
-            pill.addEventListener('dragstart', handleDragStart);
-            pill.addEventListener('dragend', handleDragEnd);
-
-            wordArea.appendChild(pill);
-        });
-
-         // Añadir listeners al contenedor para drop (más fiable que en cada píldora)
-         wordArea.addEventListener('dragover', handleDragOver);
-         wordArea.addEventListener('drop', handleDrop);
-    }
-
-    // --- Funciones de Drag & Drop ---
-    function handleDragStart(event) {
-        // Solo permitir arrastrar si el juego está activo (timer corriendo)
-         // Permitir arrastrar incluso si el timer no ha empezado (pero no después de acabar)
-        if (!timerInterval && timeLeft <= 0 && currentScore !== totalPairs) return; // No arrastrar si el tiempo acabó y no se ganó
-        if (resultsOverlay.classList.contains('hidden') === false) return; // No arrastrar si se muestran resultados
-
-
-        draggedElement = event.target; // Guardar el elemento que se arrastra
-        event.dataTransfer.setData('text/plain', event.target.dataset.id); // Necesario para Firefox
-        event.dataTransfer.effectAllowed = 'move';
-        setTimeout(() => {
-            // Asegurarse que el elemento todavía existe antes de añadir la clase
-            if(draggedElement) {
-                draggedElement.classList.add('dragging');
-            }
-        }, 0);
-    }
-
-    function handleDragEnd(event) {
-        // Limpiar estilos y la variable de referencia
-        if (draggedElement) {
-             draggedElement.classList.remove('dragging');
-        }
-        draggedElement = null;
-        // Quitar clase de feedback incorrecto si la hubiera, con un pequeño retraso
-        // para no quitarla inmediatamente si el drop fue incorrecto
-        setTimeout(() => {
-            const incorrectElements = wordArea.querySelectorAll('.incorrect-match');
-            incorrectElements.forEach(el => el.classList.remove('incorrect-match'));
-        }, 100);
-    }
-
-    function handleDragOver(event) {
-        event.preventDefault(); // Necesario para permitir el drop
-         event.dataTransfer.dropEffect = 'move';
-    }
-
-    function handleDrop(event) {
-        event.preventDefault(); // Evita comportamiento por defecto (abrir como enlace, etc.)
-        if (!draggedElement) return; // Si no hay elemento arrastrándose, salir
-
-        const dropTarget = event.target;
-
-        // Asegurarse que se suelta sobre OTRA píldora de palabra,
-        // que no esté ya emparejada (oculta o con clase correct-match),
-        // y que no sea sobre sí misma
-        if (dropTarget.classList.contains('word-pill') &&
-            !dropTarget.classList.contains('correct-match') &&
-             dropTarget.style.visibility !== 'hidden' &&
-            dropTarget !== draggedElement)
-        {
-            const draggedId = draggedElement.dataset.id;
-            const draggedLang = draggedElement.dataset.lang;
-            const targetId = dropTarget.dataset.id;
-            const targetLang = dropTarget.dataset.lang;
-
-            // Comprobar si la pareja es correcta: mismo ID, diferente idioma
-            if (draggedId === targetId && draggedLang !== targetLang) {
-                // ¡Pareja Correcta!
-                // Aplicar estilo inmediatamente
-                draggedElement.classList.add('correct-match');
-                dropTarget.classList.add('correct-match');
-                 draggedElement.classList.remove('dragging'); // Quitar estilo dragging
-
-                // Deshabilitar drag & drop para estos elementos
-                draggedElement.draggable = false;
-                dropTarget.draggable = false;
-
-                // Esperar a que termine la animación CSS para ocultarlos
-                setTimeout(() => {
-                     // Comprobar si los elementos aún existen y tienen la clase antes de ocultar
-                    if (draggedElement && draggedElement.classList.contains('correct-match')) {
-                         draggedElement.style.visibility = 'hidden';
-                    }
-                     if (dropTarget && dropTarget.classList.contains('correct-match')) {
-                         dropTarget.style.visibility = 'hidden';
-                     }
-                }, 500); // Tiempo igual a la transición en CSS
-
-                currentScore++;
-                currentScoreSpan.textContent = currentScore;
-
-                // Comprobar si se ha ganado
-                if (currentScore === totalPairs) {
-                    endGame(true); // Ganó
-                }
-            } else {
-                // Pareja Incorrecta
-                if(draggedElement) draggedElement.classList.add('incorrect-match');
-                dropTarget.classList.add('incorrect-match');
-                // Quitar la clase después de la animación de 'shake'
-                setTimeout(() => {
-                     if (draggedElement) draggedElement.classList.remove('incorrect-match');
-                     // Asegurarse que dropTarget no fue emparejado correctamente mientras tanto
-                     if (!dropTarget.classList.contains('correct-match')) {
-                        dropTarget.classList.remove('incorrect-match');
-                     }
-                }, 500); // Ajustar si la animación 'shake' dura diferente
-            }
-        }
-        // Si se suelta fuera de una píldora válida, dragend se encargará de limpiar la clase 'dragging'
-         // Ya no necesitamos limpiar 'dragging' aquí explícitamente
-    }
-
-
-    // --- Funciones del Temporizador ---
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
-    function updateTimerDisplay() {
-        timeLeftSpan.textContent = formatTime(timeLeft);
+    // --- Funciones de Control de Visibilidad ---
+    function showScreen(screen) {
+        gameSelectionDiv.classList.add('hidden');
+        matchingContainer.classList.add('hidden');
+        fillBlanksContainer.classList.add('hidden');
+        matchingSetupDiv.classList.add('hidden');
+        matchingGameDiv.classList.add('hidden');
+        fillBlanksSetupDiv.classList.add('hidden');
+        fillBlanksGameDiv.classList.add('hidden');
+        resultsOverlay.classList.add('hidden'); // Asegurarse que el overlay esté oculto al cambiar
+
+        if (screen === 'selection') {
+            gameSelectionDiv.classList.remove('hidden');
+        } else if (screen === 'matching-setup') {
+            matchingContainer.classList.remove('hidden');
+            matchingSetupDiv.classList.remove('hidden');
+        } else if (screen === 'matching-game') {
+            matchingContainer.classList.remove('hidden');
+            matchingGameDiv.classList.remove('hidden');
+        } else if (screen === 'fill-blanks-setup') {
+            fillBlanksContainer.classList.remove('hidden');
+            fillBlanksSetupDiv.classList.remove('hidden');
+        } else if (screen === 'fill-blanks-game') {
+            fillBlanksContainer.classList.remove('hidden');
+            fillBlanksGameDiv.classList.remove('hidden');
+        }
     }
 
-    function startTimer() {
-        // Evitar múltiples intervalos si ya existe uno
-        if (timerInterval) clearInterval(timerInterval);
+    // --- Funciones del Temporizador (Compartidas) ---
+    function updateTimerDisplay() {
+        const formattedTime = formatTime(timeLeft);
+        if (currentGameMode === 'matching') {
+            matchingTimerSpan.textContent = formattedTime;
+        } else if (currentGameMode === 'fill-blanks') {
+            fillBlanksTimerSpan.textContent = formattedTime;
+        }
+    }
 
-        updateTimerDisplay(); // Mostrar tiempo inicial
+    function startTimer(duration) {
+        if (timerInterval) clearInterval(timerInterval); // Limpiar intervalo anterior
+        timeLeft = duration;
+        updateTimerDisplay();
 
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
             if (timeLeft <= 0) {
-                timeLeft = 0; // Asegurarse de que no sea negativo
-                updateTimerDisplay(); // Mostrar 00:00
-                endGame(false); // Se acabó el tiempo
+                clearInterval(timerInterval);
+                timerInterval = null;
+                handleTimeUp();
             }
-        }, 1000); // Cada segundo
+        }, 1000);
     }
 
     function stopTimer() {
@@ -219,104 +125,324 @@ document.addEventListener('DOMContentLoaded', () => {
         timerInterval = null;
     }
 
-    // --- Funciones de Control del Juego ---
-    function showResults(won) {
-        stopTimer();
-        correctPairsList.innerHTML = ''; // Limpiar lista anterior
+    function handleTimeUp() {
+        alert("¡Se acabó el tiempo!");
+        if (currentGameMode === 'matching') {
+            showMatchingResults(false); // Indicar que no ganó (por tiempo)
+        } else if (currentGameMode === 'fill-blanks') {
+            checkFillBlanksAnswers(); // Comprobar automáticamente al acabar el tiempo
+            checkAnswersBtn.disabled = true; // Deshabilitar botón de comprobar
+            // Opcional: Deshabilitar todos los inputs
+             fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = true);
+        }
+    }
 
-        // Rellenar la lista de respuestas correctas
-        conectoresOriginal.forEach(pair => {
+    // --- Lógica Juego Emparejar (Matching) ---
+
+    function renderMatchingWords() {
+        wordArea.innerHTML = '';
+        const wordsToRender = [];
+        currentConnectors = shuffleArray([...conectoresOriginal]); // Barajar para este juego
+        score = 0;
+        currentScoreSpan.textContent = score;
+        totalPairsSpan.textContent = currentConnectors.length;
+
+        currentConnectors.forEach(pair => {
+            wordsToRender.push({ id: pair.id, lang: 'en', text: pair.en });
+            wordsToRender.push({ id: pair.id, lang: 'es', text: pair.es });
+        });
+
+        shuffleArray(wordsToRender);
+
+        wordsToRender.forEach(word => {
+            const pill = document.createElement('div');
+            pill.classList.add('word-pill', `lang-${word.lang}`);
+            pill.textContent = word.text;
+            pill.draggable = true;
+            pill.dataset.id = word.id;
+            pill.dataset.lang = word.lang;
+            pill.addEventListener('dragstart', handleDragStart);
+            pill.addEventListener('dragend', handleDragEnd);
+            wordArea.appendChild(pill);
+        });
+
+        wordArea.addEventListener('dragover', handleDragOver);
+        wordArea.addEventListener('drop', handleDrop);
+    }
+
+    function handleDragStart(event) {
+        if (!timerInterval && timeLeft > 0) return; // No arrastrar si timer parado pero no acabado
+        if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return; // No arrastrar si ya emparejada
+
+        draggedElement = event.target;
+        event.dataTransfer.setData('text/plain', event.target.dataset.id);
+        event.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => { if(draggedElement) draggedElement.classList.add('dragging'); }, 0);
+    }
+
+    function handleDragEnd(event) {
+        if (draggedElement) draggedElement.classList.remove('dragging');
+        draggedElement = null;
+        setTimeout(() => {
+            wordArea.querySelectorAll('.incorrect-match').forEach(el => el.classList.remove('incorrect-match'));
+        }, 100);
+    }
+
+    function handleDragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        if (!draggedElement) return;
+
+        const dropTarget = event.target;
+
+        if (dropTarget.classList.contains('word-pill') &&
+            !dropTarget.classList.contains('correct-match') &&
+            dropTarget.style.visibility !== 'hidden' &&
+            dropTarget !== draggedElement)
+        {
+            const draggedId = draggedElement.dataset.id;
+            const draggedLang = draggedElement.dataset.lang;
+            const targetId = dropTarget.dataset.id;
+            const targetLang = dropTarget.dataset.lang;
+
+            if (draggedId === targetId && draggedLang !== targetLang) {
+                // Correct Match
+                draggedElement.classList.add('correct-match');
+                dropTarget.classList.add('correct-match');
+                draggedElement.classList.remove('dragging');
+                draggedElement.draggable = false;
+                dropTarget.draggable = false;
+
+                setTimeout(() => {
+                    if (draggedElement && draggedElement.classList.contains('correct-match')) draggedElement.style.visibility = 'hidden';
+                    if (dropTarget && dropTarget.classList.contains('correct-match')) dropTarget.style.visibility = 'hidden';
+                }, 500);
+
+                score++;
+                currentScoreSpan.textContent = score;
+
+                if (score === currentConnectors.length) {
+                    stopTimer();
+                    setTimeout(() => showMatchingResults(true), 600); // Ganó
+                }
+            } else {
+                // Incorrect Match
+                if(draggedElement) draggedElement.classList.add('incorrect-match');
+                dropTarget.classList.add('incorrect-match');
+                setTimeout(() => {
+                    if (draggedElement) draggedElement.classList.remove('incorrect-match');
+                    if (!dropTarget.classList.contains('correct-match')) dropTarget.classList.remove('incorrect-match');
+                }, 500);
+            }
+        }
+        // Ensure dragging class is removed even if dropped outside a valid target
+        if (draggedElement) draggedElement.classList.remove('dragging');
+    }
+
+    function showMatchingResults(won) {
+        stopTimer();
+        correctPairsList.innerHTML = ''; // Limpiar lista
+        conectoresOriginal.forEach(pair => { // Mostrar todos los originales
             const div = document.createElement('div');
             div.textContent = `${pair.en} = ${pair.es}`;
             correctPairsList.appendChild(div);
         });
 
-         // Determinar el título del resultado
         let resultTitle = "Resultados";
-        if (won) {
-            resultTitle = "¡Felicidades, has ganado!";
-        } else if (timeLeft <= 0) {
-            resultTitle = "¡Se acabó el tiempo!";
-        } else {
-            // Se rindió
-            resultTitle = "Te has rendido";
-        }
+        if (won) resultTitle = "¡Felicidades, has ganado!";
+        else if (timeLeft <= 0) resultTitle = "¡Se acabó el tiempo!";
+        else resultTitle = "Te has rendido"; // Give up case
         resultsOverlay.querySelector('h2').textContent = resultTitle;
 
-
-        // Mostrar el overlay de resultados
         resultsOverlay.classList.remove('hidden');
-
-        // Opcional: Ocultar las palabras restantes que no se emparejaron
-        wordArea.querySelectorAll('.word-pill').forEach(pill => {
-             if (!pill.classList.contains('correct-match') && pill.style.visibility !== 'hidden') {
-                 pill.style.opacity = '0.5'; // Atenuar las no emparejadas
-                 pill.draggable = false; // Asegurarse de que no se puedan arrastrar
-             }
-         });
+        giveUpBtn.disabled = true; // Deshabilitar rendirse una vez mostrados los resultados
+        restartMatchingBtn.disabled = false; // Habilitar reiniciar
     }
 
-    function endGame(won) {
+    function initializeMatchingGame() {
+        currentGameMode = 'matching';
+        const selectedMinutes = parseInt(matchingTimeSelect.value, 10);
+        score = 0;
+        draggedElement = null;
+        renderMatchingWords();
+        showScreen('matching-game');
+        giveUpBtn.disabled = false;
+        restartMatchingBtn.disabled = true; // Deshabilitado hasta que acabe
+        resultsOverlay.classList.add('hidden'); // Asegurar que esté oculto
+        startTimer(selectedMinutes * 60);
+    }
+
+     function resetMatchingGame(goToSetup = false) {
         stopTimer();
-        // Deshabilitar drag de píldoras restantes
-        wordArea.querySelectorAll('.word-pill').forEach(pill => pill.draggable = false);
-        // No llamar a showResults inmediatamente si se ganó, esperar un poco
-        if (won) {
-            setTimeout(() => showResults(true), 600); // Pequeña pausa tras el último acierto
+        wordArea.innerHTML = '';
+        score = 0;
+        currentScoreSpan.textContent = '0';
+        totalPairsSpan.textContent = '0';
+        matchingTimerSpan.textContent = '--:--';
+        resultsOverlay.classList.add('hidden');
+        giveUpBtn.disabled = false;
+        restartMatchingBtn.disabled = false;
+        // Limpiar listeners de drag/drop del contenedor por si acaso
+        wordArea.removeEventListener('dragover', handleDragOver);
+        wordArea.removeEventListener('drop', handleDrop);
+
+        if (goToSetup) {
+             showScreen('matching-setup');
         } else {
-             showResults(false);
+            initializeMatchingGame(); // Reinicia con la misma configuración de tiempo
         }
     }
 
-    function giveUp() {
-        // Solo rendirse si el juego ha empezado y no se ha acabado
-         if (timerInterval || (timeLeft > 0 && currentScore < totalPairs)) {
-            endGame(false);
+    // --- Lógica Juego Rellenar (Fill Blanks) ---
+
+    function renderFillBlanksTable() {
+        fillBlanksTableBody.innerHTML = ''; // Limpiar tabla
+        currentConnectors = shuffleArray([...conectoresOriginal]); // Barajar para el juego
+        score = 0;
+        fillBlanksScoreSpan.textContent = score;
+        fillBlanksTotalSpan.textContent = currentConnectors.length;
+        translationDirection = translationDirectionSelect.value; // Leer dirección seleccionada
+
+        currentConnectors.forEach(pair => {
+            const row = document.createElement('tr');
+            row.dataset.id = pair.id; // Guardar ID en la fila
+
+            const sourceCell = document.createElement('td');
+            sourceCell.textContent = (translationDirection === 'en-es') ? pair.en : pair.es;
+
+            const inputCell = document.createElement('td');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...';
+            input.dataset.id = pair.id; // También en el input por facilidad
+            inputCell.appendChild(input);
+
+            const feedbackCell = document.createElement('td');
+            feedbackCell.classList.add('feedback');
+            feedbackCell.textContent = '-'; // Estado inicial
+
+            row.appendChild(sourceCell);
+            row.appendChild(inputCell);
+            row.appendChild(feedbackCell);
+
+            fillBlanksTableBody.appendChild(row);
+        });
+    }
+
+    // Normaliza y compara respuestas, maneja múltiples opciones separadas por coma/slash
+    function checkAnswer(userInput, correctAnswer) {
+        const normalizedInput = userInput.trim().toLowerCase();
+        if (!normalizedInput) return false; // Respuesta vacía es incorrecta
+
+        // Dividir respuestas correctas por coma o slash, quitar espacios extra
+        const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase());
+
+        return correctOptions.includes(normalizedInput);
+    }
+
+
+    function checkFillBlanksAnswers() {
+         if (!timerInterval && timeLeft <= 0 && score > 0) {
+             // Si el tiempo acabó y ya se comprobaron, no hacer nada más
+             // O si ya se comprobó manualmente antes de acabar el tiempo
+            // Podríamos necesitar una bandera `alreadyChecked` si permitimos comprobar varias veces.
+             // Por ahora, asumimos que solo se comprueba una vez (manualmente o al acabar tiempo).
          }
+
+        score = 0; // Reiniciar contador para recalcular
+        const rows = fillBlanksTableBody.querySelectorAll('tr');
+
+        rows.forEach(row => {
+            const input = row.querySelector('input[type="text"]');
+            const feedbackCell = row.querySelector('td.feedback');
+            const id = row.dataset.id;
+            const connectorPair = conectoresOriginal.find(p => p.id == id);
+
+            if (connectorPair && input) {
+                const userAnswer = input.value;
+                const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
+
+                if (checkAnswer(userAnswer, correctAnswer)) {
+                    feedbackCell.textContent = 'Correcto';
+                    feedbackCell.className = 'feedback correct'; // Quita otras clases y pone estas
+                    score++;
+                } else {
+                    feedbackCell.textContent = 'Incorrecto';
+                    feedbackCell.className = 'feedback incorrect';
+                    // Opcional: Mostrar la respuesta correcta si falló
+                    // input.value += ` (Correcto: ${correctAnswer.split(/[,/]/)[0]})`; // Muestra la primera opción correcta
+                }
+                input.disabled = true; // Deshabilitar input después de comprobar
+            }
+        });
+
+        fillBlanksScoreSpan.textContent = score; // Actualizar puntuación final
+        checkAnswersBtn.disabled = true; // Deshabilitar botón tras comprobar
+        stopTimer(); // Parar el timer si se comprueba manualmente antes de tiempo
     }
 
-    function resetGame() {
-        // Ocultar resultados y limpiar área de juego
-        resultsOverlay.classList.add('hidden');
-        wordArea.innerHTML = '';
 
-        // Resetear variables de estado
-        currentScore = 0;
-        currentScoreSpan.textContent = '0';
-        totalPairsSpan.textContent = conectoresOriginal.length; // Releer por si acaso
-        timeLeftSpan.textContent = '--:--'; // Resetear display timer
-        draggedElement = null;
-        stopTimer(); // Asegurarse que el timer está parado
-
-        // Mostrar la pantalla de configuración de nuevo
-        setupOverlay.classList.remove('hidden');
+    function initializeFillBlanksGame() {
+        currentGameMode = 'fill-blanks';
+        const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
+        score = 0;
+        renderFillBlanksTable(); // Crea la tabla con la dirección correcta
+        showScreen('fill-blanks-game');
+        checkAnswersBtn.disabled = false; // Habilitar botón de comprobar
+        restartFillBlanksBtn.disabled = false; // Habilitar botón de reiniciar
+        fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false); // Habilitar inputs
+        startTimer(selectedMinutes * 60);
     }
 
-     function initializeGame() {
-         setupOverlay.classList.add('hidden'); // Ocultar configuración
+    function resetFillBlanksGame(goToSetup = false) {
+        stopTimer();
+        fillBlanksTableBody.innerHTML = '';
+        score = 0;
+        fillBlanksScoreSpan.textContent = '0';
+        fillBlanksTotalSpan.textContent = '0';
+        fillBlanksTimerSpan.textContent = '--:--';
+        checkAnswersBtn.disabled = true; // Deshabilitar hasta empezar nuevo juego
+        restartFillBlanksBtn.disabled = true;
 
-         // Leer tiempo seleccionado y establecerlo
-         const selectedMinutes = parseInt(timeSelect.value, 10);
-         timeLeft = selectedMinutes * 60;
+         if (goToSetup) {
+             showScreen('fill-blanks-setup');
+        } else {
+            // Reinicia con misma configuración (dirección y tiempo)
+            initializeFillBlanksGame();
+        }
+    }
 
-         // Renderizar las palabras (esto resetea puntuación y total visualmente)
-         renderWords();
-
-         // Iniciar el temporizador
-         startTimer();
-     }
 
     // --- Event Listeners ---
-    giveUpBtn.addEventListener('click', giveUp);
-    playAgainBtn.addEventListener('click', resetGame);
-    startGameBtn.addEventListener('click', initializeGame);
 
+    // Selección de Juego
+    document.getElementById('select-matching-btn').addEventListener('click', () => showScreen('matching-setup'));
+    document.getElementById('select-fill-blanks-btn').addEventListener('click', () => showScreen('fill-blanks-setup'));
 
-    // --- Inicio ---
-    // Asegurarse de que el overlay de configuración esté visible al cargar
-    setupOverlay.classList.remove('hidden');
-    // Inicializar el display del total de pares
-    totalPairsSpan.textContent = conectoresOriginal.length;
-    // No llamar a renderWords ni startTimer aquí, esperar al botón "Empezar Juego"
+    // Botones "Volver a Selección"
+    backToSelectionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            stopTimer(); // Parar cualquier timer activo
+            showScreen('selection');
+        });
+    });
 
-}); // Fin del DOMContentLoaded
+    // Setup y Start Juego Emparejar
+    startMatchingBtn.addEventListener('click', initializeMatchingGame);
+    giveUpBtn.addEventListener('click', () => showMatchingResults(false)); // Pasar false (no ganó)
+    playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true)); // Volver al setup
+    restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false)); // Reiniciar inmediatamente
+
+    // Setup y Start Juego Rellenar
+    startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame);
+    checkAnswersBtn.addEventListener('click', checkFillBlanksAnswers);
+    restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false)); // Reiniciar inmediatamente
+
+    // --- Inicialización General ---
+    showScreen('selection'); // Mostrar la pantalla de selección al inicio
+
+}); // Fin DOMContentLoaded
