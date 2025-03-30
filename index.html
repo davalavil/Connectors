@@ -3,56 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de Emparejar Conectores</title>
+    <title>Juegos de Conectores en Inglés</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div id="game-container">
-        <header id="game-info">
-            <div id="score-board">
-                Parejas: <span id="current-score">0</span> / <span id="total-pairs">0</span>
-            </div>
-            <div id="timer-board">
-                Tiempo: <span id="time-left">--:--</span>
-            </div>
-        </header>
+    <h1>Elige un Juego</h1>
 
-        <main id="word-area">
-            <!-- Las palabras se cargarán aquí con JavaScript -->
-        </main>
+    <!-- Sección de Selección de Juego -->
+    <div id="game-selection">
+        <button id="select-matching-btn" class="selection-button">Jugar a Emparejar</button>
+        <button id="select-fill-blanks-btn" class="selection-button">Jugar a Rellenar Traducción</button>
+    </div>
 
-        <footer id="game-controls">
-            <button id="give-up-btn">¡ME RINDO!</button>
-        </footer>
-
-        <!-- Sección para mostrar resultados (inicialmente oculta) -->
-        <div id="results-overlay" class="hidden">
-            <div id="results-content">
-                <h2>Resultados</h2>
-                <div id="correct-pairs-list">
-                    <!-- Las respuestas correctas se mostrarán aquí -->
-                </div>
-                <button id="play-again-btn">Jugar de Nuevo</button>
-            </div>
+    <!-- Contenedor Juego de Emparejar (Matching) -->
+    <div id="matching-container" class="game-mode-container hidden">
+        <!-- Setup Juego Emparejar -->
+        <div id="matching-setup" class="setup-section">
+             <h2>Configurar Juego de Emparejar</h2>
+             <label for="matching-time-select">Selecciona el tiempo (minutos):</label>
+             <select id="matching-time-select">
+                 <option value="5">5</option>
+                 <option value="10" selected>10</option>
+                 <option value="15">15</option>
+                 <option value="20">20</option>
+                 <option value="1">1</option>
+             </select>
+             <button id="start-matching-btn">Empezar a Emparejar</button>
+             <button class="back-to-selection">Volver a Selección</button>
         </div>
 
-         <!-- Sección para configuración inicial -->
-         <div id="setup-overlay"> <!-- Quitamos 'hidden' para que se muestre al inicio -->
-             <div> <!-- Añadido div para aplicar estilos al contenido -->
-                <h2>Configurar Juego</h2>
-                <label for="time-select">Selecciona el tiempo (minutos):</label>
-                <select id="time-select">
-                    <option value="5">5</option>
-                    <option value="10" selected>10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="1">1</option> <!-- Opción de 1 minuto para pruebas rápidas -->
-                </select>
-                <button id="start-game-btn">Empezar Juego</button>
+        <!-- Juego Emparejar -->
+        <div id="matching-game" class="game-section hidden">
+             <header id="game-info">
+                 <div id="score-board">
+                     Parejas: <span id="current-score">0</span> / <span id="total-pairs">0</span>
+                 </div>
+                 <div id="timer-board">
+                     Tiempo: <span id="time-left">--:--</span>
+                 </div>
+             </header>
+             <main id="word-area">
+                 <!-- Las palabras para emparejar se cargarán aquí -->
+             </main>
+             <footer id="game-controls">
+                 <button id="give-up-btn">¡ME RINDO!</button>
+                 <button id="restart-matching-btn">Reiniciar Emparejar</button>
+                 <button class="back-to-selection">Volver a Selección</button>
+             </footer>
+             <!-- Overlay de Resultados (Emparejar) -->
+             <div id="results-overlay" class="hidden">
+                 <div id="results-content">
+                     <h2>Resultados</h2>
+                     <div id="correct-pairs-list"></div>
+                     <button id="play-again-matching-btn">Jugar de Nuevo (Emparejar)</button>
+                     <button class="back-to-selection">Volver a Selección</button>
+                 </div>
              </div>
-         </div>
+        </div>
+    </div>
 
+    <!-- Contenedor Juego Rellenar Huecos (Fill Blanks) -->
+    <div id="fill-blanks-container" class="game-mode-container hidden">
+        <!-- Setup Juego Rellenar Huecos -->
+        <div id="fill-blanks-setup" class="setup-section">
+            <h2>Configurar Juego de Rellenar</h2>
+            <label for="translation-direction">¿Qué quieres rellenar?</label>
+            <select id="translation-direction">
+                <option value="en-es">La traducción al Español (EN -> ES)</option>
+                <option value="es-en">La traducción al Inglés (ES -> EN)</option>
+            </select>
+            <label for="fill-blanks-time-select">Selecciona el tiempo (minutos):</label>
+            <select id="fill-blanks-time-select">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="1">1</option>
+            </select>
+            <button id="start-fill-blanks-btn">Empezar a Rellenar</option>
+            <button class="back-to-selection">Volver a Selección</button>
+       </div>
+
+        <!-- Juego Rellenar Huecos -->
+        <div id="fill-blanks-game" class="game-section hidden">
+             <header id="fill-blanks-info">
+                  <div id="fill-blanks-score-board">
+                     Correctas: <span id="fill-blanks-current-score">0</span> / <span id="fill-blanks-total">0</span>
+                 </div>
+                 <div id="fill-blanks-timer-board">
+                     Tiempo: <span id="fill-blanks-time-left">--:--</span>
+                 </div>
+             </header>
+             <main id="fill-blanks-area">
+                 <p>Escribe la traducción correcta en cada casilla:</p>
+                 <div class="table-container">
+                     <table id="fill-blanks-table">
+                         <thead>
+                             <tr>
+                                 <th>Conector Original</th>
+                                 <th>Tu Traducción</th>
+                                 <th>Resultado</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             <!-- Filas se generarán aquí -->
+                         </tbody>
+                     </table>
+                 </div>
+             </main>
+             <footer id="fill-blanks-controls">
+                 <button id="check-answers-btn">Comprobar Respuestas</button>
+                 <button id="restart-fill-blanks-btn">Reiniciar Relleno</button>
+                  <button class="back-to-selection">Volver a Selección</button>
+             </footer>
+             <!-- Aquí podría ir un overlay de resultados si se desea -->
+        </div>
     </div>
 
     <!-- Scripts -->
