@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval = null;
     let timeLeft = 0;
     let currentConnectors = []; // Array de conectores para el juego actual
-    let score = 0;
+    let score = 0; // Score dinámico durante el juego (fill-blanks)
     let fillBlanksFinalized = false; // Bandera para saber si el juego de rellenar ya finalizó
 
     // --- Elementos del DOM Comunes ---
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fillBlanksTimeSelect = document.getElementById('fill-blanks-time-select');
     const startFillBlanksBtn = document.getElementById('start-fill-blanks-btn');
     const fillBlanksTimerSpan = document.getElementById('fill-blanks-time-left');
-    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score');
+    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score'); // Score dinámico
     const fillBlanksTotalSpan = document.getElementById('fill-blanks-total');
     const fillBlanksTableBody = document.querySelector('#fill-blanks-table tbody');
     const checkAnswersBtn = document.getElementById('check-answers-btn');
@@ -133,20 +133,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentGameMode === 'matching') {
             showMatchingResults(false); // Indicar que no ganó (por tiempo)
         } else if (currentGameMode === 'fill-blanks') {
-            // Solo finalizar si no se ha finalizado ya manualmente
             if (!fillBlanksFinalized) {
-                 finalizeFillBlanksGame(); // Asegurarse que se llama a la función finalizadora
+                 finalizeFillBlanksGame(); // Llamar a la función finalizadora
             }
         }
     }
 
     // --- Lógica Juego Emparejar (Matching) ---
-    // ... (Sin cambios respecto a la versión anterior) ...
+    // ... (Sin cambios) ...
     function renderMatchingWords() {
         wordArea.innerHTML = '';
         const wordsToRender = [];
-        currentConnectors = shuffleArray([...conectoresOriginal]); // Barajar para este juego
-        score = 0;
+        currentConnectors = shuffleArray([...conectoresOriginal]);
+        score = 0; // Score para matching
         currentScoreSpan.textContent = score;
         totalPairsSpan.textContent = currentConnectors.length;
 
@@ -173,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordArea.addEventListener('drop', handleDrop);
     }
     function handleDragStart(event) {
-        if (!timerInterval && timeLeft > 0) return;
+        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return; // Solo si timer activo
         if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return;
 
         draggedElement = event.target;
@@ -215,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (draggedElement && draggedElement.classList.contains('correct-match')) draggedElement.style.visibility = 'hidden';
                     if (dropTarget && dropTarget.classList.contains('correct-match')) dropTarget.style.visibility = 'hidden';
                 }, 500);
-                score++;
+                score++; // Actualizar score de matching
                 currentScoreSpan.textContent = score;
                 if (score === currentConnectors.length) {
                     stopTimer();
@@ -252,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeMatchingGame() {
         currentGameMode = 'matching';
         const selectedMinutes = parseInt(matchingTimeSelect.value, 10);
-        score = 0;
+        score = 0; // Resetear score para matching
         draggedElement = null;
         renderMatchingWords();
         showScreen('matching-game');
@@ -280,16 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     // --- Lógica Juego Rellenar (Fill Blanks) ---
 
     function renderFillBlanksTable() {
         fillBlanksTableBody.innerHTML = '';
         currentConnectors = shuffleArray([...conectoresOriginal]);
-        score = 0;
+        score = 0; // Score dinámico para fill-blanks
         fillBlanksScoreSpan.textContent = score;
         fillBlanksTotalSpan.textContent = currentConnectors.length;
         translationDirection = translationDirectionSelect.value;
-        fillBlanksFinalized = false; // Resetear bandera
+        fillBlanksFinalized = false; // Asegurar que no está finalizado
 
         currentConnectors.forEach(pair => {
             const row = document.createElement('tr');
@@ -303,12 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
             input.type = 'text';
             input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...';
             input.dataset.id = pair.id;
+            // Listener para feedback instantáneo
             input.addEventListener('blur', handleFillBlanksInputBlur);
             inputCell.appendChild(input);
 
             const feedbackCell = document.createElement('td');
-            feedbackCell.classList.add('feedback');
-            feedbackCell.textContent = '-';
+            feedbackCell.classList.add('feedback'); // Añadir clase base
+            feedbackCell.textContent = '-'; // Estado inicial
 
             row.appendChild(sourceCell);
             row.appendChild(inputCell);
@@ -316,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fillBlanksTableBody.appendChild(row);
         });
+         console.log("Tabla de Rellenar renderizada.");
     }
 
     function checkAnswer(userInput, correctAnswer) {
@@ -324,7 +326,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase());
 
-        // Ignorar tildes para respuestas en español
         if (translationDirection === 'en-es') {
             const normalizedInputNoAccents = normalizedInput
                 .normalize("NFD")
@@ -334,15 +335,16 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         }
 
-        // Comparación directa (importante para inglés o si la anterior falló)
         return correctOptions.includes(normalizedInput);
     }
 
+    // Feedback instantáneo al perder el foco
     function handleFillBlanksInputBlur(event) {
         if (fillBlanksFinalized) return; // No hacer nada si ya finalizó
         checkSingleAnswerAndUpdate(event.target);
     }
 
+    // Actualiza UNA fila y el score dinámico
     function checkSingleAnswerAndUpdate(inputElement) {
         const row = inputElement.closest('tr');
         if (!row) return;
@@ -360,143 +362,144 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let feedbackChanged = false;
 
-        // --- Actualizar UI de la celda de feedback ---
+        // Actualizar UI de la celda
         if (isCorrectNow) {
             if (!wasCorrectBefore || feedbackCell.textContent !== 'Correcto') {
-                 feedbackCell.textContent = 'Correcto';
-                 feedbackCell.className = 'feedback correct';
-                 feedbackChanged = true;
+                feedbackCell.textContent = 'Correcto';
+                feedbackCell.className = 'feedback correct'; // Asegura clases correctas
+                feedbackChanged = true;
             }
         } else {
-            if (userAnswer.trim() !== '') { // Si hay texto y es incorrecto
+            if (userAnswer.trim() !== '') {
                 if (wasCorrectBefore || feedbackCell.textContent !== 'Incorrecto') {
                     feedbackCell.textContent = 'Incorrecto';
                     feedbackCell.className = 'feedback incorrect';
                     feedbackChanged = true;
                 }
-            } else { // Si está vacío
-                 if (wasCorrectBefore || feedbackCell.textContent !== '-') {
+            } else {
+                if (wasCorrectBefore || feedbackCell.textContent !== '-') {
                     feedbackCell.textContent = '-';
-                    feedbackCell.className = 'feedback'; // Resetear clase
+                    feedbackCell.className = 'feedback'; // Resetear a clase base
                     feedbackChanged = true;
-                 }
+                }
             }
         }
 
-        // --- Actualizar Puntuación (solo si cambió el estado de corrección) ---
+        // Actualizar score dinámico
         if (feedbackChanged) {
             if (isCorrectNow && !wasCorrectBefore) {
                 score++;
             } else if (!isCorrectNow && wasCorrectBefore) {
-                score--; // Decrementar si pasa de correcto a incorrecto/vacío
+                score--;
             }
-            // Asegurarse que el score no sea negativo
-            score = Math.max(0, score);
-            fillBlanksScoreSpan.textContent = score; // Actualizar el score visible
+            score = Math.max(0, score); // Evitar score negativo
+            fillBlanksScoreSpan.textContent = score;
+             // console.log(`Blur - Fila ID ${id}, Correcto: ${isCorrectNow}, Score dinámico: ${score}`);
         }
     }
 
-    // *** REVISADO Y SIMPLIFICADO: Función FINALIZADORA ***
+    // *** FUNCIÓN FINALIZADORA (BOTÓN / TIEMPO) ***
+    // Recorre TODO, establece feedback FINAL, calcula score FINAL, deshabilita.
     function finalizeFillBlanksGame() {
         if (fillBlanksFinalized) {
-            console.log("El juego ya ha finalizado.");
-            return; // Evitar ejecuciones múltiples
+            console.log("Intento de finalizar un juego ya finalizado.");
+            return;
         }
-        fillBlanksFinalized = true; // Marcar como finalizado AHORA
+        fillBlanksFinalized = true;
         stopTimer();
+        console.log("--- Finalizando Juego Rellenar ---");
 
-        console.log("Finalizando juego 'Rellenar Huecos'...");
-        let finalScore = 0; // Recalcular score final desde cero para asegurar
-
+        let finalScore = 0; // Recalcular score final desde CERO.
         const rows = fillBlanksTableBody.querySelectorAll('tr');
-        console.log(`Encontradas ${rows.length} filas para finalizar.`);
+
+        if (rows.length === 0) {
+            console.warn("No se encontraron filas en la tabla para finalizar.");
+            return; // Salir si no hay filas
+        }
 
         rows.forEach((row, index) => {
             const input = row.querySelector('input[type="text"]');
-            const feedbackCell = row.querySelector('td.feedback');
+            const feedbackCell = row.querySelector('td.feedback'); // Selecciona el TD con clase feedback
             const id = row.dataset.id;
             const connectorPair = conectoresOriginal.find(p => p.id == id);
 
-            if (input && feedbackCell && connectorPair) {
-                const userAnswer = input.value;
-                const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-                const isCorrect = checkAnswer(userAnswer, correctAnswer);
+            // Asegurarse que todos los elementos existen
+            if (!input) { console.error(`Fila ${index}: No se encontró input.`); return; }
+            if (!feedbackCell) { console.error(`Fila ${index}: No se encontró feedbackCell.`); return; }
+            if (!connectorPair) { console.error(`Fila ${index}: No se encontró conector con ID ${id}.`); return; }
 
-                // --- Actualización DIRECTA Y FINAL del feedback ---
-                if (isCorrect) {
-                    feedbackCell.textContent = 'Correcto';
-                    feedbackCell.className = 'feedback correct';
-                    finalScore++; // Incrementar score final
-                } else {
-                    if (userAnswer.trim() !== '') {
-                        feedbackCell.textContent = 'Incorrecto';
-                        feedbackCell.className = 'feedback incorrect';
-                        // Opcional: Mostrar respuesta correcta si se desea
-                        // feedbackCell.title = `Respuesta(s) correcta(s): ${correctAnswer}`;
-                    } else {
-                        feedbackCell.textContent = '-';
-                        feedbackCell.className = 'feedback';
-                    }
-                }
+            const userAnswer = input.value;
+            const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
+            const isCorrect = checkAnswer(userAnswer, correctAnswer);
+             // console.log(`Fila ${index} (ID ${id}): User='${userAnswer}', Correct='${correctAnswer}', Result=${isCorrect}`);
 
-                // --- Deshabilitar input ---
-                input.disabled = true;
-                // console.log(`Fila ${index}: ID ${id}, Correcto: ${isCorrect}, Input deshabilitado.`);
-
+            // --- Forzar actualización FINAL de la celda de feedback ---
+            if (isCorrect) {
+                feedbackCell.textContent = 'Correcto';
+                feedbackCell.className = 'feedback correct'; // Forzar clases
+                finalScore++; // Incrementar score final
             } else {
-                 console.warn(`Error procesando fila ${index}: Input, FeedbackCell o ConnectorPair no encontrado.`);
+                if (userAnswer.trim() !== '') {
+                    feedbackCell.textContent = 'Incorrecto';
+                    feedbackCell.className = 'feedback incorrect'; // Forzar clases
+                     // Opcional: Mostrar respuesta correcta en tooltip
+                     // feedbackCell.title = `Correcto: ${correctAnswer.split(/[,/]/)[0]}`;
+                } else {
+                    feedbackCell.textContent = '-';
+                    feedbackCell.className = 'feedback'; // Forzar clase base
+                }
             }
+
+            // --- Deshabilitar input ---
+            input.disabled = true;
         });
 
-        // Actualizar el score final en la UI
-        score = finalScore; // Asignar el score recalculado
+        // Actualizar el score mostrado con el score FINAL recalculado
+        score = finalScore; // Sobrescribir el score dinámico con el final
         fillBlanksScoreSpan.textContent = score;
-        console.log(`Score final recalculado: ${score}`);
+        console.log(`Final Score Calculado: ${score} / ${currentConnectors.length}`);
 
-        // Deshabilitar el botón de comprobar
+        // Deshabilitar botón y quitar foco
         checkAnswersBtn.disabled = true;
-        console.log("Botón 'Comprobar Respuestas' deshabilitado.");
-
-        // Quitar foco (si aplica)
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
 
         alert(`Comprobación finalizada.\nPuntuación final: ${score} / ${currentConnectors.length}`);
+        console.log("--- Juego Rellenar Finalizado ---");
     }
 
 
     function initializeFillBlanksGame() {
         currentGameMode = 'fill-blanks';
         const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
-        score = 0; // Resetear score
-        fillBlanksFinalized = false; // Resetear bandera
-        renderFillBlanksTable(); // Renderiza y añade listeners 'blur'
-        showScreen('fill-blanks-game');
-        checkAnswersBtn.disabled = false; // Habilitar botón
-        restartFillBlanksBtn.disabled = false; // Habilitar botón
-        fillBlanksScoreSpan.textContent = score; // Mostrar score inicial 0
-        // Habilitar inputs (ya se hace en render, pero por si acaso)
+        score = 0; // Resetear score dinámico
+        fillBlanksFinalized = false; // Muy importante resetear bandera
+        renderFillBlanksTable(); // Renderiza la tabla
+        showScreen('fill-blanks-game'); // Muestra la pantalla del juego
+        checkAnswersBtn.disabled = false; // Habilitar botón Comprobar
+        restartFillBlanksBtn.disabled = false; // Habilitar botón Reiniciar
+        fillBlanksScoreSpan.textContent = score; // Mostrar score 0
+        // Asegurar que inputs estén habilitados (aunque render lo hace)
         fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false);
-        startTimer(selectedMinutes * 60);
+        startTimer(selectedMinutes * 60); // Iniciar timer
     }
 
     function resetFillBlanksGame(goToSetup = false) {
-        stopTimer();
-        fillBlanksTableBody.innerHTML = ''; // Limpiar tabla
-        score = 0;
-        fillBlanksScoreSpan.textContent = '0';
-        fillBlanksTotalSpan.textContent = '0';
-        fillBlanksTimerSpan.textContent = '--:--';
-        checkAnswersBtn.disabled = true; // Deshabilitar hasta empezar
-        restartFillBlanksBtn.disabled = true; // Deshabilitar hasta empezar
+        stopTimer(); // Parar timer si está activo
+        fillBlanksTableBody.innerHTML = ''; // Limpiar tabla visualmente
+        score = 0; // Resetear variable score
+        fillBlanksScoreSpan.textContent = '0'; // Resetear marcador visual
+        fillBlanksTotalSpan.textContent = '0'; // Resetear total visual
+        fillBlanksTimerSpan.textContent = '--:--'; // Resetear timer visual
+        checkAnswersBtn.disabled = true; // Deshabilitar botón comprobar
+        restartFillBlanksBtn.disabled = true; // Deshabilitar botón reiniciar
         fillBlanksFinalized = false; // Resetear bandera
 
          if (goToSetup) {
-             showScreen('fill-blanks-setup');
+             showScreen('fill-blanks-setup'); // Volver a la pantalla de configuración
         } else {
-            // Reinicia con la misma configuración
-            initializeFillBlanksGame();
+            initializeFillBlanksGame(); // Reiniciar con la misma configuración
         }
     }
 
@@ -510,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botones "Volver a Selección"
     backToSelectionButtons.forEach(button => {
         button.addEventListener('click', () => {
-            stopTimer(); // Parar cualquier timer activo
+            stopTimer();
             showScreen('selection');
         });
     });
