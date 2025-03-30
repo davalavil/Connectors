@@ -8,7 +8,10 @@
 </head>
 <body>
 
-    <h1>Elige un Juego</h1>
+    <!-- **** H1 MODIFICADO **** -->
+    <h1 id="main-title">Conectores</h1>
+    <!-- **** FIN H1 MODIFICADO **** -->
+
 
     <!-- Sección de Selección de Juego -->
     <div id="game-selection">
@@ -20,6 +23,7 @@
     <div id="matching-container" class="game-mode-container hidden">
         <!-- Setup Juego Emparejar -->
         <div id="matching-setup" class="setup-section">
+             <!-- El H2 interno ya existe y es adecuado para la configuración -->
              <h2>Configurar Juego de Emparejar</h2>
              <label for="matching-time-select">Selecciona el tiempo (minutos):</label>
              <select id="matching-time-select">
@@ -67,6 +71,7 @@
     <div id="fill-blanks-container" class="game-mode-container hidden">
         <!-- Setup Juego Rellenar Huecos -->
         <div id="fill-blanks-setup" class="setup-section">
+             <!-- El H2 interno ya existe y es adecuado para la configuración -->
             <h2>Configurar Juego de Rellenar</h2>
             <label for="translation-direction">¿Qué quieres rellenar?</label>
             <select id="translation-direction">
@@ -87,11 +92,9 @@
 
         <!-- Juego Rellenar Huecos -->
         <div id="fill-blanks-game" class="game-section hidden">
-             <!-- **** CABECERA MODIFICADA **** -->
              <header id="fill-blanks-info">
                   <div id="fill-blanks-score-board">
                      Correctas: <span id="fill-blanks-current-score">0</span> |
-                     <!-- NUEVO: Span para erróneas -->
                      Erróneas: <span id="fill-blanks-incorrect-score">0</span> |
                      Total: <span id="fill-blanks-total">0</span>
                  </div>
@@ -99,7 +102,6 @@
                      Tiempo: <span id="fill-blanks-time-left">--:--</span>
                  </div>
              </header>
-             <!-- **** FIN CABECERA MODIFICADA **** -->
              <main id="fill-blanks-area">
                  <p>Escribe la traducción correcta en cada casilla:</p>
                  <div class="table-container">
