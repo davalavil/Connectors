@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juegos de Inglés Interactivo</title> <!-- Título más general -->
-    <link rel="stylesheet" href="css/style.css">
+    <title>Juegos de Inglés Interactivo</title>
+    <link rel="stylesheet" href="css/style.css"> <!-- Enlaza al CSS estable -->
 </head>
 <body>
 
@@ -15,7 +15,6 @@
     <div id="game-selection">
         <button id="select-matching-btn" class="selection-button">Jugar a Emparejar Conectores</button>
         <button id="select-fill-blanks-btn" class="selection-button">Jugar a Rellenar Conectores</button>
-        <!-- **** NUEVO BOTÓN DE SELECCIÓN **** -->
         <button id="select-verb-pattern-btn" class="selection-button">Jugar Gerundios/Infinitivos</button>
     </div>
 
@@ -55,7 +54,7 @@
                  <button class="back-to-selection">Volver a Selección</button>
              </footer>
              <!-- Overlay de Resultados (Emparejar) -->
-             <div id="results-overlay" class="hidden">
+             <div id="results-overlay" class="hidden"> <!-- Asegurar que empieza oculto -->
                  <div id="results-content">
                      <h2>Resultados</h2>
                      <div id="correct-pairs-list"></div>
@@ -125,7 +124,7 @@
         </div>
     </div>
 
-    <!-- **** NUEVO: Contenedor Juego Gerundios/Infinitivos **** -->
+    <!-- Contenedor Juego Gerundios/Infinitivos -->
     <div id="verb-pattern-container" class="game-mode-container hidden">
         <!-- Setup Juego -->
         <div id="verb-pattern-setup" class="setup-section">
@@ -136,7 +135,7 @@
                  <option value="15" selected>15</option>
                  <option value="20">20</option>
                  <option value="30">30</option>
-                 <option value="5">5</option> <!-- Opción rápida -->
+                 <option value="5">5</option>
              </select>
              <button id="start-verb-pattern-btn">Empezar Juego G/I</button>
              <button class="back-to-selection">Volver a Selección</button>
@@ -146,49 +145,38 @@
         <div id="verb-pattern-game" class="game-section hidden">
              <header id="verb-pattern-info">
                  <div id="verb-pattern-score-board">
-                     <!-- Contadores de Aciertos/Errores -->
                      Aciertos: <span id="verb-pattern-correct">0</span> |
                      Errores: <span id="verb-pattern-incorrect">0</span> |
                      Pregunta: <span id="verb-pattern-q-count">0</span> / <span id="verb-pattern-q-total">0</span>
                  </div>
                  <div id="verb-pattern-timer-board">
-                     <!-- Temporizador específico de la pregunta -->
                      Tiempo Pregunta: <span id="verb-pattern-q-time-left">--</span>s
                  </div>
              </header>
              <main id="verb-pattern-area">
-                 <!-- Término a clasificar -->
                  <div id="verb-pattern-term-container">
-                    <p>¿Qué sigue normalmente a esta palabra/frase?</p>
+                    <p>¿Qué sigue normally a esta palabra/frase?</p>
                     <div id="verb-pattern-term">Término...</div>
-                    <div id="verb-pattern-explanation" class="term-explanation"></div> <!-- Para mostrar la explicación -->
+                    <div id="verb-pattern-explanation" class="term-explanation"></div>
                  </div>
-
-                 <!-- Opciones de respuesta -->
                  <div id="verb-pattern-options">
                     <button class="answer-button" data-answer="gerund">Gerundio (-ing)</button>
                     <button class="answer-button" data-answer="infinitive_to">Infinitivo (con TO)</button>
                     <button class="answer-button" data-answer="infinitive_no_to">Infinitivo (sin TO)</button>
                     <button class="answer-button" data-answer="both">Ambos (Gerundio o Inf. con TO)</button>
                  </div>
-
-                 <!-- Feedback -->
-                 <div id="verb-pattern-feedback">
-                     <!-- Aquí se mostrará "¡Correcto!" o "¡Incorrecto!" -->
-                 </div>
+                 <div id="verb-pattern-feedback"></div>
              </main>
              <footer id="verb-pattern-controls">
                  <button id="verb-pattern-quit-btn">Salir del Juego</button>
              </footer>
         </div>
     </div>
-    <!-- **** FIN NUEVO CONTENEDOR **** -->
-
 
     <!-- Scripts -->
-    <script src="js/connectors.js"></script> <!-- Datos Conectores -->
-    <script src="js/verbPatterns.js"></script> <!-- Datos Gerundios/Infinitivos -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script> <!-- Librería SortableJS -->
-    <script src="js/script.js"></script>     <!-- Lógica principal del juego -->
+    <script src="js/connectors.js"></script>
+    <script src="js/verbPatterns.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
