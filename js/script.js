@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordArea.addEventListener('drop', handleDrop);
     }
     function handleDragStart(event) {
-        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return;
+        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return; // Only if timer active
         if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return;
 
         draggedElement = event.target;
@@ -307,12 +307,12 @@ document.addEventListener('DOMContentLoaded', () => {
             input.type = 'text';
             input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...';
             input.dataset.id = pair.id;
-            input.disabled = false; // Ensure input is enabled initially
-            input.addEventListener('blur', handleFillBlanksInputBlur); // Add listener for instant feedback
+            input.disabled = false;
+            input.addEventListener('blur', handleFillBlanksInputBlur);
             inputCell.appendChild(input);
 
             const feedbackCell = document.createElement('td');
-            feedbackCell.className = 'feedback'; // Set base class
+            feedbackCell.className = 'feedback'; // Set base class ONLY
             feedbackCell.textContent = '-'; // Initial text
 
             row.appendChild(sourceCell);
@@ -327,24 +327,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkAnswer(userInput, correctAnswer) {
         const normalizedInput = userInput.trim().toLowerCase();
         if (!normalizedInput) return false;
-
         const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase());
-
         if (translationDirection === 'en-es') {
-            const normalizedInputNoAccents = normalizedInput
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-             if (correctOptions.some(opt => opt.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalizedInputNoAccents)) {
-                 return true;
-             }
+            const normalizedInputNoAccents = normalizedInput.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (correctOptions.some(opt => opt.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalizedInputNoAccents)) {
+                return true;
+            }
         }
-
         return correctOptions.includes(normalizedInput);
     }
 
     // Handles instant feedback on input blur
     function handleFillBlanksInputBlur(event) {
-        if (fillBlanksFinalized) return; // Do nothing if game is finished
+        if (fillBlanksFinalized) return;
         checkSingleAnswerAndUpdate(event.target);
     }
 
@@ -355,15 +350,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedbackCell = row.querySelector('td.feedback');
         const id = row.dataset.id;
         const connectorPair = conectoresOriginal.find(p => p.id == id);
-
         if (!connectorPair || !feedbackCell) return;
 
         const userAnswer = inputElement.value;
         const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-
         const wasCorrectBefore = feedbackCell.classList.contains('correct');
         const isCorrectNow = checkAnswer(userAnswer, correctAnswer);
-
         let feedbackChanged = false;
 
         // Update feedback cell UI
@@ -374,15 +366,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 feedbackChanged = true;
             }
         } else {
-             const newText = (userAnswer.trim() !== '') ? 'Incorrecto' : '-';
-             const newClass = (userAnswer.trim() !== '') ? 'feedback incorrect' : 'feedback';
-             if (feedbackCell.textContent !== newText || feedbackCell.className !== newClass) {
-                 feedbackCell.textContent = newText;
-                 feedbackCell.className = newClass;
-                 feedbackChanged = true;
-             }
+            const newText = (userAnswer.trim() !== '') ? 'Incorrecto' : '-';
+            const newClass = (userAnswer.trim() !== '') ? 'feedback incorrect' : 'feedback';
+            if (feedbackCell.textContent !== newText || feedbackCell.className !== newClass) {
+                feedbackCell.textContent = newText;
+                feedbackCell.className = newClass;
+                feedbackChanged = true;
+            }
         }
-
         // Update dynamic score if correction status changed
         if (feedbackChanged) {
             if (isCorrectNow && !wasCorrectBefore) {
@@ -390,43 +381,43 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (!isCorrectNow && wasCorrectBefore) {
                 score--;
             }
-            score = Math.max(0, score); // Prevent negative score
-            fillBlanksScoreSpan.textContent = score; // Update dynamic score display
-            // console.log(`Blur Update - Row ID ${id}, Correct: ${isCorrectNow}, Dynamic Score: ${score}`);
+            score = Math.max(0, score);
+            fillBlanksScoreSpan.textContent = score;
         }
     }
 
-    // *** FINAL CHECK FUNCTION (Button/Time Up) ***
-    // Iterates all rows, sets FINAL feedback UI, calculates FINAL score, disables inputs.
+    // *** FINAL CHECK FUNCTION (Button/Time Up) - REVISADA ***
     function finalizeFillBlanksGame() {
         if (fillBlanksFinalized) {
             console.log("Finalize called on already finalized game.");
-            return; // Prevent multiple executions
+            return;
         }
-        fillBlanksFinalized = true; // Set flag immediately
-        stopTimer(); // Stop the clock
-        console.log("--- Finalizing Fill Blanks Game (Button/Time Up) ---");
+        fillBlanksFinalized = true;
+        stopTimer();
+        console.log("--- Finalizing Fill Blanks Game ---");
 
-        let finalCalculatedScore = 0; // Use a local variable to calculate the definitive final score
+        let finalCalculatedScore = 0;
         const rows = fillBlanksTableBody.querySelectorAll('tr');
 
         if (rows.length === 0) {
             console.warn("No rows found in table during finalization.");
-             checkAnswersBtn.disabled = true; // Still disable button
+            checkAnswersBtn.disabled = true;
             return;
         }
         console.log(`Finalizing ${rows.length} rows...`);
 
         rows.forEach((row, index) => {
             const input = row.querySelector('input[type="text"]');
-            const feedbackCell = row.querySelector('td.feedback');
+            // *** SELECCIONAR EL TD CORRECTO ***
+            // El TD de feedback es el TERCER hijo (índice 2) de la fila TR
+            const feedbackCell = row.cells[2]; // Usar índice de celda (más robusto)
             const id = row.dataset.id;
             const connectorPair = conectoresOriginal.find(p => p.id == id);
 
-            // Safety checks for elements
+            // Safety checks
             if (!input || !feedbackCell || !connectorPair) {
-                console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping.`);
-                return; // Skip this row if elements are missing
+                console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping. Input: ${!!input}, Cell: ${!!feedbackCell}, Pair: ${!!connectorPair}`);
+                return; // Skip this row
             }
 
             const userAnswer = input.value;
@@ -434,29 +425,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCorrect = checkAnswer(userAnswer, correctAnswer);
 
             // --- FORCE FINAL UI STATE ---
+            // Limpiar clases previas y añadir las nuevas
+            feedbackCell.classList.remove('correct', 'incorrect'); // Limpiar primero
+
             if (isCorrect) {
-                feedbackCell.textContent = 'Correcto'; // Set text
-                feedbackCell.className = 'feedback correct'; // Set classes
-                finalCalculatedScore++; // Increment final score
+                feedbackCell.textContent = 'Correcto';
+                feedbackCell.classList.add('correct'); // Añadir clase correcta
+                finalCalculatedScore++;
             } else {
-                 if (userAnswer.trim() !== '') {
+                if (userAnswer.trim() !== '') {
                     feedbackCell.textContent = 'Incorrecto';
-                    feedbackCell.className = 'feedback incorrect';
-                     // Optional: Tooltip with correct answer
-                     // feedbackCell.title = `Correcto: ${correctAnswer.split(/[,/]/)[0]}`;
-                 } else {
+                    feedbackCell.classList.add('incorrect'); // Añadir clase incorrecta
+                } else {
                     feedbackCell.textContent = '-';
-                    feedbackCell.className = 'feedback'; // Base class only
-                 }
+                    // No añadir clase extra si está vacío
+                }
             }
+            // Asegurarse de que la clase base 'feedback' siempre esté
+            if (!feedbackCell.classList.contains('feedback')) {
+                feedbackCell.classList.add('feedback');
+            }
+
 
             // --- Disable input ---
             input.disabled = true;
-            // console.log(`Row ${index} (ID ${id}): Final State Set - Correct: ${isCorrect}, Input Disabled. Text: ${feedbackCell.textContent}, Class: ${feedbackCell.className}`);
+            // Log detallado para depurar qué se está asignando
+             // console.log(`Row ${index} (ID ${id}): Final State Set - Correct: ${isCorrect}, Text: '${feedbackCell.textContent}', Class: '${feedbackCell.className}'`);
         });
 
         // Update the score display with the FINAL calculated score
-        score = finalCalculatedScore; // Update the global score variable
+        score = finalCalculatedScore;
         fillBlanksScoreSpan.textContent = score;
         console.log(`Final Score Calculated: ${score} / ${currentConnectors.length}`);
 
@@ -466,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.activeElement.blur();
         }
 
-        // Final confirmation alert
         alert(`Comprobación finalizada.\nPuntuación final: ${score} / ${currentConnectors.length}`);
         console.log("--- Fill Blanks Game Finalized ---");
     }
@@ -476,13 +473,13 @@ document.addEventListener('DOMContentLoaded', () => {
         currentGameMode = 'fill-blanks';
         const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
         score = 0; // Reset dynamic score
-        fillBlanksFinalized = false; // Reset finalized flag
-        renderFillBlanksTable(); // Render table and attach listeners
+        fillBlanksFinalized = false; // Reset flag
+        renderFillBlanksTable(); // Render table
         showScreen('fill-blanks-game'); // Show game screen
         checkAnswersBtn.disabled = false; // Enable check button
         restartFillBlanksBtn.disabled = false; // Enable restart button
         fillBlanksScoreSpan.textContent = score; // Show initial score 0
-        // Ensure inputs are enabled (render should do this, but double check)
+        // Ensure inputs are enabled
         fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false);
         startTimer(selectedMinutes * 60); // Start the timer
     }
