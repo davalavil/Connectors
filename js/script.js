@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToSelectionButtons = document.querySelectorAll('.back-to-selection');
 
     // --- Elementos DOM Juego Emparejar (Matching) ---
+    // ... (sin cambios)
     const matchingContainer = document.getElementById('matching-container');
     const matchingSetupDiv = document.getElementById('matching-setup');
     const matchingGameDiv = document.getElementById('matching-game');
@@ -37,7 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const playAgainMatchingBtn = document.getElementById('play-again-matching-btn');
     let draggedElement = null;
 
+
     // --- Elementos DOM Juego Rellenar (Fill Blanks) ---
+    // ... (sin cambios)
     const fillBlanksContainer = document.getElementById('fill-blanks-container');
     const fillBlanksSetupDiv = document.getElementById('fill-blanks-setup');
     const fillBlanksGameDiv = document.getElementById('fill-blanks-game');
@@ -53,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let translationDirection = 'en-es';
 
     // --- Funciones de Utilidad ---
+    // ... (sin cambios)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -60,16 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return array;
     }
-
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
+
     // --- Funciones de Control de Visibilidad ---
-    function showScreen(screen) {
-        // Ocultar todo primero
+    // ... (sin cambios)
+     function showScreen(screen) {
         gameSelectionDiv.classList.add('hidden');
         matchingContainer.classList.add('hidden');
         fillBlanksContainer.classList.add('hidden');
@@ -79,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fillBlanksGameDiv.classList.add('hidden');
         resultsOverlay.classList.add('hidden');
 
-        // Mostrar la pantalla correcta
         if (screen === 'selection') {
             gameSelectionDiv.classList.remove('hidden');
         } else if (screen === 'matching-setup') {
@@ -97,7 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     // --- Funciones del Temporizador (Compartidas) ---
+    // ... (sin cambios)
     function updateTimerDisplay() {
         const formattedTime = formatTime(timeLeft);
         if (currentGameMode === 'matching') {
@@ -106,12 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
             fillBlanksTimerSpan.textContent = formattedTime;
         }
     }
-
     function startTimer(duration) {
         if (timerInterval) clearInterval(timerInterval);
         timeLeft = duration;
         updateTimerDisplay();
-
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
@@ -122,12 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 1000);
     }
-
     function stopTimer() {
         clearInterval(timerInterval);
         timerInterval = null;
     }
-
     function handleTimeUp() {
         console.log("Time's up!");
         if (currentGameMode === 'matching') {
@@ -168,16 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
             wordArea.appendChild(pill);
         });
 
-        // Attach listeners to container only once
-        wordArea.removeEventListener('dragover', handleDragOver); // Remove previous if any
-        wordArea.removeEventListener('drop', handleDrop); // Remove previous if any
+        wordArea.removeEventListener('dragover', handleDragOver);
+        wordArea.removeEventListener('drop', handleDrop);
         wordArea.addEventListener('dragover', handleDragOver);
         wordArea.addEventListener('drop', handleDrop);
     }
     function handleDragStart(event) {
-        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return; // Only if timer active
+        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return;
         if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return;
-
         draggedElement = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.id);
         event.dataTransfer.effectAllowed = 'move';
@@ -232,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500);
             }
         }
-        // Ensure dragging class is removed if dropped outside a valid target
         if (draggedElement) draggedElement.classList.remove('dragging');
     }
     function showMatchingResults(won) {
@@ -260,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMatchingWords();
         showScreen('matching-game');
         giveUpBtn.disabled = false;
-        restartMatchingBtn.disabled = true; // Disabled until game ends
+        restartMatchingBtn.disabled = true;
         resultsOverlay.classList.add('hidden');
         startTimer(selectedMinutes * 60);
     }
@@ -274,13 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsOverlay.classList.add('hidden');
         giveUpBtn.disabled = false;
         restartMatchingBtn.disabled = false;
-        // Clean up listeners added to wordArea if necessary
         wordArea.removeEventListener('dragover', handleDragOver);
         wordArea.removeEventListener('drop', handleDrop);
         if (goToSetup) {
              showScreen('matching-setup');
         } else {
-            initializeMatchingGame(); // Restart with same settings
+            initializeMatchingGame();
         }
     }
 
@@ -312,8 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
             inputCell.appendChild(input);
 
             const feedbackCell = document.createElement('td');
-            feedbackCell.className = 'feedback'; // Set base class ONLY
-            feedbackCell.textContent = '-'; // Initial text
+            feedbackCell.className = 'feedback'; // Clase base
+            feedbackCell.textContent = '-'; // Texto inicial
 
             row.appendChild(sourceCell);
             row.appendChild(inputCell);
@@ -321,7 +318,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fillBlanksTableBody.appendChild(row);
         });
-         console.log("Fill Blanks table rendered.");
     }
 
     function checkAnswer(userInput, correctAnswer) {
@@ -347,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkSingleAnswerAndUpdate(inputElement) {
         const row = inputElement.closest('tr');
         if (!row) return;
-        const feedbackCell = row.querySelector('td.feedback');
+        const feedbackCell = row.cells[2]; // Usar índice de celda
         const id = row.dataset.id;
         const connectorPair = conectoresOriginal.find(p => p.id == id);
         if (!connectorPair || !feedbackCell) return;
@@ -358,23 +354,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCorrectNow = checkAnswer(userAnswer, correctAnswer);
         let feedbackChanged = false;
 
-        // Update feedback cell UI
+        // Limpiar clases previas
+        feedbackCell.classList.remove('correct', 'incorrect');
+
+        // Actualizar UI y marcar si cambió
         if (isCorrectNow) {
             if (!wasCorrectBefore || feedbackCell.textContent !== 'Correcto') {
                 feedbackCell.textContent = 'Correcto';
-                feedbackCell.className = 'feedback correct';
+                feedbackCell.classList.add('correct');
                 feedbackChanged = true;
+            } else {
+                 // Si ya era correcto, asegurar que el texto y clase estén bien
+                 feedbackCell.textContent = 'Correcto';
+                 feedbackCell.classList.add('correct');
             }
         } else {
             const newText = (userAnswer.trim() !== '') ? 'Incorrecto' : '-';
-            const newClass = (userAnswer.trim() !== '') ? 'feedback incorrect' : 'feedback';
-            if (feedbackCell.textContent !== newText || feedbackCell.className !== newClass) {
+            const newClass = (userAnswer.trim() !== '') ? 'incorrect' : null; // null si está vacío
+
+            if (feedbackCell.textContent !== newText || (newClass && !feedbackCell.classList.contains(newClass)) || (!newClass && (feedbackCell.classList.contains('correct') || feedbackCell.classList.contains('incorrect')))) {
                 feedbackCell.textContent = newText;
-                feedbackCell.className = newClass;
+                if (newClass) {
+                    feedbackCell.classList.add(newClass);
+                } // Ya limpiamos antes, solo añadimos si es incorrecto
                 feedbackChanged = true;
             }
         }
-        // Update dynamic score if correction status changed
+         // Asegurar clase base
+         if (!feedbackCell.classList.contains('feedback')) {
+            feedbackCell.classList.add('feedback');
+         }
+
+        // Actualizar score dinámico si el estado cambió
         if (feedbackChanged) {
             if (isCorrectNow && !wasCorrectBefore) {
                 score++;
@@ -386,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // *** FINAL CHECK FUNCTION (Button/Time Up) - REVISADA ***
+    // *** FUNCIÓN FINALIZADORA (BOTÓN / TIEMPO) - REVISADA ***
     function finalizeFillBlanksGame() {
         if (fillBlanksFinalized) {
             console.log("Finalize called on already finalized game.");
@@ -408,128 +419,115 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rows.forEach((row, index) => {
             const input = row.querySelector('input[type="text"]');
-            // *** SELECCIONAR EL TD CORRECTO ***
-            // El TD de feedback es el TERCER hijo (índice 2) de la fila TR
-            const feedbackCell = row.cells[2]; // Usar índice de celda (más robusto)
+            const feedbackCell = row.cells[2]; // Usar índice de celda
             const id = row.dataset.id;
             const connectorPair = conectoresOriginal.find(p => p.id == id);
 
-            // Safety checks
             if (!input || !feedbackCell || !connectorPair) {
-                console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping. Input: ${!!input}, Cell: ${!!feedbackCell}, Pair: ${!!connectorPair}`);
-                return; // Skip this row
+                console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping.`);
+                return;
             }
 
             const userAnswer = input.value;
             const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
             const isCorrect = checkAnswer(userAnswer, correctAnswer);
 
-            // --- FORCE FINAL UI STATE ---
-            // Limpiar clases previas y añadir las nuevas
-            feedbackCell.classList.remove('correct', 'incorrect'); // Limpiar primero
+            // --- **FORZAR ACTUALIZACIÓN VISUAL FINAL** ---
+            // 1. Limpiar clases específicas de estado
+            feedbackCell.classList.remove('correct', 'incorrect');
 
+            // 2. Establecer texto y clase final
             if (isCorrect) {
                 feedbackCell.textContent = 'Correcto';
-                feedbackCell.classList.add('correct'); // Añadir clase correcta
+                feedbackCell.classList.add('correct');
                 finalCalculatedScore++;
             } else {
                 if (userAnswer.trim() !== '') {
                     feedbackCell.textContent = 'Incorrecto';
-                    feedbackCell.classList.add('incorrect'); // Añadir clase incorrecta
+                    feedbackCell.classList.add('incorrect');
                 } else {
                     feedbackCell.textContent = '-';
-                    // No añadir clase extra si está vacío
+                    // No añadir clase 'correct' ni 'incorrect'
                 }
             }
-            // Asegurarse de que la clase base 'feedback' siempre esté
+            // Asegurar que la clase base siempre esté
             if (!feedbackCell.classList.contains('feedback')) {
-                feedbackCell.classList.add('feedback');
+                 feedbackCell.classList.add('feedback');
             }
 
-
-            // --- Disable input ---
+            // 3. Deshabilitar input
             input.disabled = true;
-            // Log detallado para depurar qué se está asignando
-             // console.log(`Row ${index} (ID ${id}): Final State Set - Correct: ${isCorrect}, Text: '${feedbackCell.textContent}', Class: '${feedbackCell.className}'`);
+             // console.log(`Row ${index} Final Update: Text='${feedbackCell.textContent}', Class='${feedbackCell.className}'`); // Log para verificar
         });
 
-        // Update the score display with the FINAL calculated score
+        // Actualizar el score mostrado con el score FINAL recalculado
         score = finalCalculatedScore;
         fillBlanksScoreSpan.textContent = score;
         console.log(`Final Score Calculated: ${score} / ${currentConnectors.length}`);
 
-        // Disable button and remove focus
+        // Deshabilitar botón y quitar foco
         checkAnswersBtn.disabled = true;
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
 
-        alert(`Comprobación finalizada.\nPuntuación final: ${score} / ${currentConnectors.length}`);
-        console.log("--- Fill Blanks Game Finalized ---");
+        // --- **QUITAR EL ALERT** ---
+        // alert(`Comprobación finalizada.\nPuntuación final: ${score} / ${currentConnectors.length}`);
+        console.log("--- Fill Blanks Game Finalized (Visual Update Complete) ---");
     }
 
 
     function initializeFillBlanksGame() {
         currentGameMode = 'fill-blanks';
         const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
-        score = 0; // Reset dynamic score
-        fillBlanksFinalized = false; // Reset flag
-        renderFillBlanksTable(); // Render table
-        showScreen('fill-blanks-game'); // Show game screen
-        checkAnswersBtn.disabled = false; // Enable check button
-        restartFillBlanksBtn.disabled = false; // Enable restart button
-        fillBlanksScoreSpan.textContent = score; // Show initial score 0
-        // Ensure inputs are enabled
+        score = 0;
+        fillBlanksFinalized = false;
+        renderFillBlanksTable();
+        showScreen('fill-blanks-game');
+        checkAnswersBtn.disabled = false;
+        restartFillBlanksBtn.disabled = false;
+        fillBlanksScoreSpan.textContent = score;
         fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false);
-        startTimer(selectedMinutes * 60); // Start the timer
+        startTimer(selectedMinutes * 60);
     }
 
     function resetFillBlanksGame(goToSetup = false) {
-        stopTimer(); // Stop any active timer
-        fillBlanksTableBody.innerHTML = ''; // Clear the table content
-        score = 0; // Reset score variable
-        fillBlanksScoreSpan.textContent = '0'; // Reset score display
-        fillBlanksTotalSpan.textContent = '0'; // Reset total display
-        fillBlanksTimerSpan.textContent = '--:--'; // Reset timer display
-        checkAnswersBtn.disabled = true; // Disable check button
-        restartFillBlanksBtn.disabled = true; // Disable restart button
-        fillBlanksFinalized = false; // Reset finalized flag
+        stopTimer();
+        fillBlanksTableBody.innerHTML = '';
+        score = 0;
+        fillBlanksScoreSpan.textContent = '0';
+        fillBlanksTotalSpan.textContent = '0';
+        fillBlanksTimerSpan.textContent = '--:--';
+        checkAnswersBtn.disabled = true;
+        restartFillBlanksBtn.disabled = true;
+        fillBlanksFinalized = false;
 
          if (goToSetup) {
-             showScreen('fill-blanks-setup'); // Go back to setup screen
+             showScreen('fill-blanks-setup');
         } else {
-            initializeFillBlanksGame(); // Restart with the same settings
+            initializeFillBlanksGame();
         }
     }
 
-
     // --- Event Listeners ---
-
-    // Selección de Juego
-    document.getElementById('select-matching-btn').addEventListener('click', () => showScreen('matching-setup'));
+    // ... (sin cambios)
+     document.getElementById('select-matching-btn').addEventListener('click', () => showScreen('matching-setup'));
     document.getElementById('select-fill-blanks-btn').addEventListener('click', () => showScreen('fill-blanks-setup'));
-
-    // Botones "Volver a Selección"
     backToSelectionButtons.forEach(button => {
         button.addEventListener('click', () => {
-            stopTimer(); // Ensure timer stops when going back
+            stopTimer();
             showScreen('selection');
         });
     });
-
-    // Setup y Start Juego Emparejar
     startMatchingBtn.addEventListener('click', initializeMatchingGame);
-    giveUpBtn.addEventListener('click', () => showMatchingResults(false)); // Give up
-    playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true)); // Go to setup
-    restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false)); // Restart immediately
-
-    // Setup y Start Juego Rellenar
+    giveUpBtn.addEventListener('click', () => showMatchingResults(false));
+    playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true));
+    restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false));
     startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame);
-    // Button calls the FINALIZATION function
     checkAnswersBtn.addEventListener('click', finalizeFillBlanksGame);
-    restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false)); // Restart immediately
+    restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false));
 
     // --- Inicialización General ---
-    showScreen('selection'); // Start at the game selection screen
+    showScreen('selection');
 
 }); // Fin DOMContentLoaded
