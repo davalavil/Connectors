@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("ERROR: El archivo 'connectors.js' no se ha cargado correctamente o la variable 'conectoresOriginal' no está definida.");
         dataError = true;
     }
-    // <<< NUEVO: Comprobar datos verbPatterns >>>
     if (typeof verbPatternData === 'undefined') {
         console.error("ERROR: El archivo 'verbPatterns.js' no se ha cargado correctamente o la variable 'verbPatternData' no está definida.");
         dataError = true;
@@ -18,32 +17,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (dataError) {
         alert("Error crítico al cargar los datos de uno o más juegos. Revisa la consola.");
-        // Podríamos deshabilitar botones o detener ejecución aquí
         return;
     }
 
     // --- Variables Globales ---
-    let currentGameMode = null; // 'matching', 'fill-blanks', 'verb-pattern'
-    let timerInterval = null; // Timer general del juego (si aplica)
-    let timeLeft = 0; // Tiempo restante del juego general
-
-    let currentConnectors = []; // Para juegos de conectores
-    let score = 0; // Score principal (parejas, correctas fill/verb)
+    let currentGameMode = null;
+    let timerInterval = null; // Timer general
+    let timeLeft = 0;
+    let currentConnectors = [];
+    let score = 0;
     let fillBlanksIncorrectScore = 0;
     let fillBlanksFinalized = false;
     let sortableInstance = null;
-
-    // <<< NUEVO: Variables para Juego Gerundios/Infinitivos >>>
-    let currentVerbPatterns = []; // Lista de patrones para la partida actual
-    let currentPatternIndex = -1; // Índice del patrón actual
-    let verbPatternTimePerQuestion = 15; // Segundos por defecto
-    let verbPatternQuestionTimer = null; // Intervalo del timer de pregunta
-    let verbPatternQuestionTimeLeft = 0; // Tiempo restante para la pregunta
-    let verbPatternIncorrectScore = 0; // Errores en este juego
-    let userCanAnswer = false; // Controla si se puede responder
+    let currentVerbPatterns = [];
+    let currentPatternIndex = -1;
+    let verbPatternTimePerQuestion = 15;
+    let verbPatternQuestionTimer = null; // Timer de pregunta
+    let verbPatternQuestionTimeLeft = 0;
+    let verbPatternIncorrectScore = 0;
+    let userCanAnswer = false;
 
     // --- Elementos del DOM Comunes ---
-    const mainTitle = document.getElementById('main-title'); // Referencia al H1
+    const mainTitle = document.getElementById('main-title'); // <<< Referencia al H1
     const gameSelectionDiv = document.getElementById('game-selection');
     const backToSelectionButtons = document.querySelectorAll('.back-to-selection');
 
@@ -59,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matchingTimerSpan = document.getElementById('time-left');
     const giveUpBtn = document.getElementById('give-up-btn');
     const restartMatchingBtn = document.getElementById('restart-matching-btn');
-    const resultsOverlay = document.getElementById('results-overlay');
+    const resultsOverlay = document.getElementById('results-overlay'); // Overlay
     const correctPairsList = document.getElementById('correct-pairs-list');
     const playAgainMatchingBtn = document.getElementById('play-again-matching-btn');
 
@@ -79,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartFillBlanksBtn = document.getElementById('restart-fill-blanks-btn');
     let translationDirection = 'en-es';
 
-    // <<< NUEVO: Elementos DOM Juego Gerundios/Infinitivos >>>
+    // --- Elementos DOM Juego Gerundios/Infinitivos ---
     const verbPatternContainer = document.getElementById('verb-pattern-container');
     const verbPatternSetupDiv = document.getElementById('verb-pattern-setup');
     const verbPatternGameDiv = document.getElementById('verb-pattern-game');
@@ -102,68 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
     function formatTime(seconds) { const minutes = Math.floor(seconds / 60); const remainingSeconds = seconds % 60; return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`; }
 
-    // --- Función de Control de Visibilidad (Actualizada) ---
+    // --- Función de Control de Visibilidad (Con Título Dinámico) ---
     function showScreen(screen) {
-        // Ocultar todas las secciones principales primero
-        gameSelectionDiv.classList.add('hidden');
-        matchingContainer.classList.add('hidden');
-        fillBlanksContainer.classList.add('hidden');
-        verbPatternContainer.classList.add('hidden'); // <<< Ocultar nuevo contenedor
-        // Asegurar que las sub-secciones también estén ocultas por defecto
-        matchingSetupDiv.classList.add('hidden');
-        matchingGameDiv.classList.add('hidden');
-        fillBlanksSetupDiv.classList.add('hidden');
-        fillBlanksGameDiv.classList.add('hidden');
-        verbPatternSetupDiv.classList.add('hidden'); // <<< Ocultar setup G/I
-        verbPatternGameDiv.classList.add('hidden'); // <<< Ocultar juego G/I
-        resultsOverlay.classList.add('hidden'); // Ocultar overlay de resultados
+        gameSelectionDiv.classList.add('hidden'); matchingContainer.classList.add('hidden'); fillBlanksContainer.classList.add('hidden'); verbPatternContainer.classList.add('hidden');
+        matchingSetupDiv.classList.add('hidden'); matchingGameDiv.classList.add('hidden'); fillBlanksSetupDiv.classList.add('hidden'); fillBlanksGameDiv.classList.add('hidden'); verbPatternSetupDiv.classList.add('hidden'); verbPatternGameDiv.classList.add('hidden');
+        resultsOverlay.classList.add('hidden'); // Asegurar que el overlay matching esté oculto
 
-        let titleText = "Selección de Juego"; // Título inicial más claro
+        let titleText = "Selección de Juego";
 
-        // Mostrar la pantalla correcta y establecer el título
-        if (screen === 'selection') {
-            gameSelectionDiv.classList.remove('hidden');
-            titleText = "Selección de Juego";
-        } else if (screen === 'matching-setup') {
-            matchingContainer.classList.remove('hidden');
-            matchingSetupDiv.classList.remove('hidden');
-            titleText = "Emparejar Conectores";
-        } else if (screen === 'matching-game') {
-            matchingContainer.classList.remove('hidden');
-            matchingGameDiv.classList.remove('hidden');
-            titleText = "Emparejar Conectores";
-        } else if (screen === 'fill-blanks-setup') {
-            fillBlanksContainer.classList.remove('hidden');
-            fillBlanksSetupDiv.classList.remove('hidden');
-            titleText = "Rellenar Conectores";
-        } else if (screen === 'fill-blanks-game') {
-            fillBlanksContainer.classList.remove('hidden');
-            fillBlanksGameDiv.classList.remove('hidden');
-            titleText = "Rellenar Conectores";
-        }
-        // <<< NUEVO: Mostrar pantallas del juego G/I >>>
-        else if (screen === 'verb-pattern-setup') {
-            verbPatternContainer.classList.remove('hidden');
-            verbPatternSetupDiv.classList.remove('hidden');
-            titleText = "Gerundios e Infinitivos";
-        } else if (screen === 'verb-pattern-game') {
-            verbPatternContainer.classList.remove('hidden');
-            verbPatternGameDiv.classList.remove('hidden');
-            titleText = "Gerundios e Infinitivos";
-        }
+        if (screen === 'selection') { gameSelectionDiv.classList.remove('hidden'); titleText = "Selección de Juego"; }
+        else if (screen === 'matching-setup') { matchingContainer.classList.remove('hidden'); matchingSetupDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; }
+        else if (screen === 'matching-game') { matchingContainer.classList.remove('hidden'); matchingGameDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; }
+        else if (screen === 'fill-blanks-setup') { fillBlanksContainer.classList.remove('hidden'); fillBlanksSetupDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; }
+        else if (screen === 'fill-blanks-game') { fillBlanksContainer.classList.remove('hidden'); fillBlanksGameDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; }
+        else if (screen === 'verb-pattern-setup') { verbPatternContainer.classList.remove('hidden'); verbPatternSetupDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; }
+        else if (screen === 'verb-pattern-game') { verbPatternContainer.classList.remove('hidden'); verbPatternGameDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; }
 
-         // Actualizar el título principal H1
-         if(mainTitle) { // Verificar que el elemento existe
-             mainTitle.textContent = titleText;
-         }
+         if(mainTitle) { mainTitle.textContent = titleText; }
     }
 
-
     // --- Funciones del Temporizador General (Compartidas) ---
-    function updateTimerDisplay() { const formattedTime = formatTime(timeLeft); if (currentGameMode === 'matching') { matchingTimerSpan.textContent = formattedTime; } else if (currentGameMode === 'fill-blanks') { fillBlanksTimerSpan.textContent = formattedTime; } /* Añadir verb-pattern si tuviera timer general */ }
+    function updateTimerDisplay() { const formattedTime = formatTime(timeLeft); if (currentGameMode === 'matching') { matchingTimerSpan.textContent = formattedTime; } else if (currentGameMode === 'fill-blanks') { fillBlanksTimerSpan.textContent = formattedTime; } }
     function startTimer(duration) { if (timerInterval) clearInterval(timerInterval); timeLeft = duration; updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); timerInterval = null; handleTimeUp(); } }, 1000); }
-    function stopTimer() { clearInterval(timerInterval); timerInterval = null; } // Detiene el timer GENERAL
-    function handleTimeUp() { console.log("Time's up! (General Timer)"); if (currentGameMode === 'matching') { showMatchingResults(false); } else if (currentGameMode === 'fill-blanks') { if (!fillBlanksFinalized) { finalizeFillBlanksGame(); } } /* Añadir verb-pattern si tuviera timer general */ }
+    function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+    function handleTimeUp() { console.log("Time's up! (General Timer)"); if (currentGameMode === 'matching') { showMatchingResults(false); } else if (currentGameMode === 'fill-blanks') { if (!fillBlanksFinalized) { finalizeFillBlanksGame(); } } }
 
     // --- Lógica Juego Emparejar (Matching) ---
     function checkMatch(p1, p2) { if (!p1 || !p2 || !p1.dataset || !p2.dataset) return false; if (p1.classList.contains('correct-match') || p2.classList.contains('correct-match') || p1.style.visibility === 'hidden' || p2.style.visibility === 'hidden') { return false; } const id1 = p1.dataset.id; const lang1 = p1.dataset.lang; const id2 = p2.dataset.id; const lang2 = p2.dataset.lang; return id1 === id2 && lang1 !== lang2; }
@@ -183,210 +140,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeFillBlanksGame() { currentGameMode = 'fill-blanks'; const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10); score = 0; fillBlanksIncorrectScore = 0; fillBlanksFinalized = false; renderFillBlanksTable(); showScreen('fill-blanks-game'); checkAnswersBtn.disabled = false; restartFillBlanksBtn.disabled = false; fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => { input.disabled = false; input.style.backgroundColor = ''; }); startTimer(selectedMinutes * 60); }
     function resetFillBlanksGame(goToSetup = false) { stopTimer(); fillBlanksTableBody.innerHTML = ''; score = 0; fillBlanksIncorrectScore = 0; fillBlanksScoreSpan.textContent = '0'; fillBlanksIncorrectScoreSpan.textContent = '0'; fillBlanksTotalSpan.textContent = '0'; fillBlanksTimerSpan.textContent = '--:--'; checkAnswersBtn.disabled = true; restartFillBlanksBtn.disabled = true; fillBlanksFinalized = false; if (goToSetup) { showScreen('fill-blanks-setup'); } else { initializeFillBlanksGame(); } }
 
-    // <<< --- NUEVO: Lógica Juego Gerundios/Infinitivos (Verb Patterns) --- >>>
-
-    function updateVerbPatternScores() {
-        verbPatternCorrectSpan.textContent = score; // Reutilizamos 'score' para aciertos
-        verbPatternIncorrectSpan.textContent = verbPatternIncorrectScore;
-        // +1 porque índice empieza en 0, asegurar que no sea negativo al inicio
-        verbPatternQCountSpan.textContent = Math.max(0, currentPatternIndex + 1);
-    }
-
-    function stopQuestionTimer() {
-        clearInterval(verbPatternQuestionTimer);
-        verbPatternQuestionTimer = null;
-    }
-
-    function startQuestionTimer() {
-        stopQuestionTimer(); // Limpiar anterior si existe
-        verbPatternQuestionTimeLeft = verbPatternTimePerQuestion;
-        verbPatternQTimerSpan.textContent = verbPatternQuestionTimeLeft;
-        userCanAnswer = true; // Permitir respuesta al iniciar timer
-        verbPatternAnswerButtons.forEach(button => button.disabled = false); // Habilitar botones
-        verbPatternFeedbackDiv.textContent = ''; // Limpiar feedback al iniciar timer
-        verbPatternFeedbackDiv.className = 'verb-pattern-feedback';
-
-        verbPatternQuestionTimer = setInterval(() => {
-            verbPatternQuestionTimeLeft--;
-            verbPatternQTimerSpan.textContent = verbPatternQuestionTimeLeft;
-            if (verbPatternQuestionTimeLeft <= 0) {
-                handleQuestionTimeout();
-            }
-        }, 1000);
-    }
-
-    function handleQuestionTimeout() {
-        console.log("Question Timeout!");
-        stopQuestionTimer();
-        userCanAnswer = false; // Bloquear respuesta
-        verbPatternAnswerButtons.forEach(button => button.disabled = true); // Deshabilitar botones
-        verbPatternIncorrectScore++; // Contar como error
-        updateVerbPatternScores();
-        verbPatternFeedbackDiv.textContent = "¡Tiempo agotado! (Error)";
-        verbPatternFeedbackDiv.className = 'verb-pattern-feedback incorrect'; // Estilo de error
-        // Mostrar la respuesta correcta
-        const currentPattern = currentVerbPatterns[currentPatternIndex];
-        showCorrectAnswerFeedback(currentPattern.category);
-
-        // Pasar a la siguiente pregunta después de un delay
-        setTimeout(displayNextVerbPatternQuestion, 2500); // Delay más largo si agota tiempo
-    }
-
-    // Marca visualmente el botón de la respuesta correcta
-    function showCorrectAnswerFeedback(correctCategory) {
-         verbPatternAnswerButtons.forEach(button => {
-            button.style.border = ''; // Limpiar bordes primero
-            if(button.dataset.answer === correctCategory) {
-                button.style.border = '2px solid green'; // Borde verde para la correcta
-            }
-        });
-    }
-
-    function handleVerbPatternAnswer(event) {
-        if (!userCanAnswer) return; // Evitar respuestas múltiples o fuera de tiempo
-
-        stopQuestionTimer();
-        userCanAnswer = false; // Bloquear más respuestas para esta pregunta
-        verbPatternAnswerButtons.forEach(button => {
-            button.disabled = true; // Deshabilitar botones
-            button.style.border = ''; // Limpiar bordes
-        });
-
-        const selectedButton = event.target;
-        const selectedAnswer = selectedButton.dataset.answer;
-        const currentPattern = currentVerbPatterns[currentPatternIndex];
-        const correctAnswer = currentPattern.category;
-
-        if (selectedAnswer === correctAnswer) {
-            score++; // Incrementar aciertos
-            verbPatternFeedbackDiv.textContent = "¡Correcto!";
-            verbPatternFeedbackDiv.className = 'verb-pattern-feedback correct';
-            selectedButton.style.border = '2px solid green'; // Marcar el botón correcto pulsado
-        } else {
-            verbPatternIncorrectScore++; // Incrementar errores
-            // Mapear categoría a texto más legible para el feedback
-            const categoryMap = {
-                'gerund': 'Gerundio (-ing)',
-                'infinitive_to': 'Infinitivo (con TO)',
-                'infinitive_no_to': 'Infinitivo (sin TO)',
-                'both': 'Ambos'
-            };
-            verbPatternFeedbackDiv.textContent = `Incorrecto. Era: ${categoryMap[correctAnswer] || correctAnswer}`;
-            verbPatternFeedbackDiv.className = 'verb-pattern-feedback incorrect';
-            selectedButton.style.border = '2px solid red'; // Marcar el botón incorrecto pulsado
-            // Resaltar también cuál era la correcta
-             showCorrectAnswerFeedback(correctAnswer);
-        }
-
-        updateVerbPatternScores();
-
-        // Pasar a la siguiente pregunta después de un delay
-        setTimeout(displayNextVerbPatternQuestion, 1800); // 1.8 segundos para ver feedback
-    }
-
-    function displayNextVerbPatternQuestion() {
-        currentPatternIndex++;
-        verbPatternAnswerButtons.forEach(button => {
-             button.disabled = true; // Asegurar que empiezan deshabilitados
-             button.style.border = ''; // Limpiar borde del botón
-        });
-
-        if (currentPatternIndex < currentVerbPatterns.length) {
-            const pattern = currentVerbPatterns[currentPatternIndex];
-            verbPatternTermDiv.textContent = pattern.term;
-            verbPatternExplanationDiv.textContent = pattern.explanation || ''; // Mostrar explicación si existe
-            verbPatternFeedbackDiv.textContent = ''; // Limpiar feedback anterior
-            verbPatternFeedbackDiv.className = 'verb-pattern-feedback'; // Resetear clase feedback
-            updateVerbPatternScores(); // Actualizar contador de pregunta
-            startQuestionTimer(); // Iniciar timer para la nueva pregunta
-        } else {
-            // Fin del juego
-            console.log("Juego de Gerundios/Infinitivos terminado!");
-            verbPatternTermDiv.textContent = "¡Juego Terminado!";
-            verbPatternExplanationDiv.textContent = '';
-            verbPatternFeedbackDiv.textContent = `Resultado Final: ${score} Aciertos, ${verbPatternIncorrectScore} Errores.`;
-            verbPatternFeedbackDiv.className = 'verb-pattern-feedback'; // Quitar color de feedback
-            verbPatternQTimerSpan.textContent = '-';
-            verbPatternAnswerButtons.forEach(button => button.disabled = true); // Deshabilitar botones al final
-            verbPatternQuitBtn.textContent = "Volver a Selección"; // Cambiar texto del botón Salir
-        }
-    }
-
-     function quitVerbPatternGame() {
-        stopQuestionTimer(); // Detener timer de pregunta
-        // Opcional: guardar resultados si se implementa
-        showScreen('selection'); // Volver a la pantalla de selección
-    }
-
-    function initializeVerbPatternGame() {
-        currentGameMode = 'verb-pattern';
-        verbPatternTimePerQuestion = parseInt(verbPatternTimeSelect.value, 10);
-        score = 0; // Resetear aciertos
-        verbPatternIncorrectScore = 0; // Resetear errores
-        currentPatternIndex = -1; // Resetear índice
-        // Asegurarse que verbPatternData existe antes de usarlo
-        if (typeof verbPatternData !== 'undefined' && verbPatternData.length > 0) {
-             currentVerbPatterns = shuffleArray([...verbPatternData]); // Cargar y barajar datos
-             verbPatternQTotalSpan.textContent = currentVerbPatterns.length; // Establecer total
-        } else {
-            console.error("No se pudieron cargar los datos para el juego de Gerundios/Infinitivos.");
-             verbPatternQTotalSpan.textContent = '0'; // Indicar 0 si no hay datos
-             currentVerbPatterns = []; // Asegurar que esté vacío
-             // Podríamos mostrar un mensaje de error aquí
-        }
-
-
-        // Actualizar totales y contadores iniciales
-        updateVerbPatternScores(); // Pone aciertos/errores a 0 y pregunta a 0/total
-
-        verbPatternQuitBtn.textContent = "Salir del Juego"; // Texto original del botón
-
-        showScreen('verb-pattern-game'); // Mostrar pantalla del juego
-        // Solo empezar si hay patrones que mostrar
-        if (currentVerbPatterns.length > 0) {
-             displayNextVerbPatternQuestion(); // Mostrar la primera pregunta
-        } else {
-             verbPatternTermDiv.textContent = "Error al cargar datos";
-             verbPatternAnswerButtons.forEach(button => button.disabled = true);
-        }
-    }
+    // --- Lógica Juego Gerundios/Infinitivos (Verb Patterns) ---
+    function updateVerbPatternScores() { verbPatternCorrectSpan.textContent = score; verbPatternIncorrectSpan.textContent = verbPatternIncorrectScore; verbPatternQCountSpan.textContent = Math.max(0, currentPatternIndex + 1); }
+    function stopQuestionTimer() { clearInterval(verbPatternQuestionTimer); verbPatternQuestionTimer = null; }
+    function startQuestionTimer() { stopQuestionTimer(); verbPatternQuestionTimeLeft = verbPatternTimePerQuestion; verbPatternQTimerSpan.textContent = verbPatternQuestionTimeLeft; userCanAnswer = true; verbPatternAnswerButtons.forEach(button => button.disabled = false); verbPatternFeedbackDiv.textContent = ''; verbPatternFeedbackDiv.className = 'verb-pattern-feedback'; verbPatternQuestionTimer = setInterval(() => { verbPatternQuestionTimeLeft--; verbPatternQTimerSpan.textContent = verbPatternQuestionTimeLeft; if (verbPatternQuestionTimeLeft <= 0) { handleQuestionTimeout(); } }, 1000); }
+    function handleQuestionTimeout() { console.log("Question Timeout!"); stopQuestionTimer(); userCanAnswer = false; verbPatternAnswerButtons.forEach(button => button.disabled = true); verbPatternIncorrectScore++; updateVerbPatternScores(); verbPatternFeedbackDiv.textContent = "¡Tiempo agotado! (Error)"; verbPatternFeedbackDiv.className = 'verb-pattern-feedback incorrect'; const currentPattern = currentVerbPatterns[currentPatternIndex]; showCorrectAnswerFeedback(currentPattern.category); setTimeout(displayNextVerbPatternQuestion, 2500); }
+    function showCorrectAnswerFeedback(correctCategory) { verbPatternAnswerButtons.forEach(button => { button.style.border = ''; if(button.dataset.answer === correctCategory) { button.style.border = '2px solid green'; } }); }
+    function handleVerbPatternAnswer(event) { if (!userCanAnswer) return; stopQuestionTimer(); userCanAnswer = false; verbPatternAnswerButtons.forEach(button => { button.disabled = true; button.style.border = ''; }); const selectedButton = event.target; const selectedAnswer = selectedButton.dataset.answer; const currentPattern = currentVerbPatterns[currentPatternIndex]; const correctAnswer = currentPattern.category; if (selectedAnswer === correctAnswer) { score++; verbPatternFeedbackDiv.textContent = "¡Correcto!"; verbPatternFeedbackDiv.className = 'verb-pattern-feedback correct'; selectedButton.style.border = '2px solid green'; } else { verbPatternIncorrectScore++; const categoryMap = { 'gerund': 'Gerundio (-ing)', 'infinitive_to': 'Infinitivo (con TO)', 'infinitive_no_to': 'Infinitivo (sin TO)', 'both': 'Ambos' }; verbPatternFeedbackDiv.textContent = `Incorrecto. Era: ${categoryMap[correctAnswer] || correctAnswer}`; verbPatternFeedbackDiv.className = 'verb-pattern-feedback incorrect'; selectedButton.style.border = '2px solid red'; showCorrectAnswerFeedback(correctAnswer); } updateVerbPatternScores(); setTimeout(displayNextVerbPatternQuestion, 1800); }
+    function displayNextVerbPatternQuestion() { currentPatternIndex++; verbPatternAnswerButtons.forEach(button => { button.disabled = true; button.style.border = ''; }); if (currentPatternIndex < currentVerbPatterns.length) { const pattern = currentVerbPatterns[currentPatternIndex]; verbPatternTermDiv.textContent = pattern.term; verbPatternExplanationDiv.textContent = pattern.explanation || ''; verbPatternFeedbackDiv.textContent = ''; verbPatternFeedbackDiv.className = 'verb-pattern-feedback'; updateVerbPatternScores(); startQuestionTimer(); } else { console.log("Juego de Gerundios/Infinitivos terminado!"); verbPatternTermDiv.textContent = "¡Juego Terminado!"; verbPatternExplanationDiv.textContent = ''; verbPatternFeedbackDiv.textContent = `Resultado Final: ${score} Aciertos, ${verbPatternIncorrectScore} Errores.`; verbPatternFeedbackDiv.className = 'verb-pattern-feedback'; verbPatternQTimerSpan.textContent = '-'; verbPatternAnswerButtons.forEach(button => button.disabled = true); verbPatternQuitBtn.textContent = "Volver a Selección"; } }
+    function quitVerbPatternGame() { stopQuestionTimer(); showScreen('selection'); }
+    function initializeVerbPatternGame() { currentGameMode = 'verb-pattern'; verbPatternTimePerQuestion = parseInt(verbPatternTimeSelect.value, 10); score = 0; verbPatternIncorrectScore = 0; currentPatternIndex = -1; if (typeof verbPatternData !== 'undefined' && verbPatternData.length > 0) { currentVerbPatterns = shuffleArray([...verbPatternData]); verbPatternQTotalSpan.textContent = currentVerbPatterns.length; } else { console.error("No se pudieron cargar los datos para el juego de Gerundios/Infinitivos."); verbPatternQTotalSpan.textContent = '0'; currentVerbPatterns = []; } updateVerbPatternScores(); verbPatternQuitBtn.textContent = "Salir del Juego"; showScreen('verb-pattern-game'); if (currentVerbPatterns.length > 0) { displayNextVerbPatternQuestion(); } else { verbPatternTermDiv.textContent = "Error al cargar datos"; verbPatternAnswerButtons.forEach(button => button.disabled = true); } }
 
     // --- Event Listeners ---
     document.getElementById('select-matching-btn').addEventListener('click', () => showScreen('matching-setup'));
     document.getElementById('select-fill-blanks-btn').addEventListener('click', () => showScreen('fill-blanks-setup'));
-    // <<< NUEVO: Listener para selección del juego G/I >>>
-    // Asegurarse que el botón existe antes de añadir listener
-    const selectVerbPatternBtn = document.getElementById('select-verb-pattern-btn');
-    if (selectVerbPatternBtn) {
-        selectVerbPatternBtn.addEventListener('click', () => showScreen('verb-pattern-setup'));
-    } else {
-        console.error("Botón 'select-verb-pattern-btn' no encontrado en el HTML.");
-    }
-
-
-    backToSelectionButtons.forEach(button => { button.addEventListener('click', () => { stopTimer(); stopQuestionTimer(); /* Detener ambos timers */ showScreen('selection'); }); });
-
-    // Matching Game Listeners
+    const selectVerbPatternBtn = document.getElementById('select-verb-pattern-btn'); if (selectVerbPatternBtn) { selectVerbPatternBtn.addEventListener('click', () => showScreen('verb-pattern-setup')); } else { console.error("Botón 'select-verb-pattern-btn' no encontrado en el HTML."); }
+    backToSelectionButtons.forEach(button => { button.addEventListener('click', () => { stopTimer(); stopQuestionTimer(); showScreen('selection'); }); });
     startMatchingBtn.addEventListener('click', initializeMatchingGame); giveUpBtn.addEventListener('click', () => showMatchingResults(false));
     playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true)); restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false));
-
-    // Fill Blanks Game Listeners
     startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame); checkAnswersBtn.addEventListener('click', finalizeFillBlanksGame);
     restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false));
-
-    // <<< NUEVO: Verb Pattern Game Listeners >>>
     startVerbPatternBtn.addEventListener('click', initializeVerbPatternGame);
     verbPatternQuitBtn.addEventListener('click', quitVerbPatternGame);
-    // Añadir listener a los botones de respuesta (delegación en el contenedor)
-    verbPatternOptionsDiv.addEventListener('click', (event) => {
-        // Asegurarse que el clic fue en un botón habilitado
-        if (event.target.classList.contains('answer-button') && !event.target.disabled && userCanAnswer) {
-            handleVerbPatternAnswer(event);
-        }
-    });
-
+    verbPatternOptionsDiv.addEventListener('click', (event) => { if (event.target.classList.contains('answer-button') && !event.target.disabled && userCanAnswer) { handleVerbPatternAnswer(event); } });
 
     // --- Inicialización General ---
-    showScreen('selection'); // <<< Empezar mostrando la selección y el título por defecto
+    showScreen('selection'); // Empezar mostrando la selección
 
 }); // Fin DOMContentLoaded
