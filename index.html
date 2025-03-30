@@ -81,20 +81,25 @@
                 <option value="20">20</option>
                 <option value="1">1</option>
             </select>
-            <button id="start-fill-blanks-btn">Empezar a Rellenar</option>
+            <button id="start-fill-blanks-btn">Empezar a Rellenar</button>
             <button class="back-to-selection">Volver a Selección</button>
        </div>
 
         <!-- Juego Rellenar Huecos -->
         <div id="fill-blanks-game" class="game-section hidden">
+             <!-- **** CABECERA MODIFICADA **** -->
              <header id="fill-blanks-info">
                   <div id="fill-blanks-score-board">
-                     Correctas: <span id="fill-blanks-current-score">0</span> / <span id="fill-blanks-total">0</span>
+                     Correctas: <span id="fill-blanks-current-score">0</span> |
+                     <!-- NUEVO: Span para erróneas -->
+                     Erróneas: <span id="fill-blanks-incorrect-score">0</span> |
+                     Total: <span id="fill-blanks-total">0</span>
                  </div>
                  <div id="fill-blanks-timer-board">
                      Tiempo: <span id="fill-blanks-time-left">--:--</span>
                  </div>
              </header>
+             <!-- **** FIN CABECERA MODIFICADA **** -->
              <main id="fill-blanks-area">
                  <p>Escribe la traducción correcta en cada casilla:</p>
                  <div class="table-container">
@@ -117,7 +122,6 @@
                  <button id="restart-fill-blanks-btn">Reiniciar Relleno</button>
                   <button class="back-to-selection">Volver a Selección</button>
              </footer>
-             <!-- Aquí podría ir un overlay de resultados si se desea -->
         </div>
     </div>
 
