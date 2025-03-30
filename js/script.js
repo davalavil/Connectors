@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
-        return array; // Devolver el array barajado
+        return array;
     }
 
     function formatTime(seconds) {
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         matchingGameDiv.classList.add('hidden');
         fillBlanksSetupDiv.classList.add('hidden');
         fillBlanksGameDiv.classList.add('hidden');
-        resultsOverlay.classList.add('hidden'); // Asegurarse que el overlay esté oculto al cambiar
+        resultsOverlay.classList.add('hidden');
 
         if (screen === 'selection') {
             gameSelectionDiv.classList.remove('hidden');
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTimer(duration) {
-        if (timerInterval) clearInterval(timerInterval); // Limpiar intervalo anterior
+        if (timerInterval) clearInterval(timerInterval);
         timeLeft = duration;
         updateTimerDisplay();
 
@@ -126,19 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleTimeUp() {
-        alert("¡Se acabó el tiempo!");
+        // alert("¡Se acabó el tiempo!"); // Quitado alert para no interrumpir
+        console.log("Time's up!");
         if (currentGameMode === 'matching') {
-            showMatchingResults(false); // Indicar que no ganó (por tiempo)
+            showMatchingResults(false);
         } else if (currentGameMode === 'fill-blanks') {
-            checkFillBlanksAnswers(); // Comprobar automáticamente al acabar el tiempo
-            checkAnswersBtn.disabled = true; // Deshabilitar botón de comprobar
-            // Opcional: Deshabilitar todos los inputs
-             fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = true);
+            checkFillBlanksAnswers(true); // Llamar a la función final de comprobación
         }
     }
 
     // --- Lógica Juego Emparejar (Matching) ---
-
+    // ... (Sin cambios respecto a la versión anterior) ...
     function renderMatchingWords() {
         wordArea.innerHTML = '';
         const wordsToRender = [];
@@ -169,17 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
         wordArea.addEventListener('dragover', handleDragOver);
         wordArea.addEventListener('drop', handleDrop);
     }
-
     function handleDragStart(event) {
-        if (!timerInterval && timeLeft > 0) return; // No arrastrar si timer parado pero no acabado
-        if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return; // No arrastrar si ya emparejada
+        if (!timerInterval && timeLeft > 0) return;
+        if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return;
 
         draggedElement = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.id);
         event.dataTransfer.effectAllowed = 'move';
         setTimeout(() => { if(draggedElement) draggedElement.classList.add('dragging'); }, 0);
     }
-
     function handleDragEnd(event) {
         if (draggedElement) draggedElement.classList.remove('dragging');
         draggedElement = null;
@@ -187,18 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
             wordArea.querySelectorAll('.incorrect-match').forEach(el => el.classList.remove('incorrect-match'));
         }, 100);
     }
-
     function handleDragOver(event) {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
     }
-
     function handleDrop(event) {
         event.preventDefault();
         if (!draggedElement) return;
-
         const dropTarget = event.target;
-
         if (dropTarget.classList.contains('word-pill') &&
             !dropTarget.classList.contains('correct-match') &&
             dropTarget.style.visibility !== 'hidden' &&
@@ -208,29 +200,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const draggedLang = draggedElement.dataset.lang;
             const targetId = dropTarget.dataset.id;
             const targetLang = dropTarget.dataset.lang;
-
             if (draggedId === targetId && draggedLang !== targetLang) {
-                // Correct Match
                 draggedElement.classList.add('correct-match');
                 dropTarget.classList.add('correct-match');
                 draggedElement.classList.remove('dragging');
                 draggedElement.draggable = false;
                 dropTarget.draggable = false;
-
                 setTimeout(() => {
                     if (draggedElement && draggedElement.classList.contains('correct-match')) draggedElement.style.visibility = 'hidden';
                     if (dropTarget && dropTarget.classList.contains('correct-match')) dropTarget.style.visibility = 'hidden';
                 }, 500);
-
                 score++;
                 currentScoreSpan.textContent = score;
-
                 if (score === currentConnectors.length) {
                     stopTimer();
-                    setTimeout(() => showMatchingResults(true), 600); // Ganó
+                    setTimeout(() => showMatchingResults(true), 600);
                 }
             } else {
-                // Incorrect Match
                 if(draggedElement) draggedElement.classList.add('incorrect-match');
                 dropTarget.classList.add('incorrect-match');
                 setTimeout(() => {
@@ -239,30 +225,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500);
             }
         }
-        // Ensure dragging class is removed even if dropped outside a valid target
         if (draggedElement) draggedElement.classList.remove('dragging');
     }
-
     function showMatchingResults(won) {
         stopTimer();
-        correctPairsList.innerHTML = ''; // Limpiar lista
-        conectoresOriginal.forEach(pair => { // Mostrar todos los originales
+        correctPairsList.innerHTML = '';
+        conectoresOriginal.forEach(pair => {
             const div = document.createElement('div');
             div.textContent = `${pair.en} = ${pair.es}`;
             correctPairsList.appendChild(div);
         });
-
         let resultTitle = "Resultados";
         if (won) resultTitle = "¡Felicidades, has ganado!";
         else if (timeLeft <= 0) resultTitle = "¡Se acabó el tiempo!";
-        else resultTitle = "Te has rendido"; // Give up case
+        else resultTitle = "Te has rendido";
         resultsOverlay.querySelector('h2').textContent = resultTitle;
-
         resultsOverlay.classList.remove('hidden');
-        giveUpBtn.disabled = true; // Deshabilitar rendirse una vez mostrados los resultados
-        restartMatchingBtn.disabled = false; // Habilitar reiniciar
+        giveUpBtn.disabled = true;
+        restartMatchingBtn.disabled = false;
     }
-
     function initializeMatchingGame() {
         currentGameMode = 'matching';
         const selectedMinutes = parseInt(matchingTimeSelect.value, 10);
@@ -271,11 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMatchingWords();
         showScreen('matching-game');
         giveUpBtn.disabled = false;
-        restartMatchingBtn.disabled = true; // Deshabilitado hasta que acabe
-        resultsOverlay.classList.add('hidden'); // Asegurar que esté oculto
+        restartMatchingBtn.disabled = true;
+        resultsOverlay.classList.add('hidden');
         startTimer(selectedMinutes * 60);
     }
-
      function resetMatchingGame(goToSetup = false) {
         stopTimer();
         wordArea.innerHTML = '';
@@ -286,30 +266,29 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsOverlay.classList.add('hidden');
         giveUpBtn.disabled = false;
         restartMatchingBtn.disabled = false;
-        // Limpiar listeners de drag/drop del contenedor por si acaso
         wordArea.removeEventListener('dragover', handleDragOver);
         wordArea.removeEventListener('drop', handleDrop);
-
         if (goToSetup) {
              showScreen('matching-setup');
         } else {
-            initializeMatchingGame(); // Reinicia con la misma configuración de tiempo
+            initializeMatchingGame();
         }
     }
+
 
     // --- Lógica Juego Rellenar (Fill Blanks) ---
 
     function renderFillBlanksTable() {
-        fillBlanksTableBody.innerHTML = ''; // Limpiar tabla
-        currentConnectors = shuffleArray([...conectoresOriginal]); // Barajar para el juego
-        score = 0;
+        fillBlanksTableBody.innerHTML = '';
+        currentConnectors = shuffleArray([...conectoresOriginal]);
+        score = 0; // Reset score for rendering
         fillBlanksScoreSpan.textContent = score;
         fillBlanksTotalSpan.textContent = currentConnectors.length;
-        translationDirection = translationDirectionSelect.value; // Leer dirección seleccionada
+        translationDirection = translationDirectionSelect.value;
 
         currentConnectors.forEach(pair => {
             const row = document.createElement('tr');
-            row.dataset.id = pair.id; // Guardar ID en la fila
+            row.dataset.id = pair.id;
 
             const sourceCell = document.createElement('td');
             sourceCell.textContent = (translationDirection === 'en-es') ? pair.en : pair.es;
@@ -318,7 +297,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...';
-            input.dataset.id = pair.id; // También en el input por facilidad
+            input.dataset.id = pair.id;
+            // *** NUEVO: Añadir listener 'blur' ***
+            input.addEventListener('blur', handleFillBlanksInputBlur);
             inputCell.appendChild(input);
 
             const feedbackCell = document.createElement('td');
@@ -333,68 +314,111 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Normaliza y compara respuestas, maneja múltiples opciones separadas por coma/slash
+    // Normaliza y compara respuestas (maneja comas/slashes)
     function checkAnswer(userInput, correctAnswer) {
         const normalizedInput = userInput.trim().toLowerCase();
-        if (!normalizedInput) return false; // Respuesta vacía es incorrecta
+        if (!normalizedInput) return false;
 
-        // Dividir respuestas correctas por coma o slash, quitar espacios extra
         const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase());
+
+        // Considerar también la respuesta sin tildes si es español
+        if (translationDirection === 'en-es') {
+            const normalizedInputNoAccents = normalizedInput
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+             if (correctOptions.some(opt => opt.normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalizedInputNoAccents)) {
+                 return true;
+             }
+        }
+
 
         return correctOptions.includes(normalizedInput);
     }
 
+    // *** NUEVO: Función para manejar el 'blur' de un input ***
+    function handleFillBlanksInputBlur(event) {
+        // No hacer nada si el juego ha terminado (inputs deshabilitados)
+        if (event.target.disabled) return;
 
-    function checkFillBlanksAnswers() {
-         if (!timerInterval && timeLeft <= 0 && score > 0) {
-             // Si el tiempo acabó y ya se comprobaron, no hacer nada más
-             // O si ya se comprobó manualmente antes de acabar el tiempo
-            // Podríamos necesitar una bandera `alreadyChecked` si permitimos comprobar varias veces.
-             // Por ahora, asumimos que solo se comprueba una vez (manualmente o al acabar tiempo).
-         }
+        checkSingleAnswerAndUpdate(event.target);
+    }
 
-        score = 0; // Reiniciar contador para recalcular
+    // *** NUEVO: Función para comprobar una respuesta y actualizar UI/Score ***
+    function checkSingleAnswerAndUpdate(inputElement) {
+        const row = inputElement.closest('tr');
+        const feedbackCell = row.querySelector('td.feedback');
+        const id = row.dataset.id;
+        const connectorPair = conectoresOriginal.find(p => p.id == id);
+
+        if (!connectorPair) return; // Seguridad
+
+        const userAnswer = inputElement.value;
+        const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
+
+        const wasCorrectBefore = feedbackCell.classList.contains('correct');
+        const isCorrectNow = checkAnswer(userAnswer, correctAnswer);
+
+        // Actualizar feedback visual
+        if (isCorrectNow) {
+            feedbackCell.textContent = 'Correcto';
+            feedbackCell.className = 'feedback correct'; // Asegura que solo estén estas clases
+        } else {
+            // Solo marcar incorrecto si hay algo escrito, si está vacío, volver a '-'
+            if (userAnswer.trim() !== '') {
+                feedbackCell.textContent = 'Incorrecto';
+                feedbackCell.className = 'feedback incorrect';
+            } else {
+                 feedbackCell.textContent = '-';
+                 feedbackCell.className = 'feedback'; // Sin clase de color
+            }
+        }
+
+        // Actualizar puntuación dinámicamente
+        if (isCorrectNow && !wasCorrectBefore) {
+            score++;
+        } else if (!isCorrectNow && wasCorrectBefore) {
+            score--;
+        }
+        fillBlanksScoreSpan.textContent = score; // Actualizar siempre la puntuación mostrada
+    }
+
+
+    // *** MODIFICADO: Botón para comprobar TODO al final / o por tiempo ***
+    // El parámetro 'isFinal' indica si es el final del juego (por botón o tiempo)
+    function checkFillBlanksAnswers(isFinal = true) {
+        stopTimer(); // Detener el timer si se pulsa el botón
+
         const rows = fillBlanksTableBody.querySelectorAll('tr');
-
         rows.forEach(row => {
             const input = row.querySelector('input[type="text"]');
-            const feedbackCell = row.querySelector('td.feedback');
-            const id = row.dataset.id;
-            const connectorPair = conectoresOriginal.find(p => p.id == id);
+             // Validar cada input de nuevo para asegurar estado final,
+             // especialmente los que no tuvieron 'blur' o quedaron vacíos
+            checkSingleAnswerAndUpdate(input);
 
-            if (connectorPair && input) {
-                const userAnswer = input.value;
-                const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-
-                if (checkAnswer(userAnswer, correctAnswer)) {
-                    feedbackCell.textContent = 'Correcto';
-                    feedbackCell.className = 'feedback correct'; // Quita otras clases y pone estas
-                    score++;
-                } else {
-                    feedbackCell.textContent = 'Incorrecto';
-                    feedbackCell.className = 'feedback incorrect';
-                    // Opcional: Mostrar la respuesta correcta si falló
-                    // input.value += ` (Correcto: ${correctAnswer.split(/[,/]/)[0]})`; // Muestra la primera opción correcta
-                }
-                input.disabled = true; // Deshabilitar input después de comprobar
+            // Deshabilitar input si es la comprobación final
+            if(isFinal) {
+                input.disabled = true;
             }
         });
 
-        fillBlanksScoreSpan.textContent = score; // Actualizar puntuación final
-        checkAnswersBtn.disabled = true; // Deshabilitar botón tras comprobar
-        stopTimer(); // Parar el timer si se comprueba manualmente antes de tiempo
+        // Si es la comprobación final, deshabilitar el botón
+        if (isFinal) {
+            checkAnswersBtn.disabled = true;
+            console.log(`Juego finalizado. Puntuación final: ${score}/${currentConnectors.length}`);
+            // Aquí podrías mostrar un mensaje de "Juego Terminado" o similar si quieres
+        }
     }
-
 
     function initializeFillBlanksGame() {
         currentGameMode = 'fill-blanks';
         const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
-        score = 0;
-        renderFillBlanksTable(); // Crea la tabla con la dirección correcta
+        score = 0; // Resetear score al iniciar
+        renderFillBlanksTable();
         showScreen('fill-blanks-game');
-        checkAnswersBtn.disabled = false; // Habilitar botón de comprobar
-        restartFillBlanksBtn.disabled = false; // Habilitar botón de reiniciar
-        fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false); // Habilitar inputs
+        checkAnswersBtn.disabled = false; // Habilitar botón
+        restartFillBlanksBtn.disabled = false;
+        // Los inputs se habilitan al renderizar
+        fillBlanksScoreSpan.textContent = score; // Asegurar que se muestra 0
         startTimer(selectedMinutes * 60);
     }
 
@@ -411,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
          if (goToSetup) {
              showScreen('fill-blanks-setup');
         } else {
-            // Reinicia con misma configuración (dirección y tiempo)
             initializeFillBlanksGame();
         }
     }
@@ -426,23 +449,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botones "Volver a Selección"
     backToSelectionButtons.forEach(button => {
         button.addEventListener('click', () => {
-            stopTimer(); // Parar cualquier timer activo
+            stopTimer();
             showScreen('selection');
         });
     });
 
     // Setup y Start Juego Emparejar
     startMatchingBtn.addEventListener('click', initializeMatchingGame);
-    giveUpBtn.addEventListener('click', () => showMatchingResults(false)); // Pasar false (no ganó)
-    playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true)); // Volver al setup
-    restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false)); // Reiniciar inmediatamente
+    giveUpBtn.addEventListener('click', () => showMatchingResults(false));
+    playAgainMatchingBtn.addEventListener('click', () => resetMatchingGame(true));
+    restartMatchingBtn.addEventListener('click', () => resetMatchingGame(false));
 
     // Setup y Start Juego Rellenar
     startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame);
-    checkAnswersBtn.addEventListener('click', checkFillBlanksAnswers);
-    restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false)); // Reiniciar inmediatamente
+    // *** MODIFICADO: El botón ahora llama a la función finalizadora ***
+    checkAnswersBtn.addEventListener('click', () => checkFillBlanksAnswers(true));
+    restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false));
 
     // --- Inicialización General ---
-    showScreen('selection'); // Mostrar la pantalla de selección al inicio
+    showScreen('selection');
 
 }); // Fin DOMContentLoaded
