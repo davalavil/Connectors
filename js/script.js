@@ -4,17 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Comprobación Inicial ---
     if (typeof conectoresOriginal === 'undefined') {
         console.error("ERROR: El archivo 'connectors.js' no se ha cargado correctamente o la variable 'conectoresOriginal' no está definida.");
-        // Mantener un alert aquí es útil para errores críticos de carga
         alert("Error crítico al cargar los datos del juego. Revisa la consola.");
         return;
     }
 
     // --- Variables Globales ---
-    let currentGameMode = null; // 'matching' or 'fill-blanks'
+    let currentGameMode = null;
     let timerInterval = null;
     let timeLeft = 0;
-    let currentConnectors = []; // Array de conectores para el juego actual
-    let score = 0; // Usado para score dinámico en fill-blanks y score final en matching
+    let currentConnectors = [];
+    let score = 0;
     let fillBlanksFinalized = false;
 
     // --- Elementos del DOM Comunes ---
@@ -46,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fillBlanksTimeSelect = document.getElementById('fill-blanks-time-select');
     const startFillBlanksBtn = document.getElementById('start-fill-blanks-btn');
     const fillBlanksTimerSpan = document.getElementById('fill-blanks-time-left');
-    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score'); // Score dinámico/final
+    const fillBlanksScoreSpan = document.getElementById('fill-blanks-current-score');
     const fillBlanksTotalSpan = document.getElementById('fill-blanks-total');
     const fillBlanksTableBody = document.querySelector('#fill-blanks-table tbody');
     const checkAnswersBtn = document.getElementById('check-answers-btn');
@@ -69,14 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funciones de Control de Visibilidad ---
      function showScreen(screen) {
-        gameSelectionDiv.classList.add('hidden');
-        matchingContainer.classList.add('hidden');
-        fillBlanksContainer.classList.add('hidden');
-        matchingSetupDiv.classList.add('hidden');
-        matchingGameDiv.classList.add('hidden');
-        fillBlanksSetupDiv.classList.add('hidden');
-        fillBlanksGameDiv.classList.add('hidden');
-        resultsOverlay.classList.add('hidden');
+        gameSelectionDiv.classList.add('hidden'); matchingContainer.classList.add('hidden'); fillBlanksContainer.classList.add('hidden');
+        matchingSetupDiv.classList.add('hidden'); matchingGameDiv.classList.add('hidden'); fillBlanksSetupDiv.classList.add('hidden');
+        fillBlanksGameDiv.classList.add('hidden'); resultsOverlay.classList.add('hidden');
         if (screen === 'selection') { gameSelectionDiv.classList.remove('hidden'); }
         else if (screen === 'matching-setup') { matchingContainer.classList.remove('hidden'); matchingSetupDiv.classList.remove('hidden'); }
         else if (screen === 'matching-game') { matchingContainer.classList.remove('hidden'); matchingGameDiv.classList.remove('hidden'); }
@@ -85,83 +79,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Funciones del Temporizador (Compartidas) ---
-    function updateTimerDisplay() {
-        const formattedTime = formatTime(timeLeft);
-        if (currentGameMode === 'matching') { matchingTimerSpan.textContent = formattedTime; }
-        else if (currentGameMode === 'fill-blanks') { fillBlanksTimerSpan.textContent = formattedTime; }
-    }
-    function startTimer(duration) {
-        if (timerInterval) clearInterval(timerInterval);
-        timeLeft = duration; updateTimerDisplay();
-        timerInterval = setInterval(() => {
-            timeLeft--; updateTimerDisplay();
-            if (timeLeft <= 0) { clearInterval(timerInterval); timerInterval = null; handleTimeUp(); }
-        }, 1000);
-    }
+    function updateTimerDisplay() { const formattedTime = formatTime(timeLeft); if (currentGameMode === 'matching') { matchingTimerSpan.textContent = formattedTime; } else if (currentGameMode === 'fill-blanks') { fillBlanksTimerSpan.textContent = formattedTime; } }
+    function startTimer(duration) { if (timerInterval) clearInterval(timerInterval); timeLeft = duration; updateTimerDisplay(); timerInterval = setInterval(() => { timeLeft--; updateTimerDisplay(); if (timeLeft <= 0) { clearInterval(timerInterval); timerInterval = null; handleTimeUp(); } }, 1000); }
     function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
-    function handleTimeUp() {
-        console.log("Time's up!");
-        if (currentGameMode === 'matching') { showMatchingResults(false); }
-        else if (currentGameMode === 'fill-blanks') { if (!fillBlanksFinalized) { finalizeFillBlanksGame(); } }
-    }
+    function handleTimeUp() { console.log("Time's up!"); if (currentGameMode === 'matching') { showMatchingResults(false); } else if (currentGameMode === 'fill-blanks') { if (!fillBlanksFinalized) { finalizeFillBlanksGame(); } } }
 
     // --- Lógica Juego Emparejar (Matching) ---
-     function renderMatchingWords() {
-        wordArea.innerHTML = ''; const wordsToRender = [];
-        currentConnectors = shuffleArray([...conectoresOriginal]); score = 0;
-        currentScoreSpan.textContent = score; totalPairsSpan.textContent = currentConnectors.length;
-        currentConnectors.forEach(pair => { wordsToRender.push({ id: pair.id, lang: 'en', text: pair.en }); wordsToRender.push({ id: pair.id, lang: 'es', text: pair.es }); });
-        shuffleArray(wordsToRender);
-        wordsToRender.forEach(word => {
-            const pill = document.createElement('div'); pill.classList.add('word-pill', `lang-${word.lang}`);
-            pill.textContent = word.text; pill.draggable = true; pill.dataset.id = word.id; pill.dataset.lang = word.lang;
-            pill.addEventListener('dragstart', handleDragStart); pill.addEventListener('dragend', handleDragEnd);
-            wordArea.appendChild(pill); });
-        wordArea.removeEventListener('dragover', handleDragOver); wordArea.removeEventListener('drop', handleDrop);
-        wordArea.addEventListener('dragover', handleDragOver); wordArea.addEventListener('drop', handleDrop);
-    }
-    function handleDragStart(event) {
-        if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return;
-        if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return;
-        draggedElement = event.target; event.dataTransfer.setData('text/plain', event.target.dataset.id); event.dataTransfer.effectAllowed = 'move';
-        setTimeout(() => { if(draggedElement) draggedElement.classList.add('dragging'); }, 0);
-    }
-    function handleDragEnd(event) {
-        if (draggedElement) draggedElement.classList.remove('dragging'); draggedElement = null;
-        setTimeout(() => { wordArea.querySelectorAll('.incorrect-match').forEach(el => el.classList.remove('incorrect-match')); }, 100);
-    }
+     function renderMatchingWords() { wordArea.innerHTML = ''; const wordsToRender = []; currentConnectors = shuffleArray([...conectoresOriginal]); score = 0; currentScoreSpan.textContent = score; totalPairsSpan.textContent = currentConnectors.length; currentConnectors.forEach(pair => { wordsToRender.push({ id: pair.id, lang: 'en', text: pair.en }); wordsToRender.push({ id: pair.id, lang: 'es', text: pair.es }); }); shuffleArray(wordsToRender); wordsToRender.forEach(word => { const pill = document.createElement('div'); pill.classList.add('word-pill', `lang-${word.lang}`); pill.textContent = word.text; pill.draggable = true; pill.dataset.id = word.id; pill.dataset.lang = word.lang; pill.addEventListener('dragstart', handleDragStart); pill.addEventListener('dragend', handleDragEnd); wordArea.appendChild(pill); }); wordArea.removeEventListener('dragover', handleDragOver); wordArea.removeEventListener('drop', handleDrop); wordArea.addEventListener('dragover', handleDragOver); wordArea.addEventListener('drop', handleDrop); }
+    function handleDragStart(event) { if (!timerInterval && timeLeft > 0 && currentGameMode === 'matching') return; if (event.target.classList.contains('correct-match') || event.target.style.visibility === 'hidden') return; draggedElement = event.target; event.dataTransfer.setData('text/plain', event.target.dataset.id); event.dataTransfer.effectAllowed = 'move'; setTimeout(() => { if(draggedElement) draggedElement.classList.add('dragging'); }, 0); }
+    function handleDragEnd(event) { if (draggedElement) draggedElement.classList.remove('dragging'); draggedElement = null; setTimeout(() => { wordArea.querySelectorAll('.incorrect-match').forEach(el => el.classList.remove('incorrect-match')); }, 100); }
     function handleDragOver(event) { event.preventDefault(); event.dataTransfer.dropEffect = 'move'; }
-    function handleDrop(event) {
-        event.preventDefault(); if (!draggedElement) return; const dropTarget = event.target;
-        if (dropTarget.classList.contains('word-pill') && !dropTarget.classList.contains('correct-match') && dropTarget.style.visibility !== 'hidden' && dropTarget !== draggedElement) {
-            const draggedId = draggedElement.dataset.id; const draggedLang = draggedElement.dataset.lang; const targetId = dropTarget.dataset.id; const targetLang = dropTarget.dataset.lang;
-            if (draggedId === targetId && draggedLang !== targetLang) {
-                draggedElement.classList.add('correct-match'); dropTarget.classList.add('correct-match'); draggedElement.classList.remove('dragging');
-                draggedElement.draggable = false; dropTarget.draggable = false;
-                setTimeout(() => { if (draggedElement && draggedElement.classList.contains('correct-match')) draggedElement.style.visibility = 'hidden'; if (dropTarget && dropTarget.classList.contains('correct-match')) dropTarget.style.visibility = 'hidden'; }, 500);
-                score++; currentScoreSpan.textContent = score;
-                if (score === currentConnectors.length) { stopTimer(); setTimeout(() => showMatchingResults(true), 600); }
-            } else { if(draggedElement) draggedElement.classList.add('incorrect-match'); dropTarget.classList.add('incorrect-match'); setTimeout(() => { if (draggedElement) draggedElement.classList.remove('incorrect-match'); if (!dropTarget.classList.contains('correct-match')) dropTarget.classList.remove('incorrect-match'); }, 500); }
-        } if (draggedElement) draggedElement.classList.remove('dragging');
-    }
-    function showMatchingResults(won) {
-        stopTimer(); correctPairsList.innerHTML = '';
-        conectoresOriginal.forEach(pair => { const div = document.createElement('div'); div.textContent = `${pair.en} = ${pair.es}`; correctPairsList.appendChild(div); });
-        let resultTitle = "Resultados"; if (won) resultTitle = "¡Felicidades, has ganado!"; else if (timeLeft <= 0) resultTitle = "¡Se acabó el tiempo!"; else resultTitle = "Te has rendido";
-        resultsOverlay.querySelector('h2').textContent = resultTitle; resultsOverlay.classList.remove('hidden');
-        giveUpBtn.disabled = true; restartMatchingBtn.disabled = false;
-    }
-    function initializeMatchingGame() {
-        currentGameMode = 'matching'; const selectedMinutes = parseInt(matchingTimeSelect.value, 10); score = 0; draggedElement = null;
-        renderMatchingWords(); showScreen('matching-game'); giveUpBtn.disabled = false; restartMatchingBtn.disabled = true; resultsOverlay.classList.add('hidden');
-        startTimer(selectedMinutes * 60);
-    }
-     function resetMatchingGame(goToSetup = false) {
-        stopTimer(); wordArea.innerHTML = ''; score = 0; currentScoreSpan.textContent = '0'; totalPairsSpan.textContent = '0'; matchingTimerSpan.textContent = '--:--';
-        resultsOverlay.classList.add('hidden'); giveUpBtn.disabled = false; restartMatchingBtn.disabled = false;
-        wordArea.removeEventListener('dragover', handleDragOver); wordArea.removeEventListener('drop', handleDrop);
-        if (goToSetup) { showScreen('matching-setup'); } else { initializeMatchingGame(); }
-    }
+    function handleDrop(event) { event.preventDefault(); if (!draggedElement) return; const dropTarget = event.target; if (dropTarget.classList.contains('word-pill') && !dropTarget.classList.contains('correct-match') && dropTarget.style.visibility !== 'hidden' && dropTarget !== draggedElement) { const draggedId = draggedElement.dataset.id; const draggedLang = draggedElement.dataset.lang; const targetId = dropTarget.dataset.id; const targetLang = dropTarget.dataset.lang; if (draggedId === targetId && draggedLang !== targetLang) { draggedElement.classList.add('correct-match'); dropTarget.classList.add('correct-match'); draggedElement.classList.remove('dragging'); draggedElement.draggable = false; dropTarget.draggable = false; setTimeout(() => { if (draggedElement && draggedElement.classList.contains('correct-match')) draggedElement.style.visibility = 'hidden'; if (dropTarget && dropTarget.classList.contains('correct-match')) dropTarget.style.visibility = 'hidden'; }, 500); score++; currentScoreSpan.textContent = score; if (score === currentConnectors.length) { stopTimer(); setTimeout(() => showMatchingResults(true), 600); } } else { if(draggedElement) draggedElement.classList.add('incorrect-match'); dropTarget.classList.add('incorrect-match'); setTimeout(() => { if (draggedElement) draggedElement.classList.remove('incorrect-match'); if (!dropTarget.classList.contains('correct-match')) dropTarget.classList.remove('incorrect-match'); }, 500); } } if (draggedElement) draggedElement.classList.remove('dragging'); }
+    function showMatchingResults(won) { stopTimer(); correctPairsList.innerHTML = ''; conectoresOriginal.forEach(pair => { const div = document.createElement('div'); div.textContent = `${pair.en} = ${pair.es}`; correctPairsList.appendChild(div); }); let resultTitle = "Resultados"; if (won) resultTitle = "¡Felicidades, has ganado!"; else if (timeLeft <= 0) resultTitle = "¡Se acabó el tiempo!"; else resultTitle = "Te has rendido"; resultsOverlay.querySelector('h2').textContent = resultTitle; resultsOverlay.classList.remove('hidden'); giveUpBtn.disabled = true; restartMatchingBtn.disabled = false; }
+    function initializeMatchingGame() { currentGameMode = 'matching'; const selectedMinutes = parseInt(matchingTimeSelect.value, 10); score = 0; draggedElement = null; renderMatchingWords(); showScreen('matching-game'); giveUpBtn.disabled = false; restartMatchingBtn.disabled = true; resultsOverlay.classList.add('hidden'); startTimer(selectedMinutes * 60); }
+    function resetMatchingGame(goToSetup = false) { stopTimer(); wordArea.innerHTML = ''; score = 0; currentScoreSpan.textContent = '0'; totalPairsSpan.textContent = '0'; matchingTimerSpan.textContent = '--:--'; resultsOverlay.classList.add('hidden'); giveUpBtn.disabled = false; restartMatchingBtn.disabled = false; wordArea.removeEventListener('dragover', handleDragOver); wordArea.removeEventListener('drop', handleDrop); if (goToSetup) { showScreen('matching-setup'); } else { initializeMatchingGame(); } }
 
     // --- Lógica Juego Rellenar (Fill Blanks) ---
 
@@ -198,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (feedbackChanged) { if (isCorrectNow && !wasCorrectBefore) { score++; } else if (!isCorrectNow && wasCorrectBefore) { score--; } score = Math.max(0, score); fillBlanksScoreSpan.textContent = score; }
     }
 
-    // *** FUNCIÓN FINALIZADORA (BOTÓN / TIEMPO) - SIN ALERT ***
+    // *** FUNCIÓN FINALIZADORA (BOTÓN / TIEMPO) - RELLENA INPUTS ***
     function finalizeFillBlanksGame() {
         if (fillBlanksFinalized) { console.log("Finalize called on already finalized game."); return; }
         fillBlanksFinalized = true; stopTimer();
@@ -219,26 +150,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!input || !feedbackCell || !connectorPair) { console.error(`Error finding elements for row ${index} (ID: ${id}). Skipping.`); return; }
 
             const userAnswer = input.value;
-            const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
-            const isCorrect = checkAnswer(userAnswer, correctAnswer);
+            // *** Determinar la RESPUESTA CORRECTA a mostrar ***
+            const correctAnswerString = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
+            const isCorrect = checkAnswer(userAnswer, correctAnswerString);
 
-            // --- **FORZAR ACTUALIZACIÓN VISUAL FINAL** ---
-            feedbackCell.classList.remove('correct', 'incorrect'); // Limpiar estado previo
+            // --- **ACTUALIZAR INPUT Y FEEDBACK** ---
+            // 1. Rellenar SIEMPRE el input con la respuesta correcta
+            input.value = correctAnswerString;
+
+            // 2. Limpiar clases específicas de estado del feedback
+            feedbackCell.classList.remove('correct', 'incorrect');
+
+            // 3. Establecer texto y clase final del feedback
             if (isCorrect) {
                 feedbackCell.textContent = 'Correcto';
                 feedbackCell.classList.add('correct');
                 finalCalculatedScore++;
+                // Opcional: Podrías poner un fondo diferente si acertó para diferenciar
+                // input.style.backgroundColor = '#e9f7ef'; // Verde muy claro
             } else {
+                // Si falló, marcar como incorrecto (si escribió algo)
                 if (userAnswer.trim() !== '') {
                     feedbackCell.textContent = 'Incorrecto';
                     feedbackCell.classList.add('incorrect');
+                    // Opcional: Fondo diferente si falló y se mostró la respuesta
+                    // input.style.backgroundColor = '#fffadf'; // Amarillo claro
                 } else {
-                    feedbackCell.textContent = '-';
+                    feedbackCell.textContent = '-'; // Si estaba vacío, dejar '-'
+                    // Opcional: Fondo diferente si estaba vacío y se mostró la respuesta
+                    // input.style.backgroundColor = '#f8f9fa'; // Gris muy claro
                 }
             }
              if (!feedbackCell.classList.contains('feedback')) { feedbackCell.classList.add('feedback'); } // Asegurar clase base
 
-            input.disabled = true; // Deshabilitar input
+            // 4. Deshabilitar input (después de actualizar valor y estilo)
+            input.disabled = true;
         });
 
         score = finalCalculatedScore; // Actualizar score global con el final
@@ -248,14 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
         checkAnswersBtn.disabled = true; // Deshabilitar botón
         if (document.activeElement instanceof HTMLElement) { document.activeElement.blur(); } // Quitar foco
 
-        console.log("--- Fill Blanks Game Finalized (Visual Update Complete) ---");
+        console.log("--- Fill Blanks Game Finalized (Inputs Filled) ---");
         // --- ALERT ELIMINADO ---
     }
 
     function initializeFillBlanksGame() {
         currentGameMode = 'fill-blanks'; const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10); score = 0; fillBlanksFinalized = false;
         renderFillBlanksTable(); showScreen('fill-blanks-game'); checkAnswersBtn.disabled = false; restartFillBlanksBtn.disabled = false;
-        fillBlanksScoreSpan.textContent = score; fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => input.disabled = false);
+        fillBlanksScoreSpan.textContent = score; fillBlanksTableBody.querySelectorAll('input[type="text"]').forEach(input => {
+            input.disabled = false;
+            input.style.backgroundColor = ''; // Resetear posible color de fondo
+        });
         startTimer(selectedMinutes * 60);
     }
     function resetFillBlanksGame(goToSetup = false) {
