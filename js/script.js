@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeLeft = 0;
     let currentConnectors = []; // Array de conectores para el juego actual
     let score = 0;
+    let fillBlanksFinalized = false; // NUEVO: Bandera para saber si el juego de rellenar ya finalizó
 
     // --- Elementos del DOM Comunes ---
     const gameSelectionDiv = document.getElementById('game-selection');
@@ -126,12 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleTimeUp() {
-        // alert("¡Se acabó el tiempo!"); // Quitado alert para no interrumpir
         console.log("Time's up!");
         if (currentGameMode === 'matching') {
             showMatchingResults(false);
         } else if (currentGameMode === 'fill-blanks') {
-            checkFillBlanksAnswers(true); // Llamar a la función final de comprobación
+            // Solo finalizar si no se ha finalizado ya manualmente
+            if (!fillBlanksFinalized) {
+                 finalizeFillBlanksGame();
+            }
         }
     }
 
@@ -281,10 +284,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderFillBlanksTable() {
         fillBlanksTableBody.innerHTML = '';
         currentConnectors = shuffleArray([...conectoresOriginal]);
-        score = 0; // Reset score for rendering
+        score = 0;
         fillBlanksScoreSpan.textContent = score;
         fillBlanksTotalSpan.textContent = currentConnectors.length;
         translationDirection = translationDirectionSelect.value;
+        fillBlanksFinalized = false; // Resetear bandera al renderizar
 
         currentConnectors.forEach(pair => {
             const row = document.createElement('tr');
@@ -298,13 +302,12 @@ document.addEventListener('DOMContentLoaded', () => {
             input.type = 'text';
             input.placeholder = (translationDirection === 'en-es') ? 'Escribe en Español...' : 'Escribe en Inglés...';
             input.dataset.id = pair.id;
-            // *** NUEVO: Añadir listener 'blur' ***
             input.addEventListener('blur', handleFillBlanksInputBlur);
             inputCell.appendChild(input);
 
             const feedbackCell = document.createElement('td');
             feedbackCell.classList.add('feedback');
-            feedbackCell.textContent = '-'; // Estado inicial
+            feedbackCell.textContent = '-';
 
             row.appendChild(sourceCell);
             row.appendChild(inputCell);
@@ -314,14 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Normaliza y compara respuestas (maneja comas/slashes)
     function checkAnswer(userInput, correctAnswer) {
         const normalizedInput = userInput.trim().toLowerCase();
         if (!normalizedInput) return false;
 
         const correctOptions = correctAnswer.split(/[,/]/).map(opt => opt.trim().toLowerCase());
 
-        // Considerar también la respuesta sin tildes si es español
         if (translationDirection === 'en-es') {
             const normalizedInputNoAccents = normalizedInput
                 .normalize("NFD")
@@ -331,26 +332,25 @@ document.addEventListener('DOMContentLoaded', () => {
              }
         }
 
-
         return correctOptions.includes(normalizedInput);
     }
 
-    // *** NUEVO: Función para manejar el 'blur' de un input ***
     function handleFillBlanksInputBlur(event) {
-        // No hacer nada si el juego ha terminado (inputs deshabilitados)
-        if (event.target.disabled) return;
+        // No hacer nada si el juego ha terminado
+        if (fillBlanksFinalized) return;
 
         checkSingleAnswerAndUpdate(event.target);
     }
 
-    // *** NUEVO: Función para comprobar una respuesta y actualizar UI/Score ***
     function checkSingleAnswerAndUpdate(inputElement) {
         const row = inputElement.closest('tr');
+        // Salir si no encontramos la fila (puede pasar en algún caso raro)
+        if (!row) return;
         const feedbackCell = row.querySelector('td.feedback');
         const id = row.dataset.id;
         const connectorPair = conectoresOriginal.find(p => p.id == id);
 
-        if (!connectorPair) return; // Seguridad
+        if (!connectorPair || !feedbackCell) return; // Seguridad
 
         const userAnswer = inputElement.value;
         const correctAnswer = (translationDirection === 'en-es') ? connectorPair.es : connectorPair.en;
@@ -359,66 +359,86 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCorrectNow = checkAnswer(userAnswer, correctAnswer);
 
         // Actualizar feedback visual
+        let feedbackChanged = false;
         if (isCorrectNow) {
-            feedbackCell.textContent = 'Correcto';
-            feedbackCell.className = 'feedback correct'; // Asegura que solo estén estas clases
+            if (!wasCorrectBefore || feedbackCell.textContent !== 'Correcto') {
+                 feedbackCell.textContent = 'Correcto';
+                 feedbackCell.className = 'feedback correct';
+                 feedbackChanged = true;
+            }
         } else {
-            // Solo marcar incorrecto si hay algo escrito, si está vacío, volver a '-'
             if (userAnswer.trim() !== '') {
-                feedbackCell.textContent = 'Incorrecto';
-                feedbackCell.className = 'feedback incorrect';
+                if (wasCorrectBefore || feedbackCell.textContent !== 'Incorrecto') {
+                    feedbackCell.textContent = 'Incorrecto';
+                    feedbackCell.className = 'feedback incorrect';
+                    feedbackChanged = true;
+                }
             } else {
-                 feedbackCell.textContent = '-';
-                 feedbackCell.className = 'feedback'; // Sin clase de color
+                 if (wasCorrectBefore || feedbackCell.textContent !== '-') {
+                    feedbackCell.textContent = '-';
+                    feedbackCell.className = 'feedback';
+                    feedbackChanged = true;
+                 }
             }
         }
 
-        // Actualizar puntuación dinámicamente
-        if (isCorrectNow && !wasCorrectBefore) {
-            score++;
-        } else if (!isCorrectNow && wasCorrectBefore) {
-            score--;
+        // Actualizar puntuación solo si el estado de corrección cambió
+        if (feedbackChanged) {
+            if (isCorrectNow && !wasCorrectBefore) {
+                score++;
+            } else if (!isCorrectNow && wasCorrectBefore) {
+                score--;
+            }
+            fillBlanksScoreSpan.textContent = score;
         }
-        fillBlanksScoreSpan.textContent = score; // Actualizar siempre la puntuación mostrada
     }
 
+    // *** MODIFICADO: Renombrado para claridad, esta es la función FINAL ***
+    function finalizeFillBlanksGame() {
+        // Evitar ejecuciones múltiples
+        if (fillBlanksFinalized) return;
 
-    // *** MODIFICADO: Botón para comprobar TODO al final / o por tiempo ***
-    // El parámetro 'isFinal' indica si es el final del juego (por botón o tiempo)
-    function checkFillBlanksAnswers(isFinal = true) {
-        stopTimer(); // Detener el timer si se pulsa el botón
+        fillBlanksFinalized = true; // Marcar como finalizado
+        stopTimer(); // Detener el temporizador
 
+        console.log("Finalizing fill blanks game...");
+
+        // Recorrer todas las filas para asegurar estado final y deshabilitar
         const rows = fillBlanksTableBody.querySelectorAll('tr');
         rows.forEach(row => {
             const input = row.querySelector('input[type="text"]');
-             // Validar cada input de nuevo para asegurar estado final,
-             // especialmente los que no tuvieron 'blur' o quedaron vacíos
-            checkSingleAnswerAndUpdate(input);
-
-            // Deshabilitar input si es la comprobación final
-            if(isFinal) {
+            if (input) {
+                 // Re-validar por si acaso (asegura que el score final sea correcto)
+                checkSingleAnswerAndUpdate(input);
+                // Deshabilitar el input
                 input.disabled = true;
             }
         });
 
-        // Si es la comprobación final, deshabilitar el botón
-        if (isFinal) {
-            checkAnswersBtn.disabled = true;
-            console.log(`Juego finalizado. Puntuación final: ${score}/${currentConnectors.length}`);
-            // Aquí podrías mostrar un mensaje de "Juego Terminado" o similar si quieres
+        // Deshabilitar el botón de comprobar
+        checkAnswersBtn.disabled = true;
+
+        // Quitar foco de cualquier input
+        if (document.activeElement instanceof HTMLInputElement) {
+            document.activeElement.blur();
         }
+
+        // Mensaje de confirmación (opcional)
+        alert(`Comprobación finalizada.\nPuntuación: ${score} / ${currentConnectors.length}`);
+
+        console.log(`Juego finalizado. Puntuación final: ${score}/${currentConnectors.length}`);
     }
 
     function initializeFillBlanksGame() {
         currentGameMode = 'fill-blanks';
         const selectedMinutes = parseInt(fillBlanksTimeSelect.value, 10);
-        score = 0; // Resetear score al iniciar
+        score = 0;
+        fillBlanksFinalized = false; // Resetear bandera
         renderFillBlanksTable();
         showScreen('fill-blanks-game');
         checkAnswersBtn.disabled = false; // Habilitar botón
         restartFillBlanksBtn.disabled = false;
-        // Los inputs se habilitan al renderizar
-        fillBlanksScoreSpan.textContent = score; // Asegurar que se muestra 0
+        fillBlanksScoreSpan.textContent = score;
         startTimer(selectedMinutes * 60);
     }
 
@@ -429,8 +449,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fillBlanksScoreSpan.textContent = '0';
         fillBlanksTotalSpan.textContent = '0';
         fillBlanksTimerSpan.textContent = '--:--';
-        checkAnswersBtn.disabled = true; // Deshabilitar hasta empezar nuevo juego
+        checkAnswersBtn.disabled = true;
         restartFillBlanksBtn.disabled = true;
+        fillBlanksFinalized = false; // Resetear bandera
 
          if (goToSetup) {
              showScreen('fill-blanks-setup');
@@ -438,7 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
             initializeFillBlanksGame();
         }
     }
-
 
     // --- Event Listeners ---
 
@@ -463,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup y Start Juego Rellenar
     startFillBlanksBtn.addEventListener('click', initializeFillBlanksGame);
     // *** MODIFICADO: El botón ahora llama a la función finalizadora ***
-    checkAnswersBtn.addEventListener('click', () => checkFillBlanksAnswers(true));
+    checkAnswersBtn.addEventListener('click', finalizeFillBlanksGame);
     restartFillBlanksBtn.addEventListener('click', () => resetFillBlanksGame(false));
 
     // --- Inicialización General ---
