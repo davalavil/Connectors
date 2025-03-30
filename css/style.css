@@ -177,7 +177,7 @@ h2 {
 }
 .word-pill:active, .word-pill.sortable-chosen { cursor: grabbing !important; transform: scale(1.06); box-shadow: var(--box-shadow-lg); z-index: 100; }
 .word-pill.lang-es { background-color: #fff3cd; border-color: #ffeeba; color: #856404; } /* Amarillo claro */
-.word-pill.sortable-ghost { opacity: 0.4; background-color: #e2e3e5; border-style: dashed; }
+.word-pill.sortable-ghost { opacity: 0.5; background-color: #e2e3e5; border-style: dashed; }
 .word-pill.correct-match { transition: all 0.5s ease-out !important; background-color: #d4edda !important; border-color: #c3e6cb !important; opacity: 0 !important; transform: scale(0.8) !important; cursor: default !important; pointer-events: none; }
 .word-pill.incorrect-match { background-color: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24 !important; animation: shake 0.3s ease-in-out; }
 
@@ -207,18 +207,18 @@ h2 {
 #verb-pattern-term { font-size: 2rem; font-weight: 500; color: var(--primary-color); margin-bottom: 10px; }
 .term-explanation { font-size: 1rem; color: var(--text-muted); margin-top: 8px; min-height: 1.3em; }
 
-/* **** LAYOUT DE BOTONES G/I CON FLEXBOX (MODIFICADO) **** */
+/* **** LAYOUT DE BOTONES G/I CON FLEXBOX **** */
 #verb-pattern-options {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center;
-    gap: 15px;
+    display: flex; /* Cambiado a Flexbox */
+    flex-wrap: wrap; /* Permitir que bajen */
+    justify-content: center; /* Centrar botones horizontalmente */
+    align-items: center; /* Centrar verticalmente si hay varias líneas */
+    gap: 15px; /* Espacio entre botones */
     width: 100%;
-    max-width: 750px;
+    max-width: 750px; /* Ajustar si es necesario */
 }
 #verb-pattern-options .answer-button {
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.5rem; /* Más padding vertical */
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
@@ -226,22 +226,12 @@ h2 {
     border-radius: var(--border-radius);
     background-color: #fff;
     transition: all 0.2s ease;
-    color: var(--primary-color);
+    color: var(--primary-color); /* Texto azul */
     text-align: center;
-    /* flex-grow: 1; */ /* <<< ELIMINADO para permitir centrado de la última fila */
-    flex-basis: calc(50% - 10px); /* Intentar que ocupen ~mitad, ajustando gap */
+    flex-grow: 1; /* Permitir que crezcan un poco */
     min-width: 180px; /* Ancho mínimo */
-    box-sizing: border-box; /* Incluir padding/border en el cálculo de basis */
     box-shadow: var(--box-shadow);
 }
-/* Ajuste para que si hay 3 o menos, ocupen más espacio pero no todo */
-@media (min-width: 500px) { /* Solo aplicar en pantallas un poco más grandes */
-    #verb-pattern-options .answer-button {
-        flex-basis: calc(33.33% - 10px); /* Intentar 3 por fila */
-    }
-}
-
-
 #verb-pattern-options .answer-button:hover:not(:disabled) { background-color: #f8f9fa; border-color: #adb5bd; transform: translateY(-2px); box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1); }
 #verb-pattern-options .answer-button:disabled { opacity: 0.65; cursor: not-allowed; background-color: #e9ecef; box-shadow: none; transform: none; }
 #verb-pattern-options .answer-button[style*="border: 2px solid green"] { border-color: var(--success-color) !important; background-color: #e7f7ec; color: #1c4a33; font-weight: 600; }
@@ -300,7 +290,7 @@ button:disabled { opacity: 0.65; cursor: not-allowed; box-shadow: none; transfor
     h1#main-title { font-size: 2rem; margin-bottom: 1.5rem; }
     .game-mode-container { padding: 20px; }
     .setup-section select, #fill-blanks-table input[type="text"] { max-width: none; } /* Permitir ancho completo en móvil */
-    #verb-pattern-options { /* No necesita cambio grid, flex wrap ya funciona */ }
+    #verb-pattern-options { grid-template-columns: 1fr; } /* Asegurar una columna G/I */
      button { padding: 10px 18px; font-size: 0.95rem; } /* Botones un poco más pequeños */
      .selection-button { padding: 0.8rem 1.5rem; font-size: 1rem; }
 
@@ -328,10 +318,11 @@ button:disabled { opacity: 0.65; cursor: not-allowed; box-shadow: none; transfor
     /* Verb Patterns */
     #verb-pattern-term-container { width: 100%; padding: 20px; box-sizing: border-box;}
     #verb-pattern-term { font-size: 1.6em; }
-    #verb-pattern-options .answer-button { font-size: 0.95rem; padding: 12px 15px; flex-basis: 100%; /* Forzar una columna en pantallas muy pequeñas */ }
+    #verb-pattern-options .answer-button { font-size: 0.95rem; padding: 12px 15px; }
     #verb-pattern-feedback { width: 90%; font-size: 1.1em; padding: 10px;}
 
     /* Botones generales */
+    button { font-size: 0.9rem; padding: 10px 15px; }
     #game-controls, #fill-blanks-controls, #verb-pattern-controls { gap: 10px; flex-direction: column; align-items: stretch;} /* Botones en columna */
     #game-controls button, #fill-blanks-controls button, #verb-pattern-controls button { width: 100%; box-sizing: border-box; }
 
@@ -339,6 +330,3 @@ button:disabled { opacity: 0.65; cursor: not-allowed; box-shadow: none; transfor
     #results-content { padding: 20px; max-width: 95%; width: 95%; box-sizing: border-box; }
     #results-content button { width: auto; } /* Botones del overlay no ancho completo */
 }
-
-/* Keyframes para animación shake (sin cambios) */
-@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
