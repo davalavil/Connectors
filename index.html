@@ -4,62 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juegos de Inglés Interactivo</title>
-    <link rel="stylesheet" href="css/style.css"> <!-- Enlaza al CSS estable -->
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Estilos específicos (aislados) para los juegos importados -->
+    <link rel="stylesheet" href="css/style_verbs.css">
+    <link rel="stylesheet" href="css/style_traduccion.css">
 </head>
 <body>
 
     <!-- Título Principal con ID -->
     <h1 id="main-title">Selección de Juego</h1>
 
-    <!-- Sección de Selección de Juego -->
+    <!-- Sección de Selección de Juego (AÑADIR BOTONES) -->
     <div id="game-selection">
-        <button id="select-matching-btn" class="selection-button">Jugar a Emparejar Conectores</button>
-        <button id="select-fill-blanks-btn" class="selection-button">Jugar a Rellenar Conectores</button>
-        <button id="select-verb-pattern-btn" class="selection-button">Jugar Gerundios/Infinitivos</button>
+        <button id="select-matching-btn" class="selection-button">Emparejar Conectores</button>
+        <button id="select-fill-blanks-btn" class="selection-button">Rellenar Conectores</button>
+        <button id="select-verb-pattern-btn" class="selection-button">Gerundios/Infinitivos</button>
+        <!-- NUEVOS BOTONES -->
+        <button id="select-verbs-game-btn" class="selection-button">Práctica de Verbos</button>
+        <button id="select-traduccion-game-btn" class="selection-button">Práctica de Vocabulario</button>
     </div>
 
     <!-- Contenedor Juego de Emparejar (Matching) -->
     <div id="matching-container" class="game-mode-container hidden">
-        <!-- Setup Juego Emparejar -->
+        <!-- ... (contenido HTML original sin cambios) ... -->
         <div id="matching-setup" class="setup-section">
              <h2>Configurar Juego de Emparejar</h2>
              <label for="matching-time-select">Selecciona el tiempo (minutos):</label>
              <select id="matching-time-select">
-                 <option value="5">5</option>
-                 <option value="10" selected>10</option>
-                 <option value="15">15</option>
-                 <option value="20">20</option>
-                 <option value="1">1</option>
+                 <option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="1">1</option>
              </select>
-             <button id="start-matching-btn">Empezar a Emparejar</button>
-             <button class="back-to-selection">Volver a Selección</button>
+             <button id="start-matching-btn" class="action-button">Empezar a Emparejar</button>
+             <button class="back-to-selection action-button">Volver a Selección</button>
         </div>
-
-        <!-- Juego Emparejar -->
         <div id="matching-game" class="game-section hidden">
              <header id="game-info">
-                 <div id="score-board">
-                     Parejas: <span id="current-score">0</span> / <span id="total-pairs">0</span>
-                 </div>
-                 <div id="timer-board">
-                     Tiempo: <span id="time-left">--:--</span>
-                 </div>
+                 <div id="score-board">Parejas: <span id="current-score">0</span> / <span id="total-pairs">0</span></div>
+                 <div id="timer-board">Tiempo: <span id="time-left">--:--</span></div>
              </header>
-             <main id="word-area">
-                 <!-- Las palabras para emparejar se cargarán aquí -->
-             </main>
+             <main id="word-area"><!-- Las palabras para emparejar se cargarán aquí --></main>
              <footer id="game-controls">
-                 <button id="give-up-btn">¡ME RINDO!</button>
-                 <button id="restart-matching-btn">Reiniciar Emparejar</button>
-                 <button class="back-to-selection">Volver a Selección</button>
+                 <button id="give-up-btn" class="action-button">¡ME RINDO!</button>
+                 <button id="restart-matching-btn" class="action-button">Reiniciar Emparejar</button>
+                 <button class="back-to-selection action-button">Volver a Selección</button>
              </footer>
-             <!-- Overlay de Resultados (Emparejar) -->
-             <div id="results-overlay" class="hidden"> <!-- Asegurar que empieza oculto -->
+             <div id="results-overlay" class="hidden">
                  <div id="results-content">
                      <h2>Resultados</h2>
                      <div id="correct-pairs-list"></div>
-                     <button id="play-again-matching-btn">Jugar de Nuevo (Emparejar)</button>
-                     <button class="back-to-selection">Volver a Selección</button>
+                     <div class="button-group"> <!-- Agrupador para botones -->
+                        <button id="play-again-matching-btn" class="action-button">Jugar de Nuevo (Emparejar)</button>
+                        <button class="back-to-selection action-button">Volver a Selección</button>
+                     </div>
                  </div>
              </div>
         </div>
@@ -67,116 +63,179 @@
 
     <!-- Contenedor Juego Rellenar Huecos (Fill Blanks) -->
     <div id="fill-blanks-container" class="game-mode-container hidden">
-        <!-- Setup Juego Rellenar Huecos -->
+        <!-- ... (contenido HTML original sin cambios) ... -->
         <div id="fill-blanks-setup" class="setup-section">
             <h2>Configurar Juego de Rellenar</h2>
             <label for="translation-direction">¿Qué quieres rellenar?</label>
-            <select id="translation-direction">
-                <option value="en-es">La traducción al Español (EN -> ES)</option>
-                <option value="es-en">La traducción al Inglés (ES -> EN)</option>
-            </select>
+            <select id="translation-direction"><option value="en-es">La traducción al Español (EN -> ES)</option><option value="es-en">La traducción al Inglés (ES -> EN)</option></select>
             <label for="fill-blanks-time-select">Selecciona el tiempo (minutos):</label>
-            <select id="fill-blanks-time-select">
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-                <option value="1">1</option>
-            </select>
-            <button id="start-fill-blanks-btn">Empezar a Rellenar</button>
-            <button class="back-to-selection">Volver a Selección</button>
+            <select id="fill-blanks-time-select"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="1">1</option></select>
+            <button id="start-fill-blanks-btn" class="action-button">Empezar a Rellenar</button>
+            <button class="back-to-selection action-button">Volver a Selección</button>
        </div>
-
-        <!-- Juego Rellenar Huecos -->
-        <div id="fill-blanks-game" class="game-section hidden">
+       <div id="fill-blanks-game" class="game-section hidden">
              <header id="fill-blanks-info">
-                  <div id="fill-blanks-score-board">
-                     Correctas: <span id="fill-blanks-current-score">0</span> |
-                     Erróneas: <span id="fill-blanks-incorrect-score">0</span> |
-                     Total: <span id="fill-blanks-total">0</span>
-                 </div>
-                 <div id="fill-blanks-timer-board">
-                     Tiempo: <span id="fill-blanks-time-left">--:--</span>
-                 </div>
+                  <div id="fill-blanks-score-board">Correctas: <span id="fill-blanks-current-score">0</span> | Erróneas: <span id="fill-blanks-incorrect-score">0</span> | Total: <span id="fill-blanks-total">0</span></div>
+                 <div id="fill-blanks-timer-board">Tiempo: <span id="fill-blanks-time-left">--:--</span></div>
              </header>
              <main id="fill-blanks-area">
                  <p>Escribe la traducción correcta en cada casilla:</p>
                  <div class="table-container">
                      <table id="fill-blanks-table">
-                         <thead>
-                             <tr>
-                                 <th>Conector Original</th>
-                                 <th>Tu Traducción</th>
-                                 <th>Resultado</th>
-                             </tr>
-                         </thead>
-                         <tbody>
-                             <!-- Filas se generarán aquí -->
-                         </tbody>
+                         <thead><tr><th>Conector Original</th><th>Tu Traducción</th><th>Resultado</th></tr></thead>
+                         <tbody><!-- Filas se generarán aquí --></tbody>
                      </table>
                  </div>
              </main>
              <footer id="fill-blanks-controls">
-                 <button id="check-answers-btn">Comprobar Respuestas</button>
-                 <button id="restart-fill-blanks-btn">Reiniciar Relleno</button>
-                  <button class="back-to-selection">Volver a Selección</button>
+                 <button id="check-answers-btn" class="action-button">Comprobar Respuestas</button>
+                 <button id="restart-fill-blanks-btn" class="action-button">Reiniciar Relleno</button>
+                 <button class="back-to-selection action-button">Volver a Selección</button>
              </footer>
         </div>
     </div>
 
     <!-- Contenedor Juego Gerundios/Infinitivos -->
     <div id="verb-pattern-container" class="game-mode-container hidden">
-        <!-- Setup Juego -->
+        <!-- ... (contenido HTML original sin cambios) ... -->
         <div id="verb-pattern-setup" class="setup-section">
              <h2>Configurar Juego de Gerundios/Infinitivos</h2>
              <label for="verb-pattern-time-select">Tiempo por pregunta (segundos):</label>
-             <select id="verb-pattern-time-select">
-                 <option value="10">10</option>
-                 <option value="15" selected>15</option>
-                 <option value="20">20</option>
-                 <option value="30">30</option>
-                 <option value="5">5</option>
-             </select>
-             <button id="start-verb-pattern-btn">Empezar Juego G/I</button>
-             <button class="back-to-selection">Volver a Selección</button>
+             <select id="verb-pattern-time-select"><option value="10">10</option><option value="15" selected>15</option><option value="20">20</option><option value="30">30</option><option value="5">5</option></select>
+             <button id="start-verb-pattern-btn" class="action-button">Empezar Juego G/I</button>
+             <button class="back-to-selection action-button">Volver a Selección</button>
         </div>
-
-        <!-- Juego -->
         <div id="verb-pattern-game" class="game-section hidden">
              <header id="verb-pattern-info">
-                 <div id="verb-pattern-score-board">
-                     Aciertos: <span id="verb-pattern-correct">0</span> |
-                     Errores: <span id="verb-pattern-incorrect">0</span> |
-                     Pregunta: <span id="verb-pattern-q-count">0</span> / <span id="verb-pattern-q-total">0</span>
-                 </div>
-                 <div id="verb-pattern-timer-board">
-                     Tiempo Pregunta: <span id="verb-pattern-q-time-left">--</span>s
-                 </div>
+                 <div id="verb-pattern-score-board">Aciertos: <span id="verb-pattern-correct">0</span> | Errores: <span id="verb-pattern-incorrect">0</span> | Pregunta: <span id="verb-pattern-q-count">0</span> / <span id="verb-pattern-q-total">0</span></div>
+                 <div id="verb-pattern-timer-board">Tiempo Pregunta: <span id="verb-pattern-q-time-left">--</span>s</div>
              </header>
              <main id="verb-pattern-area">
-                 <div id="verb-pattern-term-container">
-                    <p>¿Qué sigue normally a esta palabra/frase?</p>
-                    <div id="verb-pattern-term">Término...</div>
-                    <div id="verb-pattern-explanation" class="term-explanation"></div>
-                 </div>
-                 <div id="verb-pattern-options">
-                    <button class="answer-button" data-answer="gerund">Gerundio (-ing)</button>
-                    <button class="answer-button" data-answer="infinitive_to">Infinitivo (con TO)</button>
-                    <button class="answer-button" data-answer="infinitive_no_to">Infinitivo (sin TO)</button>
-                    <button class="answer-button" data-answer="both">Ambos (Gerundio o Inf. con TO)</button>
-                 </div>
+                 <div id="verb-pattern-term-container"><p>¿Qué sigue normally a esta palabra/frase?</p><div id="verb-pattern-term">Término...</div><div id="verb-pattern-explanation" class="term-explanation"></div></div>
+                 <div id="verb-pattern-options"><button class="answer-button" data-answer="gerund">Gerundio (-ing)</button><button class="answer-button" data-answer="infinitive_to">Infinitivo (con TO)</button><button class="answer-button" data-answer="infinitive_no_to">Infinitivo (sin TO)</button><button class="answer-button" data-answer="both">Ambos (Gerundio o Inf. con TO)</button></div>
                  <div id="verb-pattern-feedback"></div>
              </main>
              <footer id="verb-pattern-controls">
-                 <button id="verb-pattern-quit-btn">Salir del Juego</button>
+                 <button id="verb-pattern-quit-btn" class="action-button">Salir del Juego</button> <!-- Este ya actúa como "volver" -->
              </footer>
         </div>
     </div>
 
+    <!-- *********** NUEVO CONTENEDOR PARA JUEGO DE VERBOS *********** -->
+    <div id="verbs-game-container" class="game-mode-container hidden">
+        <!-- Contenido del body de Verbs_game/index.html, adaptado -->
+        <h2>Juego de Práctica de Verbos</h2> <!-- Cambiado de H1 a H2 por jerarquía -->
+
+        <div id="verbs-controles" class="setup-section"> <!-- Reutilizar clase o crear una nueva -->
+            <h3>Elige un modo de juego:</h3> <!-- Cambiado de H2 a H3 -->
+            <div class="verb-button-group"> <!-- Agrupador para botones -->
+                <button id="verbs-btn-random" class="action-button">Aleatorio</button>
+                <button id="verbs-btn-infinitive" class="action-button">Rellenar Infinitivo</button>
+                <button id="verbs-btn-past-simple" class="action-button">Rellenar Pasado Simple</button>
+                <button id="verbs-btn-past-participle" class="action-button">Rellenar Pasado Participio</button>
+                <button id="verbs-btn-translation" class="action-button">Rellenar Traducción</button>
+            </div>
+        </div>
+
+        <div id="verbs-juego" class="game-section"> <!-- Reutilizar clase o crear una nueva -->
+             <div class="table-container"> <!-- Reutilizar contenedor de tabla de FillBlanks -->
+                <table id="verb-table">
+                    <thead>
+                        <tr>
+                            <th>Infinitivo (Inglés)</th>
+                            <th>Pasado Simple (Inglés)</th>
+                            <th>Pasado Participio (Inglés)</th>
+                            <th>Traducción (Castellano)</th>
+                            <th>Tipo / Acción</th> <!-- Modificado -->
+                        </tr>
+                    </thead>
+                    <tbody id="verb-table-body">
+                        <!-- Las filas de verbos se generarán aquí con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="verbs-acciones" class="game-controls"> <!-- Reutilizar clase -->
+            <button id="verbs-btn-check" class="action-button">Comprobar Respuestas</button>
+            <!-- AÑADIR BOTÓN VOLVER -->
+            <button class="back-to-selection action-button">Volver a Selección</button>
+        </div>
+
+        <div id="verbs-feedback" class="feedback-area"> <!-- Crear/Reutilizar clase feedback -->
+            <!-- Los resultados se mostrarán aquí -->
+        </div>
+    </div>
+    <!-- *********** FIN CONTENEDOR JUEGO DE VERBOS *********** -->
+
+
+    <!-- *********** NUEVO CONTENEDOR PARA JUEGO DE TRADUCCIÓN *********** -->
+    <div id="traduccion-game-container" class="game-mode-container hidden">
+         <!-- Contenido del body de Juego_traduccion/index.html, adaptado -->
+         <h2>Vocabulary English file upper intermediate B2.2</h2> <!-- Cambiado de H1 a H2 -->
+
+        <!-- Sección Configuración (Adaptada) -->
+        <div class="configuracion-container setup-section"> <!-- Reutilizar clases -->
+            <div class="configuracion-seccion">
+                <label><strong>Unidades a incluir:</strong></label>
+                <div class="unidades-botones-control">
+                    <button id="traduccion-btn-select-all" class="btn-control-unidad action-button">Seleccionar Todas</button>
+                    <button id="traduccion-btn-deselect-all" class="btn-control-unidad action-button">Deseleccionar Todas</button>
+                </div>
+                <div id="traduccion-unidades-botones-container" class="botones-container"></div>
+            </div>
+            <div class="configuracion-seccion">
+                <label for="traduccion-num-palabras-input"><strong>Número de palabras (<span id="traduccion-num-palabras-valor">10</span>):</strong></label>
+                <div class="config-slider-container">
+                    <input type="range" id="traduccion-num-palabras-slider" value="10" min="1" max="50" step="1">
+                    <input type="number" id="traduccion-num-palabras-input" value="10" min="1" max="50">
+                </div>
+            </div>
+        </div>
+
+        <!-- Grupos de Botones (Adaptados) -->
+        <div class="traduccion-controles controles-modo"> <!-- Usar clase específica -->
+            <button id="traduccion-btn-modo-ing-esp" class="action-button">Inglés -> Español</button>
+            <button id="traduccion-btn-modo-esp-ing" class="action-button">Español -> Inglés</button>
+        </div>
+        <div class="traduccion-controles controles-acciones game-controls"> <!-- Usar clases específicas y genéricas -->
+            <button id="traduccion-btn-copiar" class="action-button">Generar Palabras</button> <!-- Texto cambiado -->
+            <button id="traduccion-btn-borrar" class="action-button">Borrar Respuestas</button>
+            <button id="traduccion-btn-mostrar-lista" class="action-button">Mostrar/Ocultar Lista</button>
+            <!-- AÑADIR BOTÓN VOLVER -->
+            <button class="back-to-selection action-button">Volver a Selección</button>
+        </div>
+
+        <h3 id="traduccion-modo-actual">Modo: Inglés -> Español</h3> <!-- Cambiado a H3 -->
+        <div id="traduccion-estado-generacion" class="estado-info feedback-area"></div> <!-- Reutilizar clase feedback -->
+
+        <div id="traduccion-area-juego" class="game-section"></div> <!-- Reutilizar clase -->
+
+        <div id="traduccion-lista-palabras" class="oculto">
+            <h3>Lista de Referencia</h3> <!-- Cambiado a H3 -->
+            <p id="traduccion-lista-info" class="estado-info"></p>
+            <div id="traduccion-contenido-lista"></div>
+        </div>
+    </div>
+    <!-- *********** FIN CONTENEDOR JUEGO DE TRADUCCIÓN *********** -->
+
+
     <!-- Scripts -->
+    <!-- Librerías Externas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+    <!-- Datos -->
     <script src="js/connectors.js"></script>
     <script src="js/verbPatterns.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="js/verbs.js"></script>         <!-- Datos juego verbos -->
+    <script src="js/palabras.js"></script>        <!-- Datos juego traducción -->
+
+    <!-- Lógica de Juegos -->
+    <script src="js/script_verbs.js"></script>       <!-- Lógica aislada juego verbos -->
+    <script src="js/script_traduccion.js"></script>  <!-- Lógica aislada juego traducción -->
+
+    <!-- Script Principal (Debe ir el último) -->
     <script src="js/script.js"></script>
+
 </body>
 </html>
