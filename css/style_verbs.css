@@ -1,5 +1,5 @@
 /* ========================================================== */
-/* css/style_verbs.css (AISLADO y v4 - ALINEACIÓN ÚLTIMA COL) */
+/* css/style_verbs.css (AISLADO y v5 - ALINEACIÓN VERTICAL FIX) */
 /* Estilos específicos para el Juego de Verbos             */
 /* ========================================================== */
 
@@ -41,17 +41,16 @@
     #verb-table th,
     #verb-table td {
         border: 1px solid var(--border-color); padding: 12px 14px;
-        text-align: left; vertical-align: middle; white-space: normal;
-        font-size: 0.95rem; word-wrap: break-word;
+        text-align: left; vertical-align: middle; /* Mantenemos vertical-align para td */
+        white-space: normal; font-size: 0.95rem; word-wrap: break-word;
     }
 
-    /* Anchos de columna (Ajustados para dar más espacio a la última) */
-    #verb-table th:nth-child(1), #verb-table td:nth-child(1) { width: 18%; } /* Infinitivo */
-    #verb-table th:nth-child(2), #verb-table td:nth-child(2) { width: 18%; } /* P. Simple */
-    #verb-table th:nth-child(3), #verb-table td:nth-child(3) { width: 18%; } /* P. Participio */
-    #verb-table th:nth-child(4), #verb-table td:nth-child(4) { width: 24%; } /* Traducción */
-    #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: 22%; } /* Tipo/Acción */
-
+    /* Anchos de columna */
+    #verb-table th:nth-child(1), #verb-table td:nth-child(1) { width: 18%; }
+    #verb-table th:nth-child(2), #verb-table td:nth-child(2) { width: 18%; }
+    #verb-table th:nth-child(3), #verb-table td:nth-child(3) { width: 18%; }
+    #verb-table th:nth-child(4), #verb-table td:nth-child(4) { width: 24%; }
+    #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: 22%; }
 
     #verb-table th {
         background-color: #e9ecef; color: var(--text-color); font-weight: 600;
@@ -62,7 +61,7 @@
     #verb-table input[type="text"] {
         width: 98%; min-width: 0; padding: 9px 10px; border: 1px solid var(--border-color);
         border-radius: var(--border-radius); box-sizing: border-box; background-color: #fff;
-        transition: all 0.2s ease-in-out; font-size: inherit;
+        transition: all 0.2s ease-in-out; font-size: inherit; vertical-align: middle; /* Alinear input también */
     }
     #verb-table input[type="text"]:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
     #verb-table input[type="text"]:disabled { background-color: #f1f3f5; cursor: not-allowed; opacity: 0.8; }
@@ -77,45 +76,50 @@
     #verb-table input[type="text"].incorrect::placeholder { color: var(--danger-color); font-style: normal; font-weight: 500; opacity: 1; }
     #verb-table input[type="text"].revealed::placeholder { color: transparent !important; }
 
-    /* ====> MODIFICACIONES ÚLTIMA COLUMNA <==== */
+    /* ====> MODIFICACIONES ALINEACIÓN ÚLTIMA COLUMNA v5 <==== */
     #verb-table td:last-child {
-        display: flex; /* Usar flexbox */
-        align-items: center; /* <<< ALINEAR VERTICALMENTE AL CENTRO >>> */
-        justify-content: space-between; /* Espacio entre texto y botón */
-        gap: 8px; /* Espacio mínimo entre ellos */
+        display: flex;
+        align-items: center; /* <<< CLAVE: Alinear items al centro del eje transversal (vertical) >>> */
+        justify-content: space-between;
+        gap: 8px;
+        /* Quitar padding vertical extra si interfiere con align-items */
+        /* padding-top: 8px; */
+        /* padding-bottom: 8px; */
     }
 
     /* Estilo para el SPAN que contiene "regular"/"irregular" */
     #verb-table td:last-child > span {
-        flex-grow: 1; /* Ocupa el espacio disponible */
-        text-align: center; /* <<< CENTRAR TEXTO regular/irregular >>> */
-        /* Opcional: Añadir un fondo/borde para 'encapsularlo' */
-        /* background-color: #f8f9fa; */
-        /* border: 1px dashed #ced4da; */
-        padding: 4px 6px; /* Pequeño padding interno */
+        flex-grow: 1;
+        text-align: center;
+        padding: 4px 6px;
         border-radius: 4px;
-        font-style: italic; /* Estilo cursiva */
-        font-size: 0.9em; /* Un poco más pequeño */
+        font-style: italic;
+        font-size: 0.9em;
         color: var(--text-muted);
+        line-height: 1.4; /* <<< Ajustar altura de línea del texto si es necesario >>> */
+         /* vertical-align: middle; /* Podría no ser necesario con flex align-items */
     }
 
     /* Estilo para el botón revelar (ojo) */
     .reveal-button {
-        flex-shrink: 0; /* <<< EVITAR QUE EL BOTÓN SE ENCOJA >>> */
-        background: none; border: none; padding: 0; /* Quitar padding extra */
-        margin: 0; /* Quitar margen extra */
-        cursor: pointer; font-size: 1.9em; /* Tamaño ajustado */
-        color: var(--secondary-color); line-height: 1; /* Asegurar alineación */
-        transition: color 0.2s ease, transform 0.1s ease;
-        display: inline-flex; /* Ayuda a centrar el icono */
-        align-items: center;
+        flex-shrink: 0; /* No encoger */
+        background: none; border: none; padding: 0; margin: 0;
+        cursor: pointer;
+        font-size: 1.8em; /* Tamaño icono */
+        color: var(--secondary-color);
+        line-height: 1; /* <<< CLAVE: Evitar altura de línea extra >>> */
+        display: inline-flex; /* Usar inline-flex para que actúe como bloque pero fluya */
+        align-items: center; /* Centrar el contenido del botón (el icono) */
         justify-content: center;
-        width: 30px; /* Ancho fijo para centrar icono */
-        height: 30px; /* Altura fija */
+        /* Quitar width/height fijos, dejar que el icono defina tamaño */
+        /* width: 30px; */
+        /* height: 30px; */
+        transition: color 0.2s ease, transform 0.1s ease;
+         /* vertical-align: middle; /* Podría no ser necesario con flex align-items */
     }
     .reveal-button:hover:not(:disabled) { color: var(--primary-color); transform: scale(1.15); }
     .reveal-button:disabled { cursor: default; opacity: 0.4; color: #999; transform: none; }
-    /* ====> FIN MODIFICACIONES ÚLTIMA COLUMNA <==== */
+    /* ====> FIN MODIFICACIONES ALINEACIÓN <==== */
 
     /* --- MEDIA QUERIES --- */
     @media (max-width: 768px) {
@@ -131,14 +135,15 @@
         #feedback { font-size: 1.05em; }
         #verbs-controles .verb-button-group { gap: 12px; }
         #verbs-controles .action-button { font-size: 0.95rem; padding: 10px 18px; }
-        /* Ajuste última celda en tablet si se ve mal con nowrap */
-        #verb-table td:last-child { /* Podría necesitar white-space: normal aquí si nowrap causa problemas */ }
+        /* Asegurar que flex sigue funcionando bien en tablet */
+         #verb-table td:last-child { /* Mantener flex */ }
+         #verb-table td:last-child > span { /* Podría necesitar text-align: left aquí si se ve mal centrado */ }
     }
 
     @media (max-width: 600px) {
         #verb-table th, #verb-table td { padding: 9px 8px; }
         #verb-table input[type="text"] { min-width: 0; font-size: 0.9rem; }
-        /* Mantener flex en fila para la última celda en móvil si hay scroll */
+        /* Mantener row y space-between si hay scroll */
         #verb-table td:last-child { flex-direction: row; align-items: center; justify-content: space-between; }
         #verb-table td:last-child > span { text-align: left; } /* Alinear texto izq en móvil */
         .reveal-button { margin-left: 5px; align-self: center; font-size: 2em; }
