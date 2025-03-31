@@ -1,7 +1,7 @@
-/* ========================================================== */
-/* css/style_verbs.css (AISLADO y v5 - ALINEACIÓN VERTICAL FIX) */
-/* Estilos específicos para el Juego de Verbos             */
-/* ========================================================== */
+/* ============================================================= */
+/* css/style_verbs.css (AISLADO y v6 - ALINEACIÓN SIMPLE Intento 1) */
+/* Estilos específicos para el Juego de Verbos                  */
+/* ============================================================= */
 
 /* IMPORTANTE: TODO el contenido está envuelto en #verbs-game-container */
 #verbs-game-container {
@@ -18,30 +18,20 @@
     }
 
     /* --- Botones de Selección de Modo --- */
-    #verbs-controles .verb-button-group {
-        display: flex; flex-wrap: wrap; justify-content: center;
-        gap: 15px; margin-top: 15px;
-    }
+    #verbs-controles .verb-button-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px; }
     #verbs-controles .action-button { background-color: var(--info-color); color: #333; }
     #verbs-controles .action-button:hover:not(:disabled) { background-color: var(--info-hover); }
     #verbs-controles .action-button:disabled { background-color: var(--info-color) !important; opacity: 0.65; }
 
     /* --- Estilos Tabla de Verbos --- */
-    #verbs-juego {
-        margin: 30px 0; width: 100%;
-        border: 1px solid var(--border-color); border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow); overflow: hidden;
-    }
-
-    #verb-table {
-        width: 100%; border-collapse: collapse; background-color: var(--lighter-bg);
-        table-layout: fixed;
-    }
+    #verbs-juego { margin: 30px 0; width: 100%; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; }
+    #verb-table { width: 100%; border-collapse: collapse; background-color: var(--lighter-bg); table-layout: fixed; }
 
     #verb-table th,
     #verb-table td {
         border: 1px solid var(--border-color); padding: 12px 14px;
-        text-align: left; vertical-align: middle; /* Mantenemos vertical-align para td */
+        text-align: left;
+        vertical-align: middle; /* <<< Mantenemos vertical-align middle para TODAS las celdas >>> */
         white-space: normal; font-size: 0.95rem; word-wrap: break-word;
     }
 
@@ -50,103 +40,83 @@
     #verb-table th:nth-child(2), #verb-table td:nth-child(2) { width: 18%; }
     #verb-table th:nth-child(3), #verb-table td:nth-child(3) { width: 18%; }
     #verb-table th:nth-child(4), #verb-table td:nth-child(4) { width: 24%; }
-    #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: 22%; }
+    #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: 22%; text-align: right; /* Alinear contenido a la derecha */}
 
-    #verb-table th {
-        background-color: #e9ecef; color: var(--text-color); font-weight: 600;
-        position: sticky; top: 0; z-index: 1; border-bottom: 2px solid #adb5bd;
-    }
+    #verb-table th { background-color: #e9ecef; color: var(--text-color); font-weight: 600; position: sticky; top: 0; z-index: 1; border-bottom: 2px solid #adb5bd; }
 
     /* --- Estilos Inputs y Feedback Visual --- */
-    #verb-table input[type="text"] {
-        width: 98%; min-width: 0; padding: 9px 10px; border: 1px solid var(--border-color);
-        border-radius: var(--border-radius); box-sizing: border-box; background-color: #fff;
-        transition: all 0.2s ease-in-out; font-size: inherit; vertical-align: middle; /* Alinear input también */
-    }
+    #verb-table input[type="text"] { width: 98%; min-width: 0; padding: 9px 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-sizing: border-box; background-color: #fff; transition: all 0.2s ease-in-out; font-size: inherit; vertical-align: middle; }
     #verb-table input[type="text"]:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
     #verb-table input[type="text"]:disabled { background-color: #f1f3f5; cursor: not-allowed; opacity: 0.8; }
     #verb-table input[type="text"].revealed { pointer-events: none; border-color: var(--secondary-color) !important; background-color: #e9ecef !important; color: #555 !important; font-style: italic; }
     #verb-table input[type="text"].revealed:disabled { opacity: 1; }
-
     #verb-table .correct { border: 2px solid var(--success-color) !important; background-color: #d1e7dd !important; }
     #verb-table .incorrect { border: 2px solid var(--danger-color) !important; background-color: #f8d7da !important; }
     #verb-table .partial { border: 2px solid var(--warning-color) !important; background-color: #fff3cd !important; }
-
     #verb-table input[type="text"]::placeholder { color: #a0a0a0; font-style: italic; opacity: 0.8; }
     #verb-table input[type="text"].incorrect::placeholder { color: var(--danger-color); font-style: normal; font-weight: 500; opacity: 1; }
     #verb-table input[type="text"].revealed::placeholder { color: transparent !important; }
 
-    /* ====> MODIFICACIONES ALINEACIÓN ÚLTIMA COLUMNA v5 <==== */
+    /* ====> MODIFICACIONES ALINEACIÓN ÚLTIMA COLUMNA v6 - SIMPLE <==== */
     #verb-table td:last-child {
-        display: flex;
-        align-items: center; /* <<< CLAVE: Alinear items al centro del eje transversal (vertical) >>> */
-        justify-content: space-between;
-        gap: 8px;
-        /* Quitar padding vertical extra si interfiere con align-items */
-        /* padding-top: 8px; */
-        /* padding-bottom: 8px; */
+        /* >>> QUITADO display: flex <<< */
+        /* >>> AÑADIDO text-align: right para alinear contenido a la derecha de la celda >>> */
+        text-align: right;
+        white-space: nowrap; /* <<< Evitar que texto y botón se separen en líneas distintas >>> */
     }
 
-    /* Estilo para el SPAN que contiene "regular"/"irregular" */
+    /* Estilo para el SPAN "regular"/"irregular" */
     #verb-table td:last-child > span {
-        flex-grow: 1;
-        text-align: center;
+        /* Quitado flex-grow */
+        text-align: left; /* <<< Alinear texto a la izquierda dentro del span >>> */
         padding: 4px 6px;
         border-radius: 4px;
         font-style: italic;
         font-size: 0.9em;
         color: var(--text-muted);
-        line-height: 1.4; /* <<< Ajustar altura de línea del texto si es necesario >>> */
-         /* vertical-align: middle; /* Podría no ser necesario con flex align-items */
+        display: inline-block; /* <<< Hacerlo inline-block para que respete vertical-align >>> */
+        vertical-align: middle; /* <<< Alinear verticalmente con el botón >>> */
+        margin-right: 8px; /* <<< Espacio entre el texto y el botón >>> */
     }
 
     /* Estilo para el botón revelar (ojo) */
     .reveal-button {
-        flex-shrink: 0; /* No encoger */
+        /* Quitado flex-shrink */
         background: none; border: none; padding: 0; margin: 0;
         cursor: pointer;
-        font-size: 1.8em; /* Tamaño icono */
+        font-size: 1.8em; /* Ajustar tamaño icono */
         color: var(--secondary-color);
-        line-height: 1; /* <<< CLAVE: Evitar altura de línea extra >>> */
-        display: inline-flex; /* Usar inline-flex para que actúe como bloque pero fluya */
-        align-items: center; /* Centrar el contenido del botón (el icono) */
-        justify-content: center;
-        /* Quitar width/height fijos, dejar que el icono defina tamaño */
-        /* width: 30px; */
-        /* height: 30px; */
+        line-height: 1;
+        display: inline-block; /* <<< Hacerlo inline-block >>> */
+        vertical-align: middle; /* <<< Alinear verticalmente con el texto >>> */
         transition: color 0.2s ease, transform 0.1s ease;
-         /* vertical-align: middle; /* Podría no ser necesario con flex align-items */
     }
     .reveal-button:hover:not(:disabled) { color: var(--primary-color); transform: scale(1.15); }
     .reveal-button:disabled { cursor: default; opacity: 0.4; color: #999; transform: none; }
-    /* ====> FIN MODIFICACIONES ALINEACIÓN <==== */
+    /* ====> FIN MODIFICACIONES ALINEACIÓN v6 - SIMPLE <==== */
 
     /* --- MEDIA QUERIES --- */
     @media (max-width: 768px) {
         #verbs-juego { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         #verb-table { table-layout: auto; }
-        #verb-table th:nth-child(1), #verb-table td:nth-child(1),
-        #verb-table th:nth-child(2), #verb-table td:nth-child(2),
-        #verb-table th:nth-child(3), #verb-table td:nth-child(3),
-        #verb-table th:nth-child(4), #verb-table td:nth-child(4),
-        #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: auto; }
+        #verb-table th:nth-child(n), #verb-table td:nth-child(n) { width: auto; }
         #verb-table th, #verb-table td { padding: 10px 12px; white-space: nowrap; }
+        /* Asegurar que la última celda sigue alineada a la derecha en tablet */
+        #verb-table td:last-child { text-align: right; }
+        #verb-table td:last-child > span { text-align: left; margin-right: 8px;} /* Mantener espacio */
+
         .reveal-button { font-size: 1.9em; }
         #feedback { font-size: 1.05em; }
         #verbs-controles .verb-button-group { gap: 12px; }
         #verbs-controles .action-button { font-size: 0.95rem; padding: 10px 18px; }
-        /* Asegurar que flex sigue funcionando bien en tablet */
-         #verb-table td:last-child { /* Mantener flex */ }
-         #verb-table td:last-child > span { /* Podría necesitar text-align: left aquí si se ve mal centrado */ }
     }
 
     @media (max-width: 600px) {
         #verb-table th, #verb-table td { padding: 9px 8px; }
         #verb-table input[type="text"] { min-width: 0; font-size: 0.9rem; }
-        /* Mantener row y space-between si hay scroll */
-        #verb-table td:last-child { flex-direction: row; align-items: center; justify-content: space-between; }
-        #verb-table td:last-child > span { text-align: left; } /* Alinear texto izq en móvil */
-        .reveal-button { margin-left: 5px; align-self: center; font-size: 2em; }
+        /* Alinear derecha y mantener nowrap si hay scroll */
+        #verb-table td:last-child { text-align: right; white-space: nowrap; }
+        .reveal-button { font-size: 2em; }
         #verbs-controles .verb-button-group { flex-direction: column; align-items: stretch; gap: 10px; }
         #verbs-controles .action-button { width: 100%; box-sizing: border-box; }
     }
