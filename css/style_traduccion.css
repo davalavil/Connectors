@@ -1,351 +1,101 @@
-/* ================================================== */
-/* css/style_traduccion.css (AISLADO y ADAPTADO)      */
-/* Estilos específicos para el Juego de Traducción    */
-/* ================================================== */
+/* ========================================================== */
+/* css/style_traduccion.css (AISLADO y v2 - BOTONES MODO FIX) */
+/* Estilos específicos para el Juego de Traducción            */
+/* ========================================================== */
 
 /* IMPORTANTE: TODO el contenido está envuelto en #traduccion-game-container */
 #traduccion-game-container {
 
-    /* --- Estilos Base Específicos Juego Traducción (Sin body, h1, h2) --- */
+    /* --- Estilos Base Específicos Juego Traducción --- */
+    h2 { font-weight: 400; font-size: 1.6rem; border-bottom: none; margin-bottom: 1.5rem; }
+    h3 { text-align: center; font-size: 1.25rem; font-weight: 500; color: var(--text-muted); margin-top: 25px; margin-bottom: 15px; }
 
-    /* Estilo para el H2 principal de este juego (si necesita ser diferente) */
-     h2 {
-        font-weight: 400; /* Un poco más ligero */
-        font-size: 1.6rem; /* Tamaño ajustado */
-        border-bottom: none; /* Sin borde inferior aquí */
-        margin-bottom: 1.5rem;
-     }
+    /* --- Sección Configuración --- */
+    /* Hereda .configuracion-container y .setup-section */
+    .unidades-botones-control { margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .btn-control-unidad { font-size: 0.85em !important; padding: 8px 16px !important; min-width: 130px !important; background-color: var(--secondary-color) !important; }
+    .btn-control-unidad:hover:not(:disabled) { background-color: var(--secondary-hover) !important; }
+    #traduccion-unidades-botones-container { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 5px; justify-content: center; margin-bottom: 15px; }
+    .unidad-btn { padding: 7px 14px; border: 1px solid var(--border-color); background-color: var(--lighter-bg); color: var(--text-color); border-radius: 20px; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; user-select: none; box-shadow: var(--box-shadow); }
+    .unidad-btn:hover { background-color: #e9ecef; border-color: #adb5bd; transform: translateY(-1px); }
+    .unidad-btn.selected { background-color: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 500; box-shadow: none; }
 
-     /* Estilo para H3 (Modo Actual, Título Lista) */
-     h3 {
-        text-align: center;
-        font-size: 1.25rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        margin-top: 25px;
-        margin-bottom: 15px;
-     }
-
-
-    /* --- Sección Configuración (Adaptada) --- */
-    /* Hereda estilos de .configuracion-container y .setup-section del CSS principal */
-
-    /* Estilos específicos para controles de unidades */
-    .unidades-botones-control {
-        margin-bottom: 15px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center; /* Centrar botones de control */
-    }
-
-    /* Botones "Seleccionar Todas" / "Deseleccionar Todas" */
-    /* Usan la clase .action-button del CSS principal */
-    .btn-control-unidad {
-        font-size: 0.85em !important; /* Hacerlos un poco más pequeños */
-        padding: 8px 16px !important; /* Ajustar padding */
-        min-width: 130px !important; /* Ancho mínimo */
-        background-color: var(--secondary-color) !important; /* Color secundario */
-    }
-    .btn-control-unidad:hover:not(:disabled) {
-         background-color: var(--secondary-hover) !important;
-    }
-
-    /* Contenedor para los botones de cada unidad */
-    #traduccion-unidades-botones-container { /* ID prefijado o original */
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding-top: 5px;
-        justify-content: center; /* Centrar botones de unidad */
-        margin-bottom: 15px; /* Espacio inferior */
-    }
-
-    /* Botones de Unidad Individual */
-    .unidad-btn {
-        padding: 7px 14px; /* Padding ajustado */
-        border: 1px solid var(--border-color);
-        background-color: var(--lighter-bg); /* Fondo blanco */
-        color: var(--text-color);
-        border-radius: 20px; /* Redondeado */
-        cursor: pointer;
-        font-size: 0.9em;
-        transition: all 0.2s ease;
-        user-select: none; /* Evitar selección de texto */
-        box-shadow: var(--box-shadow);
-    }
-    .unidad-btn:hover {
-        background-color: #e9ecef; /* Fondo suave hover */
-        border-color: #adb5bd;
-        transform: translateY(-1px);
-    }
-    /* Estilo botón de unidad seleccionado */
-    .unidad-btn.selected {
-        background-color: var(--primary-color); /* Azul primario */
-        color: white;
-        border-color: var(--primary-color);
-        font-weight: 500;
-        box-shadow: none;
-    }
-
-    /* --- Slider y Número de Palabras --- */
-    /* Hereda estilos de .config-slider-container del CSS principal */
-
-    /* Estilos específicos para los elementos del slider/input si son necesarios */
-    #traduccion-num-palabras-slider { /* ID prefijado o original */
-        flex-grow: 1;
-        cursor: pointer;
-        height: 8px;
-        background: #dee2e6;
-        border-radius: 5px;
-        appearance: none;
-        -webkit-appearance: none;
-        min-width: 120px; /* Ancho mínimo slider */
-        transition: background 0.2s ease;
-    }
-     #traduccion-num-palabras-slider:hover {
-         background: #ced4da;
-     }
-    /* Estilos Thumb (bola del slider) */
-    #traduccion-num-palabras-slider::-webkit-slider-thumb {
-        -webkit-appearance: none; appearance: none;
-        width: 20px; height: 20px; /* Más grande */
-        background: var(--primary-color);
-        border-radius: 50%; cursor: pointer;
-        border: 3px solid var(--lighter-bg); /* Borde blanco */
-        box-shadow: var(--box-shadow);
-        margin-top: -6px; /* Ajuste vertical */
-        transition: transform 0.1s ease;
-    }
-     #traduccion-num-palabras-slider::-webkit-slider-thumb:active {
-         transform: scale(1.1);
-     }
-    #traduccion-num-palabras-slider::-moz-range-thumb { /* Firefox */
-        width: 18px; height: 18px; background: var(--primary-color);
-        border-radius: 50%; cursor: pointer; border: 2px solid var(--lighter-bg);
-        box-shadow: var(--box-shadow);
-    }
-     #traduccion-num-palabras-slider::-moz-range-thumb:active {
-         transform: scale(1.1);
-     }
-
-    /* Input numérico */
-    #traduccion-num-palabras-input { /* ID prefijado o original */
-        padding: 9px 10px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        font-size: 1em;
-        width: 70px; /* Ancho fijo */
-        text-align: center;
-    }
-    #traduccion-num-palabras-input:focus {
-        border-color: var(--primary-color);
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    /* Span que muestra el valor */
-    #traduccion-num-palabras-valor { /* ID prefijado o original */
-        font-weight: 600; /* Más peso */
-        color: var(--primary-color);
-        min-width: 25px; /* Espacio mínimo */
-        text-align: right;
-        font-size: 1.1em;
-    }
+    /* Slider y Número */
+    #traduccion-num-palabras-slider { flex-grow: 1; cursor: pointer; height: 8px; background: #dee2e6; border-radius: 5px; appearance: none; -webkit-appearance: none; min-width: 120px; transition: background 0.2s ease; }
+    #traduccion-num-palabras-slider:hover { background: #ced4da; }
+    #traduccion-num-palabras-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--primary-color); border-radius: 50%; cursor: pointer; border: 3px solid var(--lighter-bg); box-shadow: var(--box-shadow); margin-top: -6px; transition: transform 0.1s ease; }
+    #traduccion-num-palabras-slider::-webkit-slider-thumb:active { transform: scale(1.1); }
+    #traduccion-num-palabras-slider::-moz-range-thumb { width: 18px; height: 18px; background: var(--primary-color); border-radius: 50%; cursor: pointer; border: 2px solid var(--lighter-bg); box-shadow: var(--box-shadow); }
+    #traduccion-num-palabras-slider::-moz-range-thumb:active { transform: scale(1.1); }
+    #traduccion-num-palabras-input { padding: 9px 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1em; width: 70px; text-align: center; }
+    #traduccion-num-palabras-input:focus { border-color: var(--primary-color); outline: 0; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); }
+    #traduccion-num-palabras-valor { font-weight: 600; color: var(--primary-color); min-width: 25px; text-align: right; font-size: 1.1em; }
 
     /* --- Controles (Modo, Acciones) --- */
-    /* Usan clases como .traduccion-controles, .controles-modo, .controles-acciones, .game-controls */
-    /* Los botones dentro usan .action-button del CSS principal */
+    .traduccion-controles { text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 750px; margin: 25px auto; }
+    .traduccion-controles.controles-acciones { padding-top: 25px; border-top: 1px solid var(--border-color); margin-bottom: 30px; }
 
-    .traduccion-controles {
-        text-align: center; display: flex; flex-wrap: wrap; justify-content: center;
-        gap: 12px; max-width: 750px; margin: 25px auto; /* Ajustar márgenes */
+    /* ====> ESTILO CORREGIDO PARA BOTONES DE MODO (Ing->Esp / Esp->Ing) <==== */
+    .traduccion-controles.controles-modo .action-button,
+    #traduccion-btn-modo-ing-esp,
+    #traduccion-btn-modo-esp-ing {
+        background-color: var(--primary-color) !important; /* Forzar color azul primario */
+        color: white !important; /* Forzar texto blanco */
+        /* Puedes ajustar otros estilos si es necesario, pero hereda de .action-button */
+        /* Ejemplo: font-weight: 500; */
+        /* Opcional: diferenciar el botón activo */
+        /* &.active { background-color: var(--primary-hover) !important; font-weight: bold; } */
     }
-    .traduccion-controles.controles-acciones {
-        padding-top: 25px; border-top: 1px solid var(--border-color); margin-bottom: 30px;
+    /* Hover específico si se quiere diferente al .action-button general */
+    .traduccion-controles.controles-modo .action-button:hover:not(:disabled),
+    #traduccion-btn-modo-ing-esp:hover:not(:disabled),
+    #traduccion-btn-modo-esp-ing:hover:not(:disabled) {
+        background-color: var(--primary-hover) !important; /* Hover azul más oscuro */
     }
+    /* ====> FIN ESTILO CORREGIDO <==== */
 
 
     /* --- Área de Juego y Lista --- */
-
-    /* Mensaje de estado (debajo de H3 Modo) */
-    #traduccion-estado-generacion { /* ID prefijado o original */
-        text-align: center;
-        font-size: 0.9em;
-        color: var(--text-muted);
-        margin-top: -10px; /* Pegarlo un poco al H3 */
-        margin-bottom: 25px;
-        min-height: 1.4em; /* Espacio reservado */
-        font-style: italic;
-    }
-
-    /* Contenedor principal del área de juego */
-    #traduccion-area-juego { /* ID prefijado o original */
-        /* Hereda de .game-section si se usa esa clase */
-        margin: 20px auto;
-        padding: 20px 25px; /* Padding ajustado */
-        background-color: var(--lighter-bg); /* Fondo blanco */
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        min-height: 100px; /* Altura mínima */
-        border: 1px solid var(--border-color); /* Borde sutil */
-    }
-
-    /* Mensajes dentro del área de juego (errores, info) */
+    #traduccion-estado-generacion { text-align: center; font-size: 0.9em; color: var(--text-muted); margin-top: -10px; margin-bottom: 25px; min-height: 1.4em; font-style: italic; }
+    #traduccion-area-juego { margin: 20px auto; padding: 20px 25px; background-color: var(--lighter-bg); border-radius: var(--border-radius); box-shadow: var(--box-shadow); min-height: 100px; border: 1px solid var(--border-color); }
     #traduccion-area-juego p.error-message { color: var(--danger-color); font-weight: 500; text-align: center; }
     #traduccion-area-juego p.info-message { color: var(--info-color); font-weight: 500; text-align: center; }
+    .fila-palabra { display: flex; flex-wrap: wrap; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e9ecef; gap: 12px 15px; }
+    .fila-palabra:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .palabra-mostrada { flex: 1 1 200px; font-weight: 600; text-align: right; color: var(--text-color); word-break: break-word; font-size: 1.05rem; padding-right: 10px; }
+    .unidad { flex: 0 0 auto; font-size: 0.8em; color: var(--text-muted); text-align: left; white-space: nowrap; font-style: italic; margin-left: -5px; margin-right: 10px; }
+    .respuesta-usuario { flex: 2 1 250px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .respuesta-usuario:focus { border-color: var(--primary-color); outline: 0; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); }
+    .resultado { flex: 0 0 60px; text-align: center; font-weight: bold; padding: 10px 5px; border-radius: var(--border-radius); font-size: 0.9em; text-transform: uppercase; border: 1px solid transparent; min-height: 1.8em; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+    .resultado-correcto { background-color: #d1e7dd; color: #0f5132; border-color: #a3cfbb; }
+    .resultado-incorrecto { background-color: #f8d7da; color: #842029; border-color: #f1aeb5; }
+    #traduccion-lista-palabras { margin: 35px auto; padding: 25px; background-color: #f8f9fa; border-radius: var(--border-radius); border: 1px solid var(--border-color); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+    #traduccion-lista-palabras h3 { margin-top: 0; margin-bottom: 10px; color: #495057; font-weight: 500; text-align: left; font-size: 1.15rem; }
+    #traduccion-lista-info { margin-top: -5px; margin-bottom: 18px; font-style: italic; font-size: 0.9em; color: var(--text-muted); }
+    #traduccion-contenido-lista { max-height: 400px; overflow-y: auto; padding-right: 15px; }
+    #traduccion-contenido-lista p { margin: 3px 0; font-size: 0.95em; color: var(--text-color); word-break: break-word; padding: 6px 0; border-bottom: 1px dashed #ced4da; }
+    #traduccion-contenido-lista p:last-child { border-bottom: none; }
+    #traduccion-contenido-lista p strong { color: var(--primary-color); }
+    #traduccion-contenido-lista span.unidad-lista { font-size: 0.85em; color: var(--text-muted); font-style: normal; }
 
-
-    /* Fila individual de palabra a traducir */
-    .fila-palabra {
-        display: flex;
-        flex-wrap: wrap; /* Permitir que elementos pasen abajo en móvil */
-        align-items: center; /* Alinear verticalmente */
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #e9ecef; /* Separador suave */
-        gap: 12px 15px; /* Espacio vertical y horizontal */
-    }
-    .fila-palabra:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none; /* Sin borde en la última */
-    }
-
-    /* Palabra mostrada (la que hay que traducir) */
-    .palabra-mostrada {
-        flex: 1 1 200px; /* Crece y base de 200px */
-        font-weight: 600; /* Más peso */
-        text-align: right;
-        color: var(--text-color);
-        word-break: break-word; /* Romper palabras largas */
-        font-size: 1.05rem;
-        padding-right: 10px; /* Espacio antes del input */
-    }
-
-    /* Indicador de unidad (File X) */
-    .unidad {
-        flex: 0 0 auto; /* No crece, no encoge, tamaño automático */
-        font-size: 0.8em;
-        color: var(--text-muted);
-        text-align: left;
-        white-space: nowrap; /* Evitar salto de línea */
-        font-style: italic;
-        margin-left: -5px; /* Acercarlo a la palabra mostrada */
-        margin-right: 10px; /* Espacio antes del input */
-    }
-
-    /* Input de respuesta del usuario */
-    .respuesta-usuario {
-        flex: 2 1 250px; /* Crece más, base 250px */
-        padding: 10px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        font-size: 1rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .respuesta-usuario:focus {
-        border-color: var(--primary-color);
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Div de resultado (SÍ/NO) */
-    .resultado {
-        flex: 0 0 60px; /* Ancho fijo */
-        text-align: center;
-        font-weight: bold;
-        padding: 10px 5px;
-        border-radius: var(--border-radius);
-        font-size: 0.9em;
-        text-transform: uppercase; /* Mayúsculas */
-        border: 1px solid transparent;
-        min-height: 1.8em; /* Altura consistente */
-        box-sizing: border-box;
-        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    }
-    /* Estilo específico para SÍ */
-    .resultado-correcto {
-        background-color: #d1e7dd; /* Verde suave */
-        color: #0f5132; /* Verde oscuro texto */
-        border-color: #a3cfbb; /* Borde verde */
-    }
-    /* Estilo específico para NO */
-    .resultado-incorrecto {
-        background-color: #f8d7da; /* Rojo suave */
-        color: #842029; /* Rojo oscuro texto */
-        border-color: #f1aeb5; /* Borde rojo */
-    }
-
-    /* --- Lista de Palabras Oculta --- */
-    #traduccion-lista-palabras { /* ID prefijado o original */
-        margin: 35px auto;
-        padding: 25px; /* Más padding */
-        background-color: #f8f9fa; /* Fondo ligeramente diferente */
-        border-radius: var(--border-radius);
-        border: 1px solid var(--border-color);
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Sombra interior */
-    }
-    #traduccion-lista-palabras h3 { /* Título de la lista */
-         margin-top: 0; margin-bottom: 10px; color: #495057; font-weight: 500; text-align: left;
-         font-size: 1.15rem;
-     }
-    #traduccion-lista-info { /* Info de unidades/número */
-        margin-top: -5px; margin-bottom: 18px; font-style: italic; font-size: 0.9em;
-        color: var(--text-muted);
-    }
-    /* Contenedor scrollable de la lista */
-    #traduccion-contenido-lista {
-        max-height: 400px; /* Más altura */
-        overflow-y: auto;
-        padding-right: 15px; /* Espacio para scrollbar */
-    }
-    #traduccion-contenido-lista p { /* Cada par de palabras en la lista */
-        margin: 3px 0;
-        font-size: 0.95em;
-        color: var(--text-color);
-        word-break: break-word;
-        padding: 6px 0;
-        border-bottom: 1px dashed #ced4da; /* Separador punteado */
-    }
-     #traduccion-contenido-lista p:last-child { border-bottom: none; }
-     /* Estilo opcional para resaltar partes */
-     #traduccion-contenido-lista p strong { color: var(--primary-color); }
-     #traduccion-contenido-lista span.unidad-lista { font-size: 0.85em; color: var(--text-muted); font-style: normal; }
-
-    /* Clase Oculto (se usa la global .hidden del CSS principal) */
-    /* Si necesitas .oculto específicamente, defínelo aquí: */
-    /* .oculto { display: none; } */
-
-
-    /* --- MEDIA QUERIES (Adaptadas y Aisladas) --- */
-
+    /* --- MEDIA QUERIES --- */
     @media (max-width: 768px) {
         .config-slider-container { gap: 15px; }
-        /* Ajustes menores en la fila de palabras si es necesario */
         .fila-palabra { gap: 10px; }
-        .palabra-mostrada { flex-basis: 150px; text-align: left; } /* Ajustar base y alineación */
+        .palabra-mostrada { flex-basis: 150px; text-align: left; }
         .respuesta-usuario { flex-basis: 180px; }
         .resultado { flex-basis: 55px; }
     }
-
     @media (max-width: 600px) {
-        /* Apilar elementos del slider si no lo hacía ya */
         .config-slider-container { flex-direction: column; align-items: stretch; gap: 12px; }
         #traduccion-num-palabras-input { width: 100%; box-sizing: border-box; }
-
-        /* Apilar elementos de la fila de palabras */
-        .fila-palabra {
-            flex-direction: column; align-items: stretch; /* Apilar y estirar */
-            border-bottom: 1px solid #ccc; padding-bottom: 18px; margin-bottom: 18px;
-        }
+        .fila-palabra { flex-direction: column; align-items: stretch; border-bottom: 1px solid #ccc; padding-bottom: 18px; margin-bottom: 18px; }
         .palabra-mostrada { text-align: left; font-size: 1.1em; margin-bottom: 8px; flex-basis: auto; padding-right: 0; }
         .unidad { text-align: left; margin-bottom: 10px; flex-basis: auto; margin-left: 0; margin-right: 0; }
         .respuesta-usuario { width: 100%; box-sizing: border-box; font-size: 1em; margin-bottom: 10px; flex-basis: auto; }
         .resultado { width: 100%; box-sizing: border-box; text-align: center; padding: 8px; align-self: auto; flex-basis: auto; font-size: 0.95em; }
-
         #traduccion-lista-palabras { padding: 15px; }
         #traduccion-contenido-lista p { font-size: 0.9em;}
     }
-
 
 } /* --- FIN DEL WRAPPER #traduccion-game-container --- */
