@@ -1,174 +1,351 @@
-/* --- Estilos Base (Para Escritorio y General) --- */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    line-height: 1.6;
-    margin: 0;
-    padding: 15px;
-    background-color: #f8f9fa;
-    color: #212529;
-    min-height: 100vh;
-    font-size: 16px;
-}
+/* ================================================== */
+/* css/style_traduccion.css (AISLADO y ADAPTADO)      */
+/* Estilos específicos para el Juego de Traducción    */
+/* ================================================== */
 
-h1, h2 { text-align: center; color: #343a40; margin-bottom: 0.8em; margin-top: 0.5em; }
-h1 { font-weight: 300; font-size: 1.8em; }
-h2 { font-size: 1.3em; font-weight: 500; }
+/* IMPORTANTE: TODO el contenido está envuelto en #traduccion-game-container */
+#traduccion-game-container {
 
-/* --- Contenedor Principal de Configuración --- */
-.configuracion-container { max-width: 800px; margin: 15px auto 25px auto; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); display: flex; flex-wrap: wrap; gap: 20px; border: 1px solid #dee2e6; }
-.configuracion-seccion { flex: 1 1 280px; min-width: 240px; }
-.configuracion-seccion > label { display: block; margin-bottom: 10px; color: #495057; font-weight: 600; font-size: 1em; }
-/* Unidades con Botones */
-.unidades-botones-control { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
-.btn-control-unidad { padding: 6px 12px; font-size: 0.8em; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
-.btn-control-unidad:hover { background-color: #5a6268; }
-.botones-container { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 5px; }
-.unidad-btn { padding: 6px 12px; border: 1px solid #ced4da; background-color: #ffffff; color: #495057; border-radius: 20px; cursor: pointer; font-size: 0.9em; transition: background-color 0.2s, border-color 0.2s, color 0.2s; user-select: none; }
-.unidad-btn:hover { background-color: #e9ecef; }
-.unidad-btn.selected { background-color: #0d6efd; color: white; border-color: #0d6efd; font-weight: 500; }
-/* Slider y Número */
-.config-slider-container { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-input[type="range"] { flex-grow: 1; cursor: pointer; height: 8px; background: #dee2e6; border-radius: 5px; appearance: none; -webkit-appearance: none; min-width: 80px; }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: #007bff; border-radius: 50%; cursor: pointer; margin-top: -5px; }
-input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: #007bff; border-radius: 50%; cursor: pointer; border: none; }
-input[type="range"]::-moz-range-track { width: 100%; height: 8px; background: #dee2e6; border-radius: 5px; cursor: pointer; }
-#num-palabras-input { padding: 8px 10px; border: 1px solid #ced4da; border-radius: 0.25rem; font-size: 1em; width: 65px; text-align: center; }
-#num-palabras-input:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
-#num-palabras-valor { font-weight: bold; color: #007bff; min-width: 20px; text-align: right;}
+    /* --- Estilos Base Específicos Juego Traducción (Sin body, h1, h2) --- */
 
-/* --- ESTILOS MODIFICADOS PARA CONTROLES --- */
-/* Estilo Común para ambos contenedores de botones */
-.controles {
-    text-align: center;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px; /* Espacio entre botones dentro de un grupo */
-    max-width: 600px; /* Limitar ancho para centrado efectivo */
-    margin-left: auto;
-    margin-right: auto;
-}
+    /* Estilo para el H2 principal de este juego (si necesita ser diferente) */
+     h2 {
+        font-weight: 400; /* Un poco más ligero */
+        font-size: 1.6rem; /* Tamaño ajustado */
+        border-bottom: none; /* Sin borde inferior aquí */
+        margin-bottom: 1.5rem;
+     }
 
-/* Estilos específicos para el grupo de botones de MODO */
-.controles-modo {
-    margin-top: 25px; /* Espacio después de la configuración */
-    margin-bottom: 10px; /* Menos espacio antes del siguiente grupo */
-}
-
-/* Estilos específicos para el grupo de botones de ACCIÓN */
-.controles-acciones {
-    margin-top: 20px; /* Espacio ANTES de este grupo */
-    margin-bottom: 30px; /* Espacio DESPUÉS de este grupo */
-    padding-top: 20px; /* Espacio interno superior */
-    border-top: 1px solid #e0e0e0; /* Línea separadora */
-    max-width: 700px; /* Puede ser un poco más ancho si se prefiere */
-}
-
-/* Estilo para TODOS los botones dentro de cualquier .controles */
-.controles button {
-    padding: 10px 15px;
-    margin: 0; /* Usar gap del contenedor */
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-    flex: 1 1 auto; /* Crecer/decrecer, base auto */
-    min-width: 140px; /* Ancho mínimo para legibilidad */
-}
-/* Ancho específico para botones de modo (2 botones) */
-.controles-modo button {
-     max-width: 220px;
-}
-/* Ancho específico para botones de acción (3 botones) */
-.controles-acciones button {
-     max-width: 180px;
-}
-
-.controles button:hover { background-color: #0056b3; }
-.controles button:active { transform: scale(0.98); }
-/* --- FIN ESTILOS MODIFICADOS CONTROLES --- */
+     /* Estilo para H3 (Modo Actual, Título Lista) */
+     h3 {
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-top: 25px;
+        margin-bottom: 15px;
+     }
 
 
-/* --- Área de Juego y Lista (Sin cambios relevantes) --- */
-#modo-actual { font-size: 1.1em; font-weight: 500; }
-.estado-info { text-align: center; font-size: 0.85em; color: #6c757d; margin-top: -10px; margin-bottom: 15px; min-height: 1.2em; }
-#area-juego { max-width: 700px; margin: 20px auto; padding: 15px; background-color: #ffffff; border-radius: 0.3rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); min-height: 50px; }
-.fila-palabra { display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e9ecef; gap: 10px; }
-.fila-palabra:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-.palabra-mostrada { flex: 1 1 25%; font-weight: 600; text-align: right; color: #495057; word-break: break-word; }
-.unidad { flex: 0 0 auto; font-size: 0.75em; color: #6c757d; text-align: left; white-space: nowrap; font-style: italic; }
-.respuesta-usuario { flex: 1 1 40%; padding: 8px 10px; border: 1px solid #ced4da; border-radius: 0.25rem; font-size: 0.95em; }
-.respuesta-usuario:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
-.resultado { flex: 0 0 45px; text-align: center; font-weight: bold; padding: 8px 2px; border-radius: 0.25rem; font-size: 0.85em; border: 1px solid transparent; min-height: 1.5em; box-sizing: border-box; }
-.resultado-correcto { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; }
-.resultado-incorrecto { background-color: #f8d7da; color: #842029; border-color: #f5c2c7; }
-#lista-palabras { max-width: 700px; margin: 30px auto; padding: 15px; background-color: #e9ecef; border-radius: 0.3rem; border: 1px solid #ced4da; }
-#lista-palabras h2 { margin-top: 0; margin-bottom: 10px; color: #495057; font-weight: 500; }
-#lista-info { margin-top: -5px; margin-bottom: 15px; font-style: italic; }
-#contenido-lista { max-height: 300px; overflow-y: auto; padding-right: 10px; }
-#contenido-lista p { margin: 4px 0; font-size: 0.9em; color: #343a40; word-break: break-word; }
-.oculto { display: none; }
+    /* --- Sección Configuración (Adaptada) --- */
+    /* Hereda estilos de .configuracion-container y .setup-section del CSS principal */
 
-
-/* --- MEDIA QUERIES PARA RESPONSIVIDAD (Ajustadas para nuevos contenedores) --- */
-
-@media (max-width: 768px) {
-    body { padding: 10px; font-size: 15px; }
-    h1 { font-size: 1.6em; }
-    h2 { font-size: 1.2em; }
-
-    .configuracion-container { padding: 15px; gap: 15px; }
-    .configuracion-seccion { flex-basis: 100%; }
-    .config-slider-container { flex-wrap: wrap; }
-    input[type="range"] { min-width: 60px; }
-    #num-palabras-input { width: 60px; }
-
-    /* Ajustar espaciado y tamaño de botones de control general */
-    .controles { gap: 8px; max-width: 100%; /* Ocupar ancho disponible */}
-    .controles-acciones { margin-top: 15px; padding-top: 15px; }
-    .controles button { font-size: 0.85em; padding: 8px 12px; flex: 1 1 150px; /* Base más pequeña */}
-
-    #area-juego, #lista-palabras { padding: 15px; }
-    .fila-palabra { gap: 8px; align-items: center; }
-    .palabra-mostrada { flex-basis: 30%; text-align: left; }
-    .unidad { font-size: 0.7em; }
-    .respuesta-usuario { flex-basis: 45%; font-size: 0.9em; }
-    .resultado { flex-basis: 40px; font-size: 0.8em; }
-}
-
-@media (max-width: 480px) {
-    body { font-size: 14px; }
-    h1 { font-size: 1.4em; }
-    h2 { font-size: 1.1em; }
-
-    .configuracion-container { padding: 10px; }
-    .configuracion-seccion > label { font-size: 0.95em; }
-    .botones-container { gap: 6px; }
-    .unidad-btn { font-size: 0.8em; padding: 5px 10px; }
-    .config-slider-container { flex-direction: column; align-items: stretch; gap: 10px; }
-    #num-palabras-input { width: 100%; box-sizing: border-box; }
-
-    /* Apilar TODOS los botones de control en pantallas muy pequeñas */
-    .controles { flex-direction: column; gap: 8px; align-items: stretch; /* Ocupar ancho */ }
-    .controles-modo { margin-bottom: 8px; } /* Menos espacio */
-    .controles-acciones { margin-top: 15px; padding-top: 15px; }
-    .controles button {
-        font-size: 0.85em;
-        padding: 9px 10px;
-        flex: 1 1 100%; /* Ocupar todo el ancho */
-        max-width: 100%; /* Sin ancho máximo aquí */
+    /* Estilos específicos para controles de unidades */
+    .unidades-botones-control {
+        margin-bottom: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center; /* Centrar botones de control */
     }
 
-    /* Fila de palabras apilada (sin cambios aquí, ya estaba bien) */
-    .fila-palabra { flex-direction: column; align-items: stretch; border-bottom: 1px solid #ccc; padding-bottom: 15px; margin-bottom: 15px; }
-    .palabra-mostrada { text-align: left; font-size: 1.05em; margin-bottom: 5px; flex-basis: auto; }
-    .unidad { text-align: left; margin-bottom: 8px; flex-basis: auto; }
-    .respuesta-usuario { width: 100%; box-sizing: border-box; font-size: 1em; margin-bottom: 8px; flex-basis: auto; }
-    .resultado { width: 100%; box-sizing: border-box; text-align: center; padding: 5px 8px; align-self: auto; flex-basis: auto; font-size: 0.9em; }
+    /* Botones "Seleccionar Todas" / "Deseleccionar Todas" */
+    /* Usan la clase .action-button del CSS principal */
+    .btn-control-unidad {
+        font-size: 0.85em !important; /* Hacerlos un poco más pequeños */
+        padding: 8px 16px !important; /* Ajustar padding */
+        min-width: 130px !important; /* Ancho mínimo */
+        background-color: var(--secondary-color) !important; /* Color secundario */
+    }
+    .btn-control-unidad:hover:not(:disabled) {
+         background-color: var(--secondary-hover) !important;
+    }
 
-    #lista-palabras { padding: 10px; }
-    #contenido-lista p { font-size: 0.85em;}
-}
+    /* Contenedor para los botones de cada unidad */
+    #traduccion-unidades-botones-container { /* ID prefijado o original */
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 5px;
+        justify-content: center; /* Centrar botones de unidad */
+        margin-bottom: 15px; /* Espacio inferior */
+    }
+
+    /* Botones de Unidad Individual */
+    .unidad-btn {
+        padding: 7px 14px; /* Padding ajustado */
+        border: 1px solid var(--border-color);
+        background-color: var(--lighter-bg); /* Fondo blanco */
+        color: var(--text-color);
+        border-radius: 20px; /* Redondeado */
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.2s ease;
+        user-select: none; /* Evitar selección de texto */
+        box-shadow: var(--box-shadow);
+    }
+    .unidad-btn:hover {
+        background-color: #e9ecef; /* Fondo suave hover */
+        border-color: #adb5bd;
+        transform: translateY(-1px);
+    }
+    /* Estilo botón de unidad seleccionado */
+    .unidad-btn.selected {
+        background-color: var(--primary-color); /* Azul primario */
+        color: white;
+        border-color: var(--primary-color);
+        font-weight: 500;
+        box-shadow: none;
+    }
+
+    /* --- Slider y Número de Palabras --- */
+    /* Hereda estilos de .config-slider-container del CSS principal */
+
+    /* Estilos específicos para los elementos del slider/input si son necesarios */
+    #traduccion-num-palabras-slider { /* ID prefijado o original */
+        flex-grow: 1;
+        cursor: pointer;
+        height: 8px;
+        background: #dee2e6;
+        border-radius: 5px;
+        appearance: none;
+        -webkit-appearance: none;
+        min-width: 120px; /* Ancho mínimo slider */
+        transition: background 0.2s ease;
+    }
+     #traduccion-num-palabras-slider:hover {
+         background: #ced4da;
+     }
+    /* Estilos Thumb (bola del slider) */
+    #traduccion-num-palabras-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none;
+        width: 20px; height: 20px; /* Más grande */
+        background: var(--primary-color);
+        border-radius: 50%; cursor: pointer;
+        border: 3px solid var(--lighter-bg); /* Borde blanco */
+        box-shadow: var(--box-shadow);
+        margin-top: -6px; /* Ajuste vertical */
+        transition: transform 0.1s ease;
+    }
+     #traduccion-num-palabras-slider::-webkit-slider-thumb:active {
+         transform: scale(1.1);
+     }
+    #traduccion-num-palabras-slider::-moz-range-thumb { /* Firefox */
+        width: 18px; height: 18px; background: var(--primary-color);
+        border-radius: 50%; cursor: pointer; border: 2px solid var(--lighter-bg);
+        box-shadow: var(--box-shadow);
+    }
+     #traduccion-num-palabras-slider::-moz-range-thumb:active {
+         transform: scale(1.1);
+     }
+
+    /* Input numérico */
+    #traduccion-num-palabras-input { /* ID prefijado o original */
+        padding: 9px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: 1em;
+        width: 70px; /* Ancho fijo */
+        text-align: center;
+    }
+    #traduccion-num-palabras-input:focus {
+        border-color: var(--primary-color);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    /* Span que muestra el valor */
+    #traduccion-num-palabras-valor { /* ID prefijado o original */
+        font-weight: 600; /* Más peso */
+        color: var(--primary-color);
+        min-width: 25px; /* Espacio mínimo */
+        text-align: right;
+        font-size: 1.1em;
+    }
+
+    /* --- Controles (Modo, Acciones) --- */
+    /* Usan clases como .traduccion-controles, .controles-modo, .controles-acciones, .game-controls */
+    /* Los botones dentro usan .action-button del CSS principal */
+
+    .traduccion-controles {
+        text-align: center; display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 12px; max-width: 750px; margin: 25px auto; /* Ajustar márgenes */
+    }
+    .traduccion-controles.controles-acciones {
+        padding-top: 25px; border-top: 1px solid var(--border-color); margin-bottom: 30px;
+    }
+
+
+    /* --- Área de Juego y Lista --- */
+
+    /* Mensaje de estado (debajo de H3 Modo) */
+    #traduccion-estado-generacion { /* ID prefijado o original */
+        text-align: center;
+        font-size: 0.9em;
+        color: var(--text-muted);
+        margin-top: -10px; /* Pegarlo un poco al H3 */
+        margin-bottom: 25px;
+        min-height: 1.4em; /* Espacio reservado */
+        font-style: italic;
+    }
+
+    /* Contenedor principal del área de juego */
+    #traduccion-area-juego { /* ID prefijado o original */
+        /* Hereda de .game-section si se usa esa clase */
+        margin: 20px auto;
+        padding: 20px 25px; /* Padding ajustado */
+        background-color: var(--lighter-bg); /* Fondo blanco */
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        min-height: 100px; /* Altura mínima */
+        border: 1px solid var(--border-color); /* Borde sutil */
+    }
+
+    /* Mensajes dentro del área de juego (errores, info) */
+    #traduccion-area-juego p.error-message { color: var(--danger-color); font-weight: 500; text-align: center; }
+    #traduccion-area-juego p.info-message { color: var(--info-color); font-weight: 500; text-align: center; }
+
+
+    /* Fila individual de palabra a traducir */
+    .fila-palabra {
+        display: flex;
+        flex-wrap: wrap; /* Permitir que elementos pasen abajo en móvil */
+        align-items: center; /* Alinear verticalmente */
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef; /* Separador suave */
+        gap: 12px 15px; /* Espacio vertical y horizontal */
+    }
+    .fila-palabra:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none; /* Sin borde en la última */
+    }
+
+    /* Palabra mostrada (la que hay que traducir) */
+    .palabra-mostrada {
+        flex: 1 1 200px; /* Crece y base de 200px */
+        font-weight: 600; /* Más peso */
+        text-align: right;
+        color: var(--text-color);
+        word-break: break-word; /* Romper palabras largas */
+        font-size: 1.05rem;
+        padding-right: 10px; /* Espacio antes del input */
+    }
+
+    /* Indicador de unidad (File X) */
+    .unidad {
+        flex: 0 0 auto; /* No crece, no encoge, tamaño automático */
+        font-size: 0.8em;
+        color: var(--text-muted);
+        text-align: left;
+        white-space: nowrap; /* Evitar salto de línea */
+        font-style: italic;
+        margin-left: -5px; /* Acercarlo a la palabra mostrada */
+        margin-right: 10px; /* Espacio antes del input */
+    }
+
+    /* Input de respuesta del usuario */
+    .respuesta-usuario {
+        flex: 2 1 250px; /* Crece más, base 250px */
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .respuesta-usuario:focus {
+        border-color: var(--primary-color);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Div de resultado (SÍ/NO) */
+    .resultado {
+        flex: 0 0 60px; /* Ancho fijo */
+        text-align: center;
+        font-weight: bold;
+        padding: 10px 5px;
+        border-radius: var(--border-radius);
+        font-size: 0.9em;
+        text-transform: uppercase; /* Mayúsculas */
+        border: 1px solid transparent;
+        min-height: 1.8em; /* Altura consistente */
+        box-sizing: border-box;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    /* Estilo específico para SÍ */
+    .resultado-correcto {
+        background-color: #d1e7dd; /* Verde suave */
+        color: #0f5132; /* Verde oscuro texto */
+        border-color: #a3cfbb; /* Borde verde */
+    }
+    /* Estilo específico para NO */
+    .resultado-incorrecto {
+        background-color: #f8d7da; /* Rojo suave */
+        color: #842029; /* Rojo oscuro texto */
+        border-color: #f1aeb5; /* Borde rojo */
+    }
+
+    /* --- Lista de Palabras Oculta --- */
+    #traduccion-lista-palabras { /* ID prefijado o original */
+        margin: 35px auto;
+        padding: 25px; /* Más padding */
+        background-color: #f8f9fa; /* Fondo ligeramente diferente */
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Sombra interior */
+    }
+    #traduccion-lista-palabras h3 { /* Título de la lista */
+         margin-top: 0; margin-bottom: 10px; color: #495057; font-weight: 500; text-align: left;
+         font-size: 1.15rem;
+     }
+    #traduccion-lista-info { /* Info de unidades/número */
+        margin-top: -5px; margin-bottom: 18px; font-style: italic; font-size: 0.9em;
+        color: var(--text-muted);
+    }
+    /* Contenedor scrollable de la lista */
+    #traduccion-contenido-lista {
+        max-height: 400px; /* Más altura */
+        overflow-y: auto;
+        padding-right: 15px; /* Espacio para scrollbar */
+    }
+    #traduccion-contenido-lista p { /* Cada par de palabras en la lista */
+        margin: 3px 0;
+        font-size: 0.95em;
+        color: var(--text-color);
+        word-break: break-word;
+        padding: 6px 0;
+        border-bottom: 1px dashed #ced4da; /* Separador punteado */
+    }
+     #traduccion-contenido-lista p:last-child { border-bottom: none; }
+     /* Estilo opcional para resaltar partes */
+     #traduccion-contenido-lista p strong { color: var(--primary-color); }
+     #traduccion-contenido-lista span.unidad-lista { font-size: 0.85em; color: var(--text-muted); font-style: normal; }
+
+    /* Clase Oculto (se usa la global .hidden del CSS principal) */
+    /* Si necesitas .oculto específicamente, defínelo aquí: */
+    /* .oculto { display: none; } */
+
+
+    /* --- MEDIA QUERIES (Adaptadas y Aisladas) --- */
+
+    @media (max-width: 768px) {
+        .config-slider-container { gap: 15px; }
+        /* Ajustes menores en la fila de palabras si es necesario */
+        .fila-palabra { gap: 10px; }
+        .palabra-mostrada { flex-basis: 150px; text-align: left; } /* Ajustar base y alineación */
+        .respuesta-usuario { flex-basis: 180px; }
+        .resultado { flex-basis: 55px; }
+    }
+
+    @media (max-width: 600px) {
+        /* Apilar elementos del slider si no lo hacía ya */
+        .config-slider-container { flex-direction: column; align-items: stretch; gap: 12px; }
+        #traduccion-num-palabras-input { width: 100%; box-sizing: border-box; }
+
+        /* Apilar elementos de la fila de palabras */
+        .fila-palabra {
+            flex-direction: column; align-items: stretch; /* Apilar y estirar */
+            border-bottom: 1px solid #ccc; padding-bottom: 18px; margin-bottom: 18px;
+        }
+        .palabra-mostrada { text-align: left; font-size: 1.1em; margin-bottom: 8px; flex-basis: auto; padding-right: 0; }
+        .unidad { text-align: left; margin-bottom: 10px; flex-basis: auto; margin-left: 0; margin-right: 0; }
+        .respuesta-usuario { width: 100%; box-sizing: border-box; font-size: 1em; margin-bottom: 10px; flex-basis: auto; }
+        .resultado { width: 100%; box-sizing: border-box; text-align: center; padding: 8px; align-self: auto; flex-basis: auto; font-size: 0.95em; }
+
+        #traduccion-lista-palabras { padding: 15px; }
+        #traduccion-contenido-lista p { font-size: 0.9em;}
+    }
+
+
+} /* --- FIN DEL WRAPPER #traduccion-game-container --- */
