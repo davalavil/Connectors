@@ -1,243 +1,255 @@
-/* css/style.css */
+/* ============================================= */
+/* css/style_verbs.css (AISLADO y ADAPTADO)      */
+/* Estilos específicos para el Juego de Verbos   */
+/* ============================================= */
 
-/* Estilos Generales */
-body {
-    font-family: sans-serif;
-    line-height: 1.6;
-    margin: 20px;
-    background-color: #f4f4f4;
-    font-size: 16px; /* Tamaño base */
-}
+/* IMPORTANTE: TODO el contenido está envuelto en #verbs-game-container */
+#verbs-game-container {
 
-h1, h2 {
-    text-align: center;
-    color: #333;
-}
+    /* --- Contenedores y Feedback Específico Verbos --- */
 
-/* Contenedores de secciones */
-#controles, #acciones, #feedback {
-    margin-bottom: 20px;
-    text-align: center;
-}
+    /* IDs prefijados (si los usaste en HTML) o los originales */
+    /* Usamos los IDs originales aquí asumiendo que no hay conflicto */
+    /* Si usaste prefijos como #verbs-controles, ajústalos aquí */
 
-/* Botones generales */
-#controles button, #acciones button {
-    padding: 10px 15px;
-    margin: 5px;
-    cursor: pointer;
-    background-color: #5cb85c; /* Verde */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1em; /* Relativo al body */
-    transition: background-color 0.2s ease; /* Suavizar hover */
-}
-
-#controles button:hover, #acciones button:hover {
-    background-color: #4cae4c; /* Verde más oscuro */
-}
-
-/* Contenedor del juego (tabla) */
-#juego {
-    margin: 20px auto;
-    max-width: 900px; /* Ancho máximo en pantallas grandes */
-    width: 100%; /* Ocupa el ancho disponible */
-    overflow-x: auto; /* !!! IMPORTANTE: Habilita scroll horizontal para la tabla en pantallas pequeñas !!! */
-    -webkit-overflow-scrolling: touch; /* Scroll más suave en iOS */
-}
-
-/* Tabla de verbos */
-#verb-table {
-    width: 100%; /* Intenta ocupar todo el contenedor #juego */
-    min-width: 700px; /* Un ancho mínimo razonable para evitar que se comprima demasiado antes de hacer scroll */
-    border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#verb-table th, #verb-table td {
-    border: 1px solid #ddd;
-    padding: 10px; /* Espaciado interno */
-    text-align: left;
-    vertical-align: middle; /* Alinear texto e inputs verticalmente */
-    white-space: nowrap; /* Evita que el texto largo (verbos/traducciones) rompa la línea dentro de la celda */
-}
-
-#verb-table th {
-    background-color: #f0f0f0;
-    color: #333;
-    position: sticky; /* Intenta mantener la cabecera visible al hacer scroll vertical */
-    top: 0;
-    z-index: 1;
-}
-
-/* Estilo para las celdas de entrada */
-#verb-table input[type="text"] {
-    width: 95%;
-    min-width: 100px; /* Ancho mínimo para que no sea demasiado pequeño */
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
-    background-color: #fff;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-    font-size: inherit; /* Hereda tamaño de fuente de la celda */
-}
-/* Deshabilitar interacción con inputs revelados */
-#verb-table input[type="text"].revealed {
-    pointer-events: none; /* Evita clics/foco */
-}
-
-
-/* --- ESTILOS DE FEEDBACK VISUAL --- */
-.correct { /* Verde: Correcto (usuario) */
-    border: 2px solid green !important;
-    background-color: #e9ffe9 !important;
-}
-
-.incorrect { /* Rojo: Incorrecto (usuario) */
-    border: 2px solid red !important;
-    background-color: #ffe9e9 !important;
-}
-
-.partial { /* Amarillo: Parcialmente correcto (usuario) */
-    border: 2px solid #e69900 !important; /* Naranja/Dorado */
-    background-color: #fff8e1 !important;
-}
-
-.revealed { /* Gris: Respuesta revelada (no cuenta) */
-    border: 2px solid #a0a0a0 !important; /* Gris */
-    background-color: #f0f0f0 !important; /* Gris claro */
-    color: #555 !important; /* Texto un poco más oscuro/apagado */
-}
-
-/* Placeholder style */
-#verb-table input[type="text"]::placeholder {
-  color: #a0a0a0; /* Color grisáceo para el placeholder */
-  font-style: italic;
-}
-/* Placeholder en input incorrecto */
-#verb-table input[type="text"].incorrect::placeholder {
-  color: #d32f2f; /* Color rojo para el placeholder de respuesta correcta en campo incorrecto */
-  font-style: normal; /* Quitar cursiva si es la respuesta */
-}
-/* Asegurar que el placeholder no se vea en inputs revelados */
-#verb-table input[type="text"].revealed::placeholder {
-    color: transparent !important;
-}
-
-
-/* Feedback general */
-#feedback {
-    margin-top: 20px;
-    font-weight: bold;
-    font-size: 1.1em;
-    min-height: 1.5em; /* Espacio reservado para que no salte la página */
-}
-
-/* Última celda (Tipo + Botón revelar) */
-#verb-table td:last-child {
-    display: flex; /* Permite alinear elementos en la celda */
-    align-items: center; /* Centra verticalmente */
-    justify-content: space-between; /* Espacio entre texto y botón */
-    white-space: normal; /* Permitir que "regular/irregular" se ajuste si es necesario */
-}
-
-/* Botón revelar (ojo) */
-.reveal-button {
-    background: none; /* Sin fondo */
-    border: none; /* Sin borde */
-    padding: 0 5px; /* Pequeño padding horizontal */
-    margin-left: 10px; /* Espacio a la izquierda del botón */
-    cursor: pointer; /* Cursor de mano */
-    font-size: 1.5em; /* Hacer el icono un poco más grande para tocar fácil */
-    color: #555; /* Color del icono */
-    vertical-align: middle; /* Alinear con el texto si flex no se usa */
-    line-height: 1; /* Ajustar altura de línea */
-    flex-shrink: 0; /* Evita que el botón se encoja si no hay espacio */
-}
-
-.reveal-button:hover {
-    color: #000; /* Color al pasar el ratón */
-}
-
-/* Estilo opcional si el botón se deshabilita */
-.reveal-button:disabled {
-    cursor: default;
-    opacity: 0.5;
-    color: #999; /* Color más apagado cuando está deshabilitado */
-}
-
-/* --- !!! MEDIA QUERIES PARA RESPONSIVE DESIGN !!! --- */
-
-/* Estilos para pantallas más pequeñas (tabletas y móviles) - Ancho máximo 768px */
-@media (max-width: 768px) {
-    body {
-        margin: 10px; /* Reducir margen general */
-        font-size: 15px; /* Ajustar tamaño de fuente base si es necesario */
+    #controles, #acciones, #feedback {
+        margin-bottom: 20px;
+        text-align: center;
     }
 
-    h1 {
-        font-size: 1.8em; /* Reducir tamaño de H1 */
-    }
-    h2 {
-        font-size: 1.3em; /* Reducir tamaño de H2 */
-    }
-
-    /* Botones de control y acción */
-    #controles button, #acciones button {
-        padding: 12px 15px; /* Aumentar padding vertical para mejor toque */
-        font-size: 1em; /* Asegurar tamaño legible */
-        /* display: block; /* Descomentar si quieres que ocupen todo el ancho y se apilen */
-        /* width: 80%; */
-        /* margin: 8px auto; */
-    }
-
-    /* Ajustes menores en la tabla (principalmente padding) */
-    #verb-table th, #verb-table td {
-        padding: 8px; /* Reducir un poco el padding */
-    }
-
-    #verb-table input[type="text"] {
-        padding: 10px 8px; /* Asegurar altura táctil en inputs */
-    }
-
-    /* Ajustar tamaño del botón de revelar si es necesario */
-    .reveal-button {
-        font-size: 1.6em; /* Un poco más grande para dedos */
-    }
-
+    /* Estilo base para el área de feedback */
     #feedback {
-        font-size: 1em; /* Ajustar tamaño de fuente del feedback */
-    }
-}
-
-/* Estilos opcionales para pantallas muy pequeñas (móviles) - Ancho máximo 480px */
-@media (max-width: 480px) {
-    body {
-        font-size: 14px; /* Reducir más si es necesario */
-    }
-
-     h1 {
-        font-size: 1.6em;
-    }
-    h2 {
-        font-size: 1.2em;
+        margin-top: 25px; /* Más espacio arriba */
+        font-weight: 500; /* Peso medio */
+        font-size: 1.1em;
+        min-height: 1.8em; /* Un poco más de altura */
+        padding: 12px 15px;
+        border-radius: var(--border-radius);
+        background-color: #e9ecef; /* Fondo suave heredado */
+        color: var(--text-muted); /* Color texto suave */
+        border: 1px solid var(--border-color);
     }
 
-    /* Forzar apilamiento de botones si no se hizo antes */
-    /* #controles button, #acciones button {
-        display: block;
-        width: 90%;
-        margin: 10px auto;
+    /* Estilo para el grupo de botones de modo (si no usan .action-button) */
+    /* Si los botones de modo usan la clase .action-button, heredan el estilo principal */
+    #controles .verb-button-group { /* Clase añadida en HTML para agrupar */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px; /* Espacio entre botones */
+        margin-top: 15px;
+    }
+     /* Estilos específicos si NO usan action-button */
+    /* #controles button {
+        padding: 10px 15px;
+        cursor: pointer;
+        background-color: var(--info-color); /* Ejemplo color info */
+    /*    color: white;
+        border: none;
+        border-radius: 50px; /* Píldora */
+    /*    font-size: 1rem;
+        transition: background-color 0.2s ease;
+    }
+    #controles button:hover:not(:disabled) {
+        background-color: var(--info-hover);
+        transform: translateY(-2px);
     } */
 
-    /* Reducir más el padding de la tabla si interfiere con el scroll */
-    #verb-table th, #verb-table td {
-        padding: 6px;
+
+    /* --- Estilos Tabla de Verbos --- */
+
+    /* Contenedor del juego (tabla) */
+    #juego {
+        margin: 25px 0; /* Espacio vertical */
+        /* Hereda max-width de .game-mode-container */
+        width: 100%;
+        overflow-x: auto; /* Mantenido para scroll horizontal de tabla */
+        -webkit-overflow-scrolling: touch; /* Scroll suave iOS */
+        border: 1px solid var(--border-color); /* Borde opcional para el contenedor */
+        border-radius: var(--border-radius);
     }
 
-     #verb-table input[type="text"] {
-        min-width: 80px; /* Reducir ancho mínimo del input */
+    /* Tabla de verbos */
+    #verb-table {
+        width: 100%;
+        min-width: 680px; /* Ancho mínimo antes de scroll */
+        border-collapse: collapse; /* Bordes juntos */
+        background-color: var(--lighter-bg); /* Fondo blanco */
+        /* La sombra la puede dar el .game-mode-container o #juego */
     }
-}
+
+    #verb-table th,
+    #verb-table td {
+        border: 1px solid var(--border-color); /* Borde definido en variables */
+        padding: 12px 14px; /* Padding ajustado */
+        text-align: left;
+        vertical-align: middle; /* Alinear verticalmente */
+        white-space: nowrap; /* Evitar saltos de línea por defecto */
+        font-size: 0.95rem; /* Tamaño fuente celdas */
+    }
+
+    #verb-table th {
+        background-color: #e9ecef; /* Fondo cabecera suave */
+        color: var(--text-color);
+        font-weight: 600; /* Cabecera más marcada */
+        position: sticky; /* Cabecera fija al hacer scroll vertical */
+        top: 0;
+        z-index: 1; /* Asegurar que esté por encima del contenido */
+    }
+
+    /* --- Estilos Inputs y Feedback Visual --- */
+
+    #verb-table input[type="text"] {
+        width: 98%; /* Casi todo el ancho de la celda */
+        min-width: 110px; /* Ancho mínimo input */
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-sizing: border-box;
+        background-color: #fff;
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.2s ease;
+        font-size: inherit; /* Heredar tamaño fuente de la celda */
+    }
+
+    /* Estilo Focus (usando variables globales) */
+    #verb-table input[type="text"]:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        outline: none;
+    }
+
+    /* Inputs deshabilitados (cuando se comprueba o revela) */
+    #verb-table input[type="text"]:disabled {
+        background-color: #e9ecef; /* Fondo grisáceo */
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    /* Inputs revelados (estado específico) */
+    #verb-table input[type="text"].revealed {
+        pointer-events: none; /* No interactuable */
+        border-color: var(--secondary-color) !important; /* Borde gris */
+        background-color: #f0f0f0 !important; /* Fondo gris claro */
+        color: #555 !important; /* Texto un poco más oscuro/apagado */
+        font-style: italic; /* Para diferenciar más */
+    }
+    #verb-table input[type="text"].revealed:disabled {
+        opacity: 1; /* Quitar opacidad de disabled si es revealed */
+    }
+
+
+    /* --- Clases de Feedback Visual (Aisladas) --- */
+    /* Mantener !important si es necesario para sobreescribir estilos base de input */
+
+    #verb-table .correct { /* Verde */
+        border: 2px solid var(--success-color) !important;
+        background-color: #d1e7dd !important;
+    }
+
+    #verb-table .incorrect { /* Rojo */
+        border: 2px solid var(--danger-color) !important;
+        background-color: #f8d7da !important;
+    }
+
+    #verb-table .partial { /* Amarillo/Naranja */
+        border: 2px solid var(--warning-color) !important;
+        background-color: #fff3cd !important;
+    }
+
+    /* Placeholder styles */
+    #verb-table input[type="text"]::placeholder {
+      color: #a0a0a0;
+      font-style: italic;
+      opacity: 0.8;
+    }
+    #verb-table input[type="text"].incorrect::placeholder {
+      color: var(--danger-color); /* Rojo */
+      font-style: normal;
+      font-weight: 500; /* Hacerlo un poco más visible */
+      opacity: 1;
+    }
+    /* Asegurar que el placeholder no se vea en inputs revelados */
+    #verb-table input[type="text"].revealed::placeholder {
+        color: transparent !important;
+    }
+
+
+    /* --- Celda Tipo y Botón Revelar --- */
+
+    #verb-table td:last-child {
+        display: flex; /* Flex para alinear */
+        align-items: center;
+        justify-content: space-between; /* Espacio entre texto y botón */
+        white-space: normal; /* Permitir que 'regular'/'irregular' salte línea */
+        gap: 10px; /* Espacio */
+    }
+
+    /* Botón revelar (ojo) */
+    .reveal-button {
+        background: none;
+        border: none;
+        padding: 0 4px; /* Padding ajustado */
+        margin-left: 5px; /* Pequeño margen izquierdo */
+        cursor: pointer;
+        font-size: 1.7em; /* Icono más grande */
+        color: var(--secondary-color); /* Color gris */
+        vertical-align: middle;
+        line-height: 1; /* Ajustar altura */
+        flex-shrink: 0; /* No encoger */
+        transition: color 0.2s ease, transform 0.1s ease;
+    }
+
+    .reveal-button:hover:not(:disabled) {
+        color: var(--primary-color); /* Azul al pasar el ratón */
+        transform: scale(1.1); /* Ligeramente más grande */
+    }
+
+    /* Estilo botón revelar deshabilitado */
+    .reveal-button:disabled {
+        cursor: default;
+        opacity: 0.5;
+        color: #999; /* Color apagado */
+        transform: none;
+    }
+
+
+    /* --- MEDIA QUERIES (Aisladas) --- */
+
+    @media (max-width: 768px) {
+        #verb-table th, #verb-table td {
+            padding: 10px; /* Reducir padding */
+            white-space: normal; /* Permitir saltos en tablet */
+        }
+        #verb-table input[type="text"] {
+            padding: 9px 8px;
+        }
+        .reveal-button {
+            font-size: 1.8em; /* Un poco más grande para tocar */
+        }
+        #feedback {
+            font-size: 1.05em;
+        }
+    }
+
+    @media (max-width: 600px) {
+        #verb-table th, #verb-table td {
+            padding: 8px 6px; /* Aún menos padding */
+        }
+         #verb-table input[type="text"] {
+            min-width: 90px; /* Reducir ancho mínimo */
+            font-size: 0.9rem;
+        }
+        /* Apilar texto y botón en la última celda */
+        #verb-table td:last-child {
+            flex-direction: column;
+            align-items: flex-start; /* Alinear a la izquierda */
+            gap: 5px;
+        }
+        .reveal-button {
+             margin-left: 0; /* Quitar margen si está apilado */
+             align-self: flex-end; /* Mover botón a la derecha */
+             font-size: 1.9em;
+         }
+    }
+
+} /* --- FIN DEL WRAPPER #verbs-game-container --- */
