@@ -1,637 +1,238 @@
-/* =================================================== */
-/* css/style.css (PRINCIPAL y Juegos Originales)       */
-/* Estilos base, menú y juegos de Conectores/Patrones  */
-/* =================================================== */
+/* ============================================================= */
+/* css/style.css (PRINCIPAL v2 - RESPONSIVIDAD MEJORADA)         */
+/* Estilos base, menú, juegos originales y Media Queries Refinadas */
+/* ============================================================= */
 
-/* --- Variables CSS Globales --- */
+/* --- Variables CSS Globales (Sin cambios) --- */
 :root {
-    --primary-color: #0d6efd; /* Azul Bootstrap */
-    --primary-hover: #0b5ed7;
-    --secondary-color: #6c757d; /* Gris secundario */
-    --secondary-hover: #5c636a;
-    --success-color: #198754; /* Verde Bootstrap */
-    --success-hover: #157347;
-    --danger-color: #dc3545; /* Rojo Bootstrap */
-    --danger-hover: #bb2d3b;
-    --warning-color: #ffc107; /* Amarillo Bootstrap */
-    --warning-hover: #ffca2c;
-    --info-color: #0dcaf0; /* Cyan Bootstrap */
-    --info-hover: #31d2f2;
-    --light-bg: #f8f9fa; /* Fondo claro */
-    --lighter-bg: #ffffff; /* Blanco */
-    --text-color: #212529; /* Negro suave */
-    --text-muted: #6c757d; /* Gris texto */
-    --border-color: #dee2e6; /* Color borde sutil */
-    --border-radius: 0.375rem; /* 6px */
+    --primary-color: #0d6efd; --primary-hover: #0b5ed7;
+    --secondary-color: #6c757d; --secondary-hover: #5c636a;
+    --success-color: #198754; --success-hover: #157347;
+    --danger-color: #dc3545; --danger-hover: #bb2d3b;
+    --warning-color: #ffc107; --warning-hover: #ffca2c;
+    --info-color: #0dcaf0; --info-hover: #31d2f2;
+    --light-bg: #f8f9fa; --lighter-bg: #ffffff;
+    --text-color: #212529; --text-muted: #6c757d;
+    --border-color: #dee2e6; --border-radius: 0.375rem;
     --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    --box-shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+    --box-shadow-lg: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
 }
 
-/* --- Estilos Base --- */
+/* --- Estilos Base (Sin cambios) --- */
 body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* Fuentes sistema modernas */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra el contenido principal horizontalmente */
-    min-height: 100vh;
-    background-color: var(--light-bg);
-    color: var(--text-color);
-    margin: 0;
-    padding: 30px 20px; /* Padding general */
-    box-sizing: border-box;
-    line-height: 1.6;
-    font-size: 16px; /* Tamaño base */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; background-color: var(--light-bg); color: var(--text-color);
+    margin: 0; padding: 30px 20px; box-sizing: border-box; line-height: 1.6; font-size: 16px;
 }
 
-/* --- Encabezados --- */
-h1, h2, h3 { /* Añadido h3 a estilos base */
-    color: var(--text-color);
-    text-align: center;
-    margin-top: 1rem; /* Espacio superior */
-    margin-bottom: 1.5rem; /* Espacio inferior */
-}
+/* --- Encabezados (Sin cambios) --- */
+h1, h2, h3 { color: var(--text-color); text-align: center; margin-top: 1rem; margin-bottom: 1.5rem; }
+h1#main-title { font-size: 2.6rem; font-weight: 300; color: var(--primary-color); margin-bottom: 2.5rem; }
+h2 { font-size: 1.7rem; font-weight: 500; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 1.8rem; }
+h3 { font-size: 1.3rem; font-weight: 500; color: var(--text-muted); margin-bottom: 1rem; }
 
-/* Título Principal de la Aplicación */
-h1#main-title {
-    font-size: 2.6rem; /* Tamaño ajustado */
-    font-weight: 300; /* Ligero */
-    color: var(--primary-color);
-    margin-bottom: 2.5rem; /* Más espacio debajo */
-}
+/* --- Sección Selección de Juego (Sin cambios) --- */
+#game-selection { display: flex; gap: 18px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; max-width: 1100px; width: 100%; }
+.selection-button { padding: 0.85rem 1.7rem; font-size: 1.05rem; font-weight: 500; cursor: pointer; background-color: var(--primary-color); color: white; border: none; border-radius: 50px; transition: all 0.2s ease-in-out; box-shadow: var(--box-shadow); text-align: center; flex: 1 1 180px; max-width: 280px; }
+.selection-button:hover { background-color: var(--primary-hover); transform: translateY(-3px) scale(1.02); box-shadow: var(--box-shadow-lg); }
 
-/* Títulos de Sección/Juego */
-h2 {
-    font-size: 1.7rem; /* Tamaño ajustado */
-    font-weight: 500; /* Semibold */
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.8rem;
-    margin-bottom: 1.8rem;
-}
-/* Subtítulos dentro de juegos */
-h3 {
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-}
+/* --- Contenedores y Secciones Comunes de Juego (Sin cambios) --- */
+.game-mode-container { background-color: var(--lighter-bg); padding: 30px 35px; border-radius: 0.75rem; box-shadow: var(--box-shadow-lg); width: 100%; max-width: 950px; box-sizing: border-box; margin-bottom: 30px; }
+.setup-section, .game-section { display: flex; flex-direction: column; gap: 20px; }
+.setup-section h2 { margin-top: 0; margin-bottom: 20px; }
+.setup-section label { font-weight: 500; margin-bottom: 6px; display: block; color: var(--text-muted); }
+.setup-section select { padding: 11px 14px; border-radius: var(--border-radius); border: 1px solid var(--border-color); width: 100%; box-sizing: border-box; max-width: 350px; margin-bottom: 15px; background-color: #fff; font-size: 1rem; }
+.setup-section select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
 
-/* --- Sección Selección de Juego --- */
-#game-selection {
-    display: flex;
-    gap: 18px; /* Espacio entre botones */
-    margin-bottom: 40px;
-    flex-wrap: wrap; /* Permitir que botones bajen */
-    justify-content: center; /* Centrar botones */
-    max-width: 1100px; /* Ancho máximo para botones */
-    width: 100%;
-}
+/* --- Cabeceras de Información de Juego (Comunes - Sin cambios) --- */
+#game-info, #fill-blanks-info, #verb-pattern-info { display: flex; justify-content: space-around; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); font-size: 1rem; flex-wrap: wrap; gap: 15px; }
+#score-board, #timer-board, #fill-blanks-score-board, #fill-blanks-timer-board, #verb-pattern-score-board, #verb-pattern-timer-board { background-color: #e9ecef; padding: 9px 18px; border-radius: 50px; color: var(--text-muted); font-weight: 500; display: inline-block; white-space: nowrap; font-size: 0.95rem; }
+#score-board span, #timer-board span, #fill-blanks-score-board span, #fill-blanks-timer-board span, #verb-pattern-score-board span, #verb-pattern-timer-board span { font-weight: 600; color: var(--text-color); margin: 0 4px; }
 
-.selection-button {
-    padding: 0.85rem 1.7rem; /* Padding ajustado */
-    font-size: 1.05rem; /* Tamaño fuente ajustado */
-    font-weight: 500;
-    cursor: pointer;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50px; /* Píldora */
-    transition: all 0.2s ease-in-out;
-    box-shadow: var(--box-shadow);
-    text-align: center;
-    flex: 1 1 180px; /* Crecer/encoger, base 180px */
-    max-width: 280px; /* Ancho máximo por botón */
-}
-
-.selection-button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-3px) scale(1.02); /* Efecto hover sutil */
-    box-shadow: var(--box-shadow-lg);
-}
-
-/* --- Contenedores y Secciones Comunes de Juego --- */
-.game-mode-container {
-    background-color: var(--lighter-bg); /* Fondo blanco */
-    padding: 30px 35px; /* Padding interno */
-    border-radius: 0.75rem; /* Bordes redondeados (12px) */
-    box-shadow: var(--box-shadow-lg); /* Sombra pronunciada */
-    width: 100%; /* Ocupar ancho disponible */
-    max-width: 950px; /* Ancho máximo contenedor */
-    box-sizing: border-box;
-    margin-bottom: 30px; /* Espacio inferior */
-}
-
-/* Secciones Setup y Game */
-.setup-section, .game-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Espacio entre elementos internos */
-}
-
-.setup-section h2 { /* Título dentro del setup */
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-/* Labels y Selects en Setup */
-.setup-section label {
-    font-weight: 500;
-    margin-bottom: 6px; /* Menos espacio bajo label */
-    display: block;
-    color: var(--text-muted);
-}
-.setup-section select {
-    padding: 11px 14px; /* Padding ajustado */
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    width: 100%;
-    box-sizing: border-box;
-    max-width: 350px; /* Limitar ancho select */
-    margin-bottom: 15px;
-    background-color: #fff;
-    font-size: 1rem;
-}
-.setup-section select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Outline Bootstrap */
-    outline: none;
-}
-
-/* --- Cabeceras de Información de Juego (Comunes) --- */
-#game-info, /* Matching */
-#fill-blanks-info, /* Fill Blanks */
-#verb-pattern-info { /* Verb Patterns */
-    display: flex;
-    justify-content: space-around; /* Distribuir espacio */
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1rem;
-    flex-wrap: wrap; /* Permitir wrap */
-    gap: 15px; /* Espacio entre elementos */
-}
-/* Estilo para los recuadros de score/timer */
-#score-board, #timer-board,
-#fill-blanks-score-board, #fill-blanks-timer-board,
-#verb-pattern-score-board, #verb-pattern-timer-board {
-    background-color: #e9ecef; /* Fondo suave */
-    padding: 9px 18px; /* Padding ajustado */
-    border-radius: 50px; /* Píldora */
-    color: var(--text-muted);
-    font-weight: 500;
-    display: inline-block;
-    white-space: nowrap; /* Evitar saltos de línea internos */
-    font-size: 0.95rem; /* Ligeramente más pequeño */
-}
-/* Estilo para los números dentro de los recuadros */
-#fill-blanks-score-board span,
-#verb-pattern-score-board span,
-#score-board span, #timer-board span, /* Aplicar a todos */
-#fill-blanks-timer-board span, #verb-pattern-timer-board span {
-    font-weight: 600;
-    color: var(--text-color); /* Color texto principal */
-    margin: 0 4px; /* Pequeño margen */
-}
-
-
-/* --- Controles y Botones Comunes (Acción, Volver) --- */
-/* Contenedor de controles al final de cada juego */
-#game-controls, /* Matching */
-#fill-blanks-controls, /* Fill Blanks */
-#verb-pattern-controls, /* Verb Patterns */
-#acciones, /* Verbs (si usa este ID) */
-.traduccion-controles.controles-acciones /* Traduccion */
-{
-    margin-top: 30px;
-    text-align: center;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px; /* Espacio entre botones */
-}
-
-/* Estilos base para botones de acción y navegación */
-.action-button, /* Clase genérica para botones de acción */
-#start-matching-btn, #start-fill-blanks-btn, #start-verb-pattern-btn,
-#give-up-btn, #check-answers-btn, #restart-matching-btn, #restart-fill-blanks-btn,
-#play-again-matching-btn, .back-to-selection, #verb-pattern-quit-btn,
-/* Añadir IDs de botones de juegos importados si no usan action-button */
-#verbs-btn-check, #traduccion-btn-copiar, #traduccion-btn-borrar, #traduccion-btn-mostrar-lista
-{
-    padding: 11px 25px; /* Padding base */
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    border-radius: 50px; /* Píldora */
-    transition: all 0.2s ease;
-    color: white; /* Texto blanco por defecto */
-    box-shadow: var(--box-shadow);
-    min-width: 150px; /* Ancho mínimo */
-    text-align: center;
-}
-
-/* Efecto Hover para botones de acción */
-.action-button:hover:not(:disabled),
-#start-matching-btn:hover:not(:disabled), #start-fill-blanks-btn:hover:not(:disabled), #start-verb-pattern-btn:hover:not(:disabled),
-#give-up-btn:hover:not(:disabled), #check-answers-btn:hover:not(:disabled), #restart-matching-btn:hover:not(:disabled), #restart-fill-blanks-btn:hover:not(:disabled),
-#play-again-matching-btn:hover:not(:disabled), .back-to-selection:hover:not(:disabled), #verb-pattern-quit-btn:hover:not(:disabled),
-#verbs-btn-check:hover:not(:disabled), #traduccion-btn-copiar:hover:not(:disabled), #traduccion-btn-borrar:hover:not(:disabled), #traduccion-btn-mostrar-lista:hover:not(:disabled)
-{
-    transform: translateY(-2px); /* Subir un poco */
-    box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.15); /* Sombra hover */
-}
-
-/* Estilo botones deshabilitados */
-.action-button:disabled, button:disabled {
-     opacity: 0.65;
-     cursor: not-allowed;
-     box-shadow: none;
-     transform: none;
-}
-
-/* --- Colores Específicos para Botones Comunes --- */
-
-/* Botones "Empezar" (Verde) */
+/* --- Controles y Botones Comunes (Acción, Volver - Sin cambios) --- */
+#game-controls, #fill-blanks-controls, #verb-pattern-controls, #acciones, .traduccion-controles.controles-acciones { margin-top: 30px; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+.action-button, button { padding: 11px 25px; font-size: 1rem; font-weight: 500; cursor: pointer; border: none; border-radius: 50px; transition: all 0.2s ease; color: white; box-shadow: var(--box-shadow); min-width: 150px; text-align: center; }
+.action-button:hover:not(:disabled), button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.15); }
+.action-button:disabled, button:disabled { opacity: 0.65; cursor: not-allowed; box-shadow: none; transform: none;}
 #start-matching-btn, #start-fill-blanks-btn, #start-verb-pattern-btn { background-color: var(--success-color); }
 #start-matching-btn:hover:not(:disabled), #start-fill-blanks-btn:hover:not(:disabled), #start-verb-pattern-btn:hover:not(:disabled) { background-color: var(--success-hover); }
-
-/* Botones "Rendirse", "Borrar" (Rojo/Peligro) */
 #give-up-btn, #traduccion-btn-borrar { background-color: var(--danger-color); }
 #give-up-btn:hover:not(:disabled), #traduccion-btn-borrar:hover:not(:disabled) { background-color: var(--danger-hover); }
-
-/* Botones "Comprobar", "Generar" (Amarillo/Advertencia) */
-#check-answers-btn, /* Fill Blanks */
-#verbs-btn-check, /* Verbs */
-#traduccion-btn-copiar /* Traduccion (Generar) */
-{
-    background-color: var(--warning-color);
-    color: #333; /* Texto oscuro para amarillo */
-}
-#check-answers-btn:hover:not(:disabled),
-#verbs-btn-check:hover:not(:disabled),
-#traduccion-btn-copiar:hover:not(:disabled)
-{ background-color: var(--warning-hover); }
-
-/* Botones "Reiniciar", "Jugar de Nuevo", "Mostrar Lista" (Cyan/Info) */
-#restart-matching-btn, #restart-fill-blanks-btn, #play-again-matching-btn,
-#traduccion-btn-mostrar-lista
-{ background-color: var(--info-color); color: #333; /* Texto oscuro para cyan claro */ }
-#restart-matching-btn:hover:not(:disabled), #restart-fill-blanks-btn:hover:not(:disabled), #play-again-matching-btn:hover:not(:disabled),
-#traduccion-btn-mostrar-lista:hover:not(:disabled)
-{ background-color: var(--info-hover); }
-
-/* Botones "Volver", "Salir" (Gris/Secundario) */
+#check-answers-btn, #verbs-btn-check, #traduccion-btn-copiar { background-color: var(--warning-color); color: #333; }
+#check-answers-btn:hover:not(:disabled), #verbs-btn-check:hover:not(:disabled), #traduccion-btn-copiar:hover:not(:disabled) { background-color: var(--warning-hover); }
+#restart-matching-btn, #restart-fill-blanks-btn, #play-again-matching-btn, #traduccion-btn-mostrar-lista { background-color: var(--info-color); color: #333; }
+#restart-matching-btn:hover:not(:disabled), #restart-fill-blanks-btn:hover:not(:disabled), #play-again-matching-btn:hover:not(:disabled), #traduccion-btn-mostrar-lista:hover:not(:disabled) { background-color: var(--info-hover); }
 .back-to-selection, #verb-pattern-quit-btn { background-color: var(--secondary-color); }
 .back-to-selection:hover:not(:disabled), #verb-pattern-quit-btn:hover:not(:disabled) { background-color: var(--secondary-hover); }
 
-/* Botones modo de juegos importados (si no usan action-button) */
-/* Ejemplo: */
-/* #verbs-game-container #controles button { background-color: var(--info-color); } */
-/* #traduccion-game-container .traduccion-controles button { background-color: var(--primary-color); } */
-
-
-/* ================================================= */
-/* === ESTILOS ESPECÍFICOS JUEGOS ORIGINALES ======= */
-/* ================================================= */
-
-/* --- Juego de Emparejar (Matching Game) --- */
-#matching-container #word-area { /* Asegurar que se aplica dentro de su contenedor */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    align-content: flex-start; /* Alinear items arriba */
-    padding: 25px; /* Padding interno */
-    min-height: 450px; /* Altura mínima */
-    border: 2px dashed var(--border-color); /* Borde punteado */
-    border-radius: var(--border-radius);
-    background-color: var(--light-bg); /* Fondo contenedor */
-    position: relative; /* Para z-index de pills */
-}
-#matching-container .word-pill {
-    padding: 10px 22px;
-    background-color: #cfe2ff; /* Azul claro Bootstrap */
-    border: 1px solid #b6d4fe;
-    border-radius: 50px; /* Píldora */
-    cursor: grab;
-    user-select: none;
-    transition: all 0.2s ease-in-out;
-    box-shadow: var(--box-shadow);
-    text-align: center;
-    font-size: 1rem;
-    color: #052c65; /* Texto azul oscuro */
-    font-weight: 500;
-}
-/* Estilos al arrastrar */
-#matching-container .word-pill:active,
-#matching-container .word-pill.sortable-chosen {
-    cursor: grabbing !important;
-    transform: scale(1.06);
-    box-shadow: var(--box-shadow-lg);
-    z-index: 100; /* Poner encima */
-}
-/* Píldora en Español */
-#matching-container .word-pill.lang-es {
-    background-color: #fff3cd; /* Amarillo Bootstrap */
-    border-color: #ffeeba;
-    color: #664d03; /* Texto amarillo oscuro */
-}
-/* Placeholder fantasma al arrastrar */
-#matching-container .word-pill.sortable-ghost {
-     opacity: 0.4;
-     background-color: #e2e3e5;
-     border-style: dashed;
-}
-/* Animación correcta */
-#matching-container .word-pill.correct-match {
-    transition: all 0.5s ease-out !important;
-    background-color: var(--success-color) !important; /* Verde */
-    border-color: var(--success-hover) !important;
-    color: white !important;
-    opacity: 0 !important; /* Desaparecer */
-    transform: scale(0.8) !important; /* Encoger */
-    cursor: default !important;
-    pointer-events: none; /* No interactuable */
-}
-/* Animación incorrecta */
-#matching-container .word-pill.incorrect-match {
-    background-color: var(--danger-color) !important; /* Rojo */
-    border-color: var(--danger-hover) !important;
-    color: white !important;
-    animation: shake 0.3s ease-in-out; /* Animación shake */
-}
-
-/* --- Overlay de Resultados (Matching) --- */
-/* Estilo contenedor overlay */
-#results-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(33, 37, 41, 0.75); /* Fondo oscuro semitransparente */
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1050; /* Muy alto para estar encima de todo */
-    opacity: 0; visibility: hidden; /* Oculto por defecto */
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Transición fade */
-}
-/* Estilo cuando overlay es visible (quitando .hidden) */
-#results-overlay:not(.hidden) {
-    opacity: 1; visibility: visible;
-    transition: opacity 0.3s ease, visibility 0s linear 0s;
-}
-/* Contenido del overlay */
-#results-content {
-    background-color: white; padding: 30px 35px; /* Padding interno */
-    border-radius: var(--border-radius); text-align: center;
-    max-width: 90%; width: 550px; /* Ancho máximo */
-    box-shadow: var(--box-shadow-lg);
-    transform: scale(0.95); /* Empezar ligeramente pequeño */
-    transition: transform 0.3s ease 0.1s; /* Transición scale con retraso */
-}
-#results-overlay:not(.hidden) #results-content {
-     transform: scale(1); /* Escalar a tamaño normal al mostrar */
-}
-/* Título del overlay */
-#results-content h2 { margin-top: 0; margin-bottom: 20px; color: var(--primary-color); font-weight: 500; font-size: 1.8rem; border-bottom: none; /* Sin línea */ }
-/* Lista de parejas correctas */
+/* --- ESTILOS ESPECÍFICOS JUEGOS ORIGINALES (Sin cambios funcionales) --- */
+/* Matching */
+#matching-container #word-area { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-content: flex-start; padding: 25px; min-height: 450px; border: 2px dashed var(--border-color); border-radius: var(--border-radius); background-color: var(--light-bg); position: relative; }
+#matching-container .word-pill { padding: 10px 22px; background-color: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 50px; cursor: grab; user-select: none; transition: all 0.2s ease-in-out; box-shadow: var(--box-shadow); text-align: center; font-size: 1rem; color: #052c65; font-weight: 500; }
+#matching-container .word-pill:active, #matching-container .word-pill.sortable-chosen { cursor: grabbing !important; transform: scale(1.06); box-shadow: var(--box-shadow-lg); z-index: 100; }
+#matching-container .word-pill.lang-es { background-color: #fff3cd; border-color: #ffeeba; color: #664d03; }
+#matching-container .word-pill.sortable-ghost { opacity: 0.4; background-color: #e2e3e5; border-style: dashed; }
+#matching-container .word-pill.correct-match { transition: all 0.5s ease-out !important; background-color: var(--success-color) !important; border-color: var(--success-hover) !important; color: white !important; opacity: 0 !important; transform: scale(0.8) !important; cursor: default !important; pointer-events: none; }
+#matching-container .word-pill.incorrect-match { background-color: var(--danger-color) !important; border-color: var(--danger-hover) !important; color: white !important; animation: shake 0.3s ease-in-out; }
+/* Overlay Matching */
+#results-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(33, 37, 41, 0.75); display: flex; justify-content: center; align-items: center; z-index: 1050; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+#results-overlay:not(.hidden) { opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0s linear 0s; }
+#results-content { background-color: white; padding: 30px 35px; border-radius: var(--border-radius); text-align: center; max-width: 90%; width: 550px; box-shadow: var(--box-shadow-lg); transform: scale(0.95); transition: transform 0.3s ease 0.1s; }
+#results-overlay:not(.hidden) #results-content { transform: scale(1); }
+#results-content h2 { margin-top: 0; margin-bottom: 20px; color: var(--primary-color); font-weight: 500; font-size: 1.8rem; border-bottom: none; }
 #correct-pairs-list { margin-top: 15px; margin-bottom: 25px; text-align: left; max-height: 350px; overflow-y: auto; padding: 15px 20px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: var(--light-bg); }
 #correct-pairs-list div { padding: 8px 0; border-bottom: 1px dashed #e0e0e0; font-size: 1rem; }
 #correct-pairs-list div:last-child { border-bottom: none; }
-/* Grupo de botones en overlay */
-#results-content .button-group {
-    display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap;
-}
-
-
-/* --- Juego de Rellenar Huecos (Fill Blanks) --- */
-#fill-blanks-container #fill-blanks-area { /* Aplicar dentro de su contenedor */
-     width: 100%;
-}
-#fill-blanks-container #fill-blanks-area > p { /* Párrafo de instrucción */
-    text-align: center; margin-bottom: 20px; font-style: italic; color: var(--text-muted);
-}
-/* Contenedor de tabla scrollable */
-#fill-blanks-container .table-container {
-    max-height: 550px; /* Altura máxima scroll */
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    background-color: var(--lighter-bg); /* Fondo tabla */
-}
-#fill-blanks-container #fill-blanks-table {
-     width: 100%; border-collapse: collapse;
-}
-/* Celdas y Cabeceras */
-#fill-blanks-container #fill-blanks-table th,
-#fill-blanks-container #fill-blanks-table td {
-    border-bottom: 1px solid var(--border-color); /* Solo borde inferior */
-    padding: 12px 15px; /* Padding celdas */
-    text-align: left; vertical-align: middle;
-    font-size: 0.95rem;
-}
+#results-content .button-group { display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+/* Fill Blanks */
+#fill-blanks-container #fill-blanks-area { width: 100%; }
+#fill-blanks-container #fill-blanks-area > p { text-align: center; margin-bottom: 20px; font-style: italic; color: var(--text-muted); }
+#fill-blanks-container .table-container { max-height: 550px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); background-color: var(--lighter-bg); }
+#fill-blanks-container #fill-blanks-table { width: 100%; border-collapse: collapse; }
+#fill-blanks-container #fill-blanks-table th, #fill-blanks-container #fill-blanks-table td { border-bottom: 1px solid var(--border-color); padding: 12px 15px; text-align: left; vertical-align: middle; font-size: 0.95rem; }
 #fill-blanks-container #fill-blanks-table tr:last-child td { border-bottom: none; }
-#fill-blanks-container #fill-blanks-table tr:nth-child(even) { background-color: var(--light-bg); } /* Filas alternas */
-#fill-blanks-container #fill-blanks-table thead th {
-    background-color: #e9ecef; font-weight: 600; position: sticky; top: 0; z-index: 10;
-    border-bottom: 2px solid #adb5bd; /* Borde inferior más grueso cabecera */
-}
-/* Anchos de columna */
-#fill-blanks-container #fill-blanks-table th:nth-child(1),
-#fill-blanks-container #fill-blanks-table td:nth-child(1) { font-weight: 500; width: 38%; } /* Columna Original */
-#fill-blanks-container #fill-blanks-table th:nth-child(2),
-#fill-blanks-container #fill-blanks-table td:nth-child(2) { width: 42%; } /* Columna Input */
-#fill-blanks-container #fill-blanks-table th:nth-child(3),
-#fill-blanks-container #fill-blanks-table td:nth-child(3) { text-align: center; font-weight: 600; width: 20%; } /* Columna Resultado */
+#fill-blanks-container #fill-blanks-table tr:nth-child(even) { background-color: var(--light-bg); }
+#fill-blanks-container #fill-blanks-table thead th { background-color: #e9ecef; font-weight: 600; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #adb5bd; }
+#fill-blanks-container #fill-blanks-table th:nth-child(1), #fill-blanks-container #fill-blanks-table td:nth-child(1) { font-weight: 500; width: 38%; }
+#fill-blanks-container #fill-blanks-table th:nth-child(2), #fill-blanks-container #fill-blanks-table td:nth-child(2) { width: 42%; }
+#fill-blanks-container #fill-blanks-table th:nth-child(3), #fill-blanks-container #fill-blanks-table td:nth-child(3) { text-align: center; font-weight: 600; width: 20%; }
+#fill-blanks-container #fill-blanks-table input[type="text"] { width: 98%; padding: 9px 10px; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease; font-size: 0.95rem; }
+#fill-blanks-container #fill-blanks-table input[type="text"]:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
+#fill-blanks-container #fill-blanks-table input[type="text"]:disabled { background-color: #e9ecef; cursor: not-allowed; border-color: var(--border-color); font-style: italic; }
+#fill-blanks-container #fill-blanks-table td.feedback { font-size: 0.9em; text-transform: uppercase; transition: background-color 0.3s, color 0.3s; }
+#fill-blanks-container #fill-blanks-table td.feedback.correct { background-color: #d1e7dd !important; color: #0f5132 !important; }
+#fill-blanks-container #fill-blanks-table td.feedback.incorrect { background-color: #f8d7da !important; color: #842029 !important; }
+/* Verb Patterns */
+#verb-pattern-container #verb-pattern-area { display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 20px; min-height: 300px; }
+#verb-pattern-container #verb-pattern-term-container { text-align: center; background-color: var(--lighter-bg); padding: 30px 35px; border-radius: var(--border-radius); border: 1px solid var(--border-color); width: 95%; max-width: 650px; box-shadow: var(--box-shadow); }
+#verb-pattern-container #verb-pattern-term-container p { margin-top: 0; margin-bottom: 15px; font-style: italic; color: var(--text-muted); font-size: 0.95rem; }
+#verb-pattern-container #verb-pattern-term { font-size: 2rem; font-weight: 500; color: var(--primary-color); margin-bottom: 12px; }
+#verb-pattern-container .term-explanation { font-size: 0.95rem; color: var(--text-muted); margin-top: 8px; min-height: 1.3em; }
+#verb-pattern-container #verb-pattern-options { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; width: 100%; max-width: 750px; }
+#verb-pattern-container #verb-pattern-options .answer-button { padding: 0.8rem 1.2rem; font-size: 1rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); border-radius: 50px; background-color: #fff; transition: all 0.2s ease; color: var(--primary-color); text-align: center; flex-basis: calc(50% - 10px); min-width: 170px; box-sizing: border-box; box-shadow: var(--box-shadow); }
+@media (min-width: 700px) { #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: calc(33.33% - 10px); } }
+@media (min-width: 900px) { #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: calc(25% - 10px); } }
+#verb-pattern-container #verb-pattern-options .answer-button:hover:not(:disabled) { background-color: #f0f0f0; border-color: #adb5bd; transform: translateY(-2px); box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1); }
+#verb-pattern-container #verb-pattern-options .answer-button:disabled { opacity: 0.65; cursor: not-allowed; background-color: #e9ecef; box-shadow: none; transform: none; }
+#verb-pattern-container #verb-pattern-options .answer-button[style*="border: 2px solid var(--success-color)"] { border-color: var(--success-color) !important; background-color: #d1e7dd; color: #0f5132; font-weight: 600; }
+#verb-pattern-container #verb-pattern-options .answer-button[style*="border: 2px solid var(--danger-color)"] { border-color: var(--danger-color) !important; background-color: #f8d7da; color: #842029; }
+#verb-pattern-container #verb-pattern-feedback { margin-top: 10px; font-size: 1.15rem; font-weight: 500; min-height: 1.6em; text-align: center; padding: 12px 18px; border-radius: var(--border-radius); width: 90%; max-width: 550px; box-sizing: border-box; border: 1px solid transparent; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+#verb-pattern-container #verb-pattern-feedback.correct { color: #0f5132; background-color: #d1e7dd; border-color: #a3cfbb; }
+#verb-pattern-container #verb-pattern-feedback.incorrect { color: #842029; background-color: #f8d7da; border-color: #f1aeb5; }
 
-/* Input dentro de la tabla */
-#fill-blanks-container #fill-blanks-table input[type="text"] {
-    width: 98%; padding: 9px 10px; border: 1px solid var(--border-color);
-    border-radius: var(--border-radius); box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease; font-size: 0.95rem;
-}
-#fill-blanks-container #fill-blanks-table input[type="text"]:focus {
-    border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none;
-}
-#fill-blanks-container #fill-blanks-table input[type="text"]:disabled {
-    background-color: #e9ecef; cursor: not-allowed; border-color: var(--border-color);
-    font-style: italic; /* Mostrar texto en cursiva al deshabilitar */
-}
-/* Feedback en celda de resultado */
-#fill-blanks-container #fill-blanks-table td.feedback {
-    font-size: 0.9em; text-transform: uppercase; transition: background-color 0.3s, color 0.3s;
-}
-#fill-blanks-container #fill-blanks-table td.feedback.correct {
-    background-color: #d1e7dd !important; color: #0f5132 !important;
-}
-#fill-blanks-container #fill-blanks-table td.feedback.incorrect {
-    background-color: #f8d7da !important; color: #842029 !important;
-}
+/* --- Clase de Utilidad Ocultar (Sin cambios) --- */
+.hidden { display: none !important; }
 
+/* ==================================================== */
+/* === MEDIA QUERIES (RESPONSIVIDAD REFINADA v2) ====== */
+/* ==================================================== */
 
-/* --- Estilos Juego Gerundios/Infinitivos (Verb Patterns) --- */
-#verb-pattern-container #verb-pattern-area { /* Aplicar dentro de su contenedor */
-    display: flex; flex-direction: column; align-items: center; gap: 30px; /* Espacio entre elementos */
-    padding: 20px; min-height: 300px;
-}
-/* Contenedor del término a evaluar */
-#verb-pattern-container #verb-pattern-term-container {
-    text-align: center; background-color: var(--lighter-bg); padding: 30px 35px;
-    border-radius: var(--border-radius); border: 1px solid var(--border-color);
-    width: 95%; max-width: 650px; box-shadow: var(--box-shadow);
-}
-#verb-pattern-container #verb-pattern-term-container p { /* Instrucción */
-     margin-top: 0; margin-bottom: 15px; font-style: italic; color: var(--text-muted); font-size: 0.95rem;
-}
-/* Término principal */
-#verb-pattern-container #verb-pattern-term {
-    font-size: 2rem; font-weight: 500; color: var(--primary-color); margin-bottom: 12px;
-}
-/* Explicación opcional */
-#verb-pattern-container .term-explanation {
-    font-size: 0.95rem; color: var(--text-muted); margin-top: 8px; min-height: 1.3em;
-}
-
-/* Contenedor de botones de opción */
-#verb-pattern-container #verb-pattern-options {
-    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-    gap: 14px; width: 100%; max-width: 750px;
-}
-/* Botones de respuesta */
-#verb-pattern-container #verb-pattern-options .answer-button {
-    padding: 0.8rem 1.2rem; font-size: 1rem; font-weight: 500; cursor: pointer;
-    border: 1px solid var(--border-color); border-radius: 50px; /* Píldora */
-    background-color: #fff; transition: all 0.2s ease; color: var(--primary-color);
-    text-align: center; flex-basis: calc(50% - 10px); /* Base 2 columnas */ min-width: 170px;
-    box-sizing: border-box; box-shadow: var(--box-shadow);
-}
-/* Intentar 3 o 4 columnas en pantallas más anchas */
-@media (min-width: 700px) {
-    #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: calc(33.33% - 10px); } /* 3 columnas */
-}
-@media (min-width: 900px) {
-    #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: calc(25% - 10px); } /* 4 columnas */
-}
-
-/* Hover botones respuesta */
-#verb-pattern-container #verb-pattern-options .answer-button:hover:not(:disabled) {
-    background-color: #f0f0f0; border-color: #adb5bd; transform: translateY(-2px); box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
-}
-/* Deshabilitado botones respuesta */
-#verb-pattern-container #verb-pattern-options .answer-button:disabled {
-    opacity: 0.65; cursor: not-allowed; background-color: #e9ecef; box-shadow: none; transform: none;
-}
-/* Estilo borde verde (respuesta correcta seleccionada o mostrada) */
-#verb-pattern-container #verb-pattern-options .answer-button[style*="border: 2px solid green"] {
-    border-color: var(--success-color) !important; background-color: #d1e7dd; color: #0f5132; font-weight: 600;
-}
-/* Estilo borde rojo (respuesta incorrecta seleccionada) */
-#verb-pattern-container #verb-pattern-options .answer-button[style*="border: 2px solid red"] {
-    border-color: var(--danger-color) !important; background-color: #f8d7da; color: #842029;
-}
-
-/* Feedback (Correcto/Incorrecto/Tiempo) */
-#verb-pattern-container #verb-pattern-feedback {
-    margin-top: 10px; /* Más cerca de los botones */ font-size: 1.15rem; font-weight: 500;
-    min-height: 1.6em; text-align: center; padding: 12px 18px; border-radius: var(--border-radius);
-    width: 90%; max-width: 550px; box-sizing: border-box;
-    border: 1px solid transparent; transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
-#verb-pattern-container #verb-pattern-feedback.correct {
-    color: #0f5132; background-color: #d1e7dd; border-color: #a3cfbb;
-}
-#verb-pattern-container #verb-pattern-feedback.incorrect {
-    color: #842029; background-color: #f8d7da; border-color: #f1aeb5;
-}
-
-
-/* --- Clase de Utilidad Ocultar --- */
-.hidden {
-    display: none !important; /* Usar !important para asegurar que oculte */
-}
-
-
-/* --- Responsividad General --- */
+/* --- Estilos para Tablets (max-width: 768px) --- */
 @media (max-width: 768px) {
-    body { padding: 20px 15px; font-size: 15px; }
-    h1#main-title { font-size: 2rem; margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.15rem; }
+    body {
+        padding: 20px 15px; /* Menos padding horizontal */
+        font-size: 15px; /* Ligeramente más pequeño */
+    }
+    h1#main-title { font-size: 2.1rem; margin-bottom: 2rem; } /* Reducir H1 */
+    h2 { font-size: 1.5rem; } /* Reducir H2 */
+    h3 { font-size: 1.2rem; } /* Reducir H3 */
 
-    .game-mode-container { padding: 25px 20px; }
-    .setup-section select { max-width: none; } /* Permitir ancho completo */
+    .game-mode-container {
+        padding: 25px 20px; /* Menos padding interno */
+    }
+    .setup-section select {
+        max-width: none; /* Permitir ancho completo */
+        font-size: 0.95rem; /* Reducir fuente select */
+    }
 
-    /* Ajustar cabeceras de info */
+    /* Ajustar cabeceras de info (menos padding, fuente más pequeña) */
     #game-info, #fill-blanks-info, #verb-pattern-info {
-         justify-content: space-between; /* Volver a espacio entre extremos */
-         font-size: 0.9rem;
+         justify-content: space-between; /* Alinear extremos */
+         font-size: 0.95rem;
          gap: 10px;
+         padding-bottom: 10px;
+         margin-bottom: 20px;
     }
      #score-board, #timer-board, #fill-blanks-score-board, #fill-blanks-timer-board, #verb-pattern-score-board, #verb-pattern-timer-board {
-         padding: 8px 14px; font-size: 0.9rem;
+         padding: 8px 15px; /* Menos padding */
+         font-size: 0.9rem; /* Fuente más pequeña */
      }
 
-    /* Botones de acción más grandes para tocar */
-     .action-button, button { padding: 12px 22px; font-size: 1rem; }
-     .selection-button { padding: 0.8rem 1.4rem; font-size: 1rem; }
+    /* Botones (ligeramente más pequeños) */
+     .action-button, button {
+        padding: 11px 22px; /* Ajustar padding */
+        font-size: 0.95rem; /* Fuente más pequeña */
+     }
+     .selection-button {
+         padding: 0.8rem 1.5rem;
+         font-size: 1rem;
+         flex-basis: calc(33.33% - 12px); /* Intentar 3 por fila en tablet */
+         max-width: none;
+     }
 
-    /* Ajustes específicos tablet */
-    #matching-container #word-area { padding: 20px; min-height: 400px; }
+    /* Ajustes específicos juegos originales en tablet */
+    /* Matching */
+    #matching-container #word-area { padding: 20px; min-height: 400px; gap: 10px;}
+    #matching-container .word-pill { padding: 9px 18px; font-size: 0.95rem;}
+    /* Fill Blanks */
     #fill-blanks-container .table-container { max-height: 500px; }
-    #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: calc(50% - 8px); min-width: 140px; } /* 2 columnas */
-
+     #fill-blanks-container #fill-blanks-table th,
+     #fill-blanks-container #fill-blanks-table td { padding: 11px 12px; } /* Menos padding */
+     #fill-blanks-container #fill-blanks-table input[type="text"] { font-size: 0.9rem; padding: 8px 9px;}
+    /* Verb Patterns */
+    #verb-pattern-container #verb-pattern-options .answer-button {
+        flex-basis: calc(50% - 8px); /* Forzar 2 columnas */
+        min-width: 140px;
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+    }
+    #verb-pattern-container #verb-pattern-term { font-size: 1.8rem; }
+    #verb-pattern-container #verb-pattern-feedback { font-size: 1.1rem; }
 }
 
+/* --- Estilos para Móviles (max-width: 600px) --- */
 @media (max-width: 600px) {
-    body { padding: 15px 10px; font-size: 14px; }
-    h1#main-title { font-size: 1.7rem; margin-bottom: 1.5rem;}
-    h2 { font-size: 1.3rem; }
-    h3 { font-size: 1.1rem; }
+    body { padding: 15px 10px; font-size: 14px; } /* Menos padding, fuente base */
+    h1#main-title { font-size: 1.8rem; margin-bottom: 1.5rem;} /* Reducir más */
+    h2 { font-size: 1.35rem; margin-bottom: 1.5rem; padding-bottom: 0.6rem; }
+    h3 { font-size: 1.15rem; margin-bottom: 0.8rem;}
 
-    .game-mode-container { padding: 20px 15px; }
+    .game-mode-container { padding: 20px 15px; border-radius: 0.5rem; } /* Menos padding/radius */
 
     /* Apilar botones de selección */
-    .selection-button { width: 100%; box-sizing: border-box; max-width: none; }
-    #game-selection { gap: 12px; width: 100%; padding: 0 5px; }
+    .selection-button { width: 100%; flex-basis: 100%; max-width: none; font-size: 1rem; padding: 12px 15px; }
+    #game-selection { gap: 10px; width: 100%; padding: 0 5px; }
 
-    /* Apilar cabeceras de info */
-    #game-info, #fill-blanks-info, #verb-pattern-info {
-         flex-direction: column; align-items: stretch; gap: 8px;
-    }
-    #score-board, #timer-board, #fill-blanks-score-board, #fill-blanks-timer-board, #verb-pattern-score-board, #verb-pattern-timer-board {
-         text-align: center; width: 100%; box-sizing: border-box;
-    }
+    /* Apilar cabeceras de info y centrar */
+    #game-info, #fill-blanks-info, #verb-pattern-info { flex-direction: column; align-items: stretch; gap: 8px; }
+    #score-board, #timer-board, #fill-blanks-score-board, #fill-blanks-timer-board, #verb-pattern-score-board, #verb-pattern-timer-board { text-align: center; width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 9px 12px; }
 
-    /* Ajustes Matching móvil */
-    #matching-container #word-area { min-height: 350px; padding: 15px; gap: 10px; }
-    #matching-container .word-pill { padding: 8px 16px; font-size: 0.95rem; }
+    /* Botones acción (más grandes y apilados) */
+    .action-button, button { font-size: 1rem; padding: 12px 15px; width: 100%; box-sizing: border-box; }
+     /* Contenedores de controles (apilados) */
+     #game-controls, #fill-blanks-controls, #verb-pattern-controls, #acciones, .traduccion-controles.controles-acciones { gap: 10px; flex-direction: column; align-items: stretch; margin-top: 25px;}
 
-    /* Ajustes Fill Blanks móvil */
+    /* Ajustes específicos juegos originales en móvil */
+    /* Matching */
+    #matching-container #word-area { min-height: 350px; padding: 15px; gap: 8px; }
+    #matching-container .word-pill { padding: 8px 15px; font-size: 0.9rem; }
+    /* Fill Blanks - Permitir ajuste texto */
     #fill-blanks-container #fill-blanks-table th,
-    #fill-blanks-container #fill-blanks-table td { padding: 9px 10px; font-size: 0.9rem; white-space: normal; /* Permitir saltos */ }
-    #fill-blanks-container .table-container { max-height: 450px; }
-
-    /* Ajustes Verb Patterns móvil */
-    #verb-pattern-container #verb-pattern-term-container { width: 100%; padding: 20px; box-sizing: border-box;}
+    #fill-blanks-container #fill-blanks-table td { padding: 9px 8px; font-size: 0.85rem; white-space: normal; } /* Permitir wrap */
+    #fill-blanks-container .table-container { max-height: 400px; }
+     /* Verb Patterns */
+    #verb-pattern-container #verb-pattern-area { gap: 20px; padding: 15px 5px;}
+    #verb-pattern-container #verb-pattern-term-container { width: 100%; padding: 20px 15px; box-sizing: border-box;}
     #verb-pattern-container #verb-pattern-term { font-size: 1.5rem; }
-    #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: 100%; /* 1 columna */ font-size: 0.95rem; padding: 12px 15px; }
-    #verb-pattern-container #verb-pattern-feedback { width: 95%; font-size: 1.1em; padding: 10px;}
-
-    /* Apilar controles inferiores */
-    #game-controls, #fill-blanks-controls, #verb-pattern-controls,
-    #acciones, .traduccion-controles.controles-acciones /* Aplicar a todos */
-    { gap: 12px; flex-direction: column; align-items: stretch;}
-    #game-controls button, #fill-blanks-controls button, #verb-pattern-controls button,
-    #acciones button, .traduccion-controles.controles-acciones button /* Aplicar a todos los botones dentro */
-     { width: 100%; box-sizing: border-box; padding: 12px; margin: 0; /* Quitar margen si se usa gap */ }
+    #verb-pattern-container #verb-pattern-options .answer-button { flex-basis: 100%; font-size: 0.95rem; padding: 11px 15px; } /* 1 columna */
+    #verb-pattern-container #verb-pattern-feedback { width: 95%; font-size: 1.05em; padding: 10px;}
 
     /* Ajustes Overlay móvil */
-    #results-content { padding: 25px 15px; width: 95%; box-sizing: border-box; }
+    #results-content { padding: 20px 15px; width: 95%; box-sizing: border-box; }
     #results-content .button-group { flex-direction: column; gap: 10px; align-items: stretch; }
     #results-content button { width: 100%; box-sizing: border-box; }
 }
 
-/* --- Keyframes para Animación Shake (Usada en Matching) --- */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); } /* Más intensidad */
-    75% { transform: translateX(6px); }
-}
+/* --- Keyframes Animación Shake (Sin cambios) --- */
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
