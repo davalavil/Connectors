@@ -1,225 +1,140 @@
 /* ========================================================== */
-/* css/style_verbs.css (AISLADO y ESTÉTICA MEJORADA v2)       */
+/* css/style_verbs.css (AISLADO y v3 - SIN SCROLL HORIZONTAL) */
 /* Estilos específicos para el Juego de Verbos             */
 /* ========================================================== */
 
 /* IMPORTANTE: TODO el contenido está envuelto en #verbs-game-container */
 #verbs-game-container {
-    /* Añadir más padding interno al contenedor del juego */
     padding-top: 25px;
     padding-bottom: 35px;
 
     /* --- Contenedores y Feedback Específico Verbos --- */
-
-    /* Sección de controles de modo */
-    #verbs-controles { /* ID prefijado o original */
-        margin-bottom: 35px; /* Más espacio debajo de los controles */
-        text-align: center;
+    #verbs-controles { margin-bottom: 35px; text-align: center; }
+    #verbs-acciones { margin-top: 30px; margin-bottom: 25px; text-align: center; }
+    #verbs-feedback {
+        margin-top: 25px; font-weight: 500; font-size: 1.1em; min-height: 1.8em;
+        padding: 15px 20px; border-radius: var(--border-radius); background-color: #e9ecef;
+        color: var(--text-muted); border: 1px solid var(--border-color); line-height: 1.5;
     }
 
-    /* Sección de acciones (botones Comprobar/Volver) */
-    #verbs-acciones { /* ID prefijado o original */
-        margin-top: 30px; /* Más espacio encima de los botones de acción */
-        margin-bottom: 25px;
-        text-align: center;
-        /* Hereda .game-controls de style.css para flex/gap */
-    }
-
-    /* Área de feedback */
-    #verbs-feedback { /* ID prefijado o original */
-        margin-top: 25px;
-        font-weight: 500;
-        font-size: 1.1em;
-        min-height: 1.8em;
-        padding: 15px 20px; /* Más padding */
-        border-radius: var(--border-radius);
-        background-color: #e9ecef;
-        color: var(--text-muted);
-        border: 1px solid var(--border-color);
-        line-height: 1.5; /* Mejorar legibilidad */
-    }
-
-    /* --- Botones de Selección de Modo (Aleatorio, Rellenar...) --- */
+    /* --- Botones de Selección de Modo --- */
     #verbs-controles .verb-button-group {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px; /* >>> AUMENTAR ESPACIO ENTRE BOTONES <<< */
-        margin-top: 15px;
+        display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 15px; margin-top: 15px;
     }
+    #verbs-controles .action-button { background-color: var(--info-color); color: #333; }
+    #verbs-controles .action-button:hover:not(:disabled) { background-color: var(--info-hover); }
+    #verbs-controles .action-button:disabled { background-color: var(--info-color) !important; opacity: 0.65; }
 
-    /* >>> ESTILO PARA LOS BOTONES DE MODO <<< */
-    /* Aplicar estilo base .action-button definido en style.css y sobreescribir color */
-    #verbs-controles .action-button { /* Target específico */
-        background-color: var(--info-color); /* Color Cyan */
-        color: #333; /* Texto oscuro para cyan claro */
-        /* Hereda padding, border-radius, font-size, etc de .action-button */
-    }
-    #verbs-controles .action-button:hover:not(:disabled) {
-        background-color: var(--info-hover); /* Hover Cyan más oscuro */
-        /* Hereda transform/box-shadow de .action-button:hover */
-    }
-    #verbs-controles .action-button:disabled {
-        /* Hereda estilo disabled de .action-button:disabled */
-        background-color: var(--info-color) !important; /* Mantener color base pero con opacidad */
-        opacity: 0.65;
-    }
-
-
-    /* --- Estilos Tabla de Verbos --- */
-
-    /* Contenedor del juego (tabla) */
-    #verbs-juego { /* ID prefijado o original */
-        margin: 30px 0; /* Más espacio vertical alrededor de la tabla */
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    /* --- Estilos Tabla de Verbos (SIN SCROLL HORIZONTAL POR DEFECTO) --- */
+    #verbs-juego {
+        margin: 30px 0; width: 100%;
+        /* >>> ELIMINADO overflow-x: auto; de la regla general <<< */
+        /* -webkit-overflow-scrolling: touch; ya no es necesario aquí */
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow); /* Añadir sombra sutil */
+        box-shadow: var(--box-shadow);
+        overflow: hidden; /* Opcional: para asegurar que nada se salga si hay error */
     }
 
-    /* Tabla de verbos */
     #verb-table {
         width: 100%;
-        min-width: 700px; /* Ancho mínimo ajustado */
+        /* >>> ELIMINADO min-width: 700px; <<< */
         border-collapse: collapse;
         background-color: var(--lighter-bg);
+        table-layout: fixed; /* >>> AÑADIDO: Ayuda a controlar mejor el ancho de columnas <<< */
     }
 
     #verb-table th,
     #verb-table td {
         border: 1px solid var(--border-color);
-        padding: 14px 15px; /* Padding generoso */
+        padding: 12px 14px; /* Reducir padding ligeramente */
         text-align: left;
         vertical-align: middle;
-        white-space: nowrap;
-        font-size: 1rem; /* Tamaño fuente consistente */
+        /* >>> CAMBIADO white-space: nowrap a normal <<< */
+        white-space: normal;
+        font-size: 0.95rem; /* Ajustar tamaño fuente si es necesario */
+        word-wrap: break-word; /* Asegurar que palabras largas se rompan */
     }
 
+    /* --- Definir anchos relativos para columnas (ajustar según preferencia) --- */
+    #verb-table th:nth-child(1), #verb-table td:nth-child(1) { width: 18%; } /* Infinitivo */
+    #verb-table th:nth-child(2), #verb-table td:nth-child(2) { width: 18%; } /* Pasado Simple */
+    #verb-table th:nth-child(3), #verb-table td:nth-child(3) { width: 18%; } /* Pasado Participio */
+    #verb-table th:nth-child(4), #verb-table td:nth-child(4) { width: 26%; } /* Traducción (más ancha) */
+    #verb-table th:nth-child(5), #verb-table td:nth-child(5) { width: 20%; } /* Tipo/Acción */
+    /* La suma es 100%. Ajustar estos porcentajes para dar más o menos espacio a cada columna. */
+
+
     #verb-table th {
-        background-color: #e9ecef;
-        color: var(--text-color);
-        font-weight: 600;
-        position: sticky;
-        top: 0;
-        z-index: 1;
-        border-bottom: 2px solid #adb5bd; /* Borde inferior más grueso cabecera */
+        background-color: #e9ecef; color: var(--text-color); font-weight: 600;
+        position: sticky; top: 0; z-index: 1; border-bottom: 2px solid #adb5bd;
     }
 
     /* --- Estilos Inputs y Feedback Visual --- */
-
     #verb-table input[type="text"] {
-        width: 98%;
-        min-width: 120px; /* Un poco más de ancho mínimo */
-        padding: 10px 12px; /* Padding input */
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        box-sizing: border-box;
-        background-color: #fff;
-        transition: all 0.2s ease-in-out;
-        font-size: inherit;
+        width: 98%; /* Ocupar casi toda la celda */
+        min-width: 0; /* >>> ELIMINADO min-width específico del input <<< */
+        padding: 9px 10px; /* Ajustar padding */
+        border: 1px solid var(--border-color); border-radius: var(--border-radius);
+        box-sizing: border-box; background-color: #fff;
+        transition: all 0.2s ease-in-out; font-size: inherit;
     }
+    #verb-table input[type="text"]:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); outline: none; }
+    #verb-table input[type="text"]:disabled { background-color: #f1f3f5; cursor: not-allowed; opacity: 0.8; }
+    #verb-table input[type="text"].revealed { pointer-events: none; border-color: var(--secondary-color) !important; background-color: #e9ecef !important; color: #555 !important; font-style: italic; }
+    #verb-table input[type="text"].revealed:disabled { opacity: 1; }
 
-    #verb-table input[type="text"]:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        outline: none;
-    }
+    #verb-table .correct { border: 2px solid var(--success-color) !important; background-color: #d1e7dd !important; }
+    #verb-table .incorrect { border: 2px solid var(--danger-color) !important; background-color: #f8d7da !important; }
+    #verb-table .partial { border: 2px solid var(--warning-color) !important; background-color: #fff3cd !important; }
 
-    #verb-table input[type="text"]:disabled {
-        background-color: #f1f3f5; /* Fondo ligeramente diferente para disabled */
-        cursor: not-allowed;
-        opacity: 0.8;
-    }
-
-    #verb-table input[type="text"].revealed {
-        pointer-events: none;
-        border-color: var(--secondary-color) !important;
-        background-color: #e9ecef !important; /* Fondo igual a cabecera */
-        color: #555 !important;
-        font-style: italic;
-    }
-    #verb-table input[type="text"].revealed:disabled {
-        opacity: 1;
-    }
-
-
-    /* Clases de Feedback Visual (Correcto/Incorrecto/Parcial) */
-    #verb-table .correct {
-        border: 2px solid var(--success-color) !important;
-        background-color: #d1e7dd !important;
-    }
-    #verb-table .incorrect {
-        border: 2px solid var(--danger-color) !important;
-        background-color: #f8d7da !important;
-    }
-    #verb-table .partial {
-        border: 2px solid var(--warning-color) !important;
-        background-color: #fff3cd !important;
-    }
-
-    /* Placeholder styles */
     #verb-table input[type="text"]::placeholder { color: #a0a0a0; font-style: italic; opacity: 0.8; }
     #verb-table input[type="text"].incorrect::placeholder { color: var(--danger-color); font-style: normal; font-weight: 500; opacity: 1; }
     #verb-table input[type="text"].revealed::placeholder { color: transparent !important; }
 
-
     /* --- Celda Tipo y Botón Revelar --- */
-    #verb-table td:last-child {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        white-space: normal;
-        gap: 12px; /* Más espacio entre texto y botón */
-    }
+    #verb-table td:last-child { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .reveal-button { background: none; border: none; padding: 0 5px; margin-left: 5px; cursor: pointer; font-size: 1.8em; color: var(--secondary-color); vertical-align: middle; line-height: 1; flex-shrink: 0; transition: color 0.2s ease, transform 0.1s ease; }
+    .reveal-button:hover:not(:disabled) { color: var(--primary-color); transform: scale(1.15); }
+    .reveal-button:disabled { cursor: default; opacity: 0.4; color: #999; transform: none; }
 
-    .reveal-button {
-        background: none; border: none; padding: 0 5px; margin-left: 5px;
-        cursor: pointer; font-size: 1.8em; /* Más grande */ color: var(--secondary-color);
-        vertical-align: middle; line-height: 1; flex-shrink: 0;
-        transition: color 0.2s ease, transform 0.1s ease;
-    }
-    .reveal-button:hover:not(:disabled) { color: var(--primary-color); transform: scale(1.15); } /* Efecto hover más notorio */
-    .reveal-button:disabled { cursor: default; opacity: 0.4; /* Más transparente */ color: #999; transform: none; }
-
-
-    /* --- MEDIA QUERIES (Aisladas y Revisadas) --- */
-
+    /* --- MEDIA QUERIES --- */
     @media (max-width: 768px) {
-        #verb-table th, #verb-table td {
-            padding: 10px 12px; /* Ajustar padding tablet */
-            white-space: normal;
+        /* >>> AÑADIDO: Restaurar scroll horizontal SOLO para tablet/móvil <<< */
+        #verbs-juego {
+            overflow-x: auto;
+             -webkit-overflow-scrolling: touch;
         }
+        /* >>> QUITAR table-layout: fixed y anchos específicos en móvil <<< */
+        /* Esto permite que las columnas se ajusten mejor al contenido mínimo */
+         #verb-table {
+            table-layout: auto; /* Dejar que el navegador ajuste */
+         }
+         #verb-table th:nth-child(1), #verb-table td:nth-child(1),
+         #verb-table th:nth-child(2), #verb-table td:nth-child(2),
+         #verb-table th:nth-child(3), #verb-table td:nth-child(3),
+         #verb-table th:nth-child(4), #verb-table td:nth-child(4),
+         #verb-table th:nth-child(5), #verb-table td:nth-child(5) {
+             width: auto; /* Quitar anchos fijos */
+         }
+        /* --- Fin cambios table-layout --- */
+
+        #verb-table th, #verb-table td { padding: 10px 12px; white-space: nowrap; /* Restaurar nowrap si se prefiere scroll */ }
         .reveal-button { font-size: 1.9em; }
         #feedback { font-size: 1.05em; }
-
-        /* Ajustar grupo botones modo */
-        #verbs-controles .verb-button-group {
-             gap: 12px; /* Menos gap en tablet */
-        }
-         #verbs-controles .action-button {
-             font-size: 0.95rem; /* Fuente más pequeña botones modo */
-             padding: 10px 18px;
-         }
+        #verbs-controles .verb-button-group { gap: 12px; }
+        #verbs-controles .action-button { font-size: 0.95rem; padding: 10px 18px; }
     }
 
     @media (max-width: 600px) {
-        #verb-table th, #verb-table td { padding: 9px 8px; /* Menos padding móvil */ }
-        #verb-table input[type="text"] { min-width: 85px; font-size: 0.9rem; }
-        #verb-table td:last-child { flex-direction: column; align-items: flex-start; gap: 6px; }
-        .reveal-button { margin-left: 0; align-self: flex-end; font-size: 2em; } /* Aún más grande y a la derecha */
-
-         /* Apilar botones de modo */
-         #verbs-controles .verb-button-group {
-             flex-direction: column;
-             align-items: stretch; /* Ocupar ancho */
-             gap: 10px;
-         }
-         #verbs-controles .action-button {
-             width: 100%; /* Ancho completo */
-             box-sizing: border-box;
-         }
+        #verb-table th, #verb-table td { padding: 9px 8px; }
+        /* Quitar min-width del input si aún estaba */
+        #verb-table input[type="text"] { min-width: 0; font-size: 0.9rem; }
+        #verb-table td:last-child { flex-direction: row; align-items: center; } /* Volver a fila en móvil si hay scroll */
+        .reveal-button { margin-left: 5px; align-self: center; font-size: 2em; }
+        #verbs-controles .verb-button-group { flex-direction: column; align-items: stretch; gap: 10px; }
+        #verbs-controles .action-button { width: 100%; box-sizing: border-box; }
     }
 
 } /* --- FIN DEL WRAPPER #verbs-game-container --- */
