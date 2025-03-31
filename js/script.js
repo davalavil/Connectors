@@ -1,8 +1,8 @@
 // ===========================================================
-// js/script.js (PRINCIPAL - ORQUESTADOR DE JUEGOS - v1.7)
+// js/script.js (PRINCIPAL - ORQUESTADOR DE JUEGOS - v1.6.1)
 // Maneja selección, visibilidad y control.
-// v1.7: Aplicar barajado MÚLTIPLE a píldoras en Matching Game
-//       para aumentar dificultad/dispersión percibida.
+// v1.6.1: Basado en v1.6 (botones Start OK).
+//         + Barajado MÚLTIPLE de píldoras en Matching Game.
 // ===========================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -80,8 +80,56 @@ document.addEventListener('DOMContentLoaded', () => {
     function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
     function formatTime(seconds) { const minutes = Math.floor(seconds / 60); const remainingSeconds = seconds % 60; return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`; }
 
-    // --- Función de Control de Visibilidad (Orquestador - Lógica v1.3 Restaurada) ---
-    function showScreen(screenId) { /* ... (código v1.6 sin cambios) ... */ console.log(`Navegando a pantalla: ${screenId}`); gameSelectionDiv.classList.add('hidden'); matchingContainer.classList.add('hidden'); fillBlanksContainer.classList.add('hidden'); verbPatternContainer.classList.add('hidden'); verbsGameContainer.classList.add('hidden'); traduccionGameContainer.classList.add('hidden'); if(matchingSetupDiv) matchingSetupDiv.classList.add('hidden'); if(matchingGameDiv) matchingGameDiv.classList.add('hidden'); if(fillBlanksSetupDiv) fillBlanksSetupDiv.classList.add('hidden'); if(fillBlanksGameDiv) fillBlanksGameDiv.classList.add('hidden'); if(verbPatternSetupDiv) verbPatternSetupDiv.classList.add('hidden'); if(verbPatternGameDiv) verbPatternGameDiv.classList.add('hidden'); if(resultsOverlay) resultsOverlay.classList.add('hidden'); let titleText = "Selección de Juego"; let needsInit = false; let containerToShow = null; switch (screenId) { case 'selection': containerToShow = gameSelectionDiv; titleText = "Selección de Juego"; break; case 'matching-setup': containerToShow = matchingContainer; if(matchingSetupDiv) matchingSetupDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; break; case 'fill-blanks-setup': containerToShow = fillBlanksContainer; if(fillBlanksSetupDiv) fillBlanksSetupDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; break; case 'verb-pattern-setup': containerToShow = verbPatternContainer; if(verbPatternSetupDiv) verbPatternSetupDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; break; case 'matching-game': containerToShow = matchingContainer; if(matchingGameDiv) matchingGameDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; break; case 'fill-blanks-game': containerToShow = fillBlanksContainer; if(fillBlanksGameDiv) fillBlanksGameDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; break; case 'verb-pattern-game': containerToShow = verbPatternContainer; if(verbPatternGameDiv) verbPatternGameDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; break; case 'verbs': containerToShow = verbsGameContainer; titleText = "Práctica de Verbos"; needsInit = true; break; case 'traduccion': containerToShow = traduccionGameContainer; titleText = "Práctica de Vocabulario"; needsInit = true; break; default: console.warn("showScreen ID desconocido:", screenId); containerToShow = gameSelectionDiv; screenId = 'selection'; } if (needsInit) { if (screenId === 'verbs') { if (typeof VerbsGame?.init === 'function') { VerbsGame.init(verbsGameContainer); } else { console.error("Error VerbsGame.init"); containerToShow = gameSelectionDiv; screenId = 'selection'; } } else if (screenId === 'traduccion') { if (typeof TraduccionGame?.init === 'function') { TraduccionGame.init(traduccionGameContainer); } else { console.error("Error TraduccionGame.init"); containerToShow = gameSelectionDiv; screenId = 'selection'; } } } if (containerToShow) { containerToShow.classList.remove('hidden'); } else { console.error(`Contenedor para '${screenId}' no encontrado.`); gameSelectionDiv.classList.remove('hidden'); screenId = 'selection'; } if(mainTitle) mainTitle.textContent = titleText; currentGameMode = screenId; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    // --- Función de Control de Visibilidad (Orquestador - Lógica v1.3/v1.6 Restaurada) ---
+    function showScreen(screenId) {
+        console.log(`Navegando a pantalla: ${screenId}`);
+
+        // 1. Ocultar todos los contenedores principales y sub-secciones
+        gameSelectionDiv.classList.add('hidden');
+        matchingContainer.classList.add('hidden');
+        fillBlanksContainer.classList.add('hidden');
+        verbPatternContainer.classList.add('hidden');
+        verbsGameContainer.classList.add('hidden');
+        traduccionGameContainer.classList.add('hidden');
+        if(matchingSetupDiv) matchingSetupDiv.classList.add('hidden');
+        if(matchingGameDiv) matchingGameDiv.classList.add('hidden');
+        if(fillBlanksSetupDiv) fillBlanksSetupDiv.classList.add('hidden');
+        if(fillBlanksGameDiv) fillBlanksGameDiv.classList.add('hidden');
+        if(verbPatternSetupDiv) verbPatternSetupDiv.classList.add('hidden');
+        if(verbPatternGameDiv) verbPatternGameDiv.classList.add('hidden');
+        if(resultsOverlay) resultsOverlay.classList.add('hidden');
+
+        // 2. Determinar título y mostrar contenedor/sección correctos
+        let titleText = "Selección de Juego";
+        let needsInit = false;
+
+        switch (screenId) {
+            case 'selection': gameSelectionDiv.classList.remove('hidden'); titleText = "Selección de Juego"; break;
+            case 'matching-setup': matchingContainer.classList.remove('hidden'); if(matchingSetupDiv) matchingSetupDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; break;
+            case 'matching-game': matchingContainer.classList.remove('hidden'); if(matchingGameDiv) matchingGameDiv.classList.remove('hidden'); titleText = "Emparejar Conectores"; break;
+            case 'fill-blanks-setup': fillBlanksContainer.classList.remove('hidden'); if(fillBlanksSetupDiv) fillBlanksSetupDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; break;
+            case 'fill-blanks-game': fillBlanksContainer.classList.remove('hidden'); if(fillBlanksGameDiv) fillBlanksGameDiv.classList.remove('hidden'); titleText = "Rellenar Conectores"; break;
+            case 'verb-pattern-setup': verbPatternContainer.classList.remove('hidden'); if(verbPatternSetupDiv) verbPatternSetupDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; break;
+            case 'verb-pattern-game': verbPatternContainer.classList.remove('hidden'); if(verbPatternGameDiv) verbPatternGameDiv.classList.remove('hidden'); titleText = "Gerundios e Infinitivos"; break;
+            case 'verbs': verbsGameContainer.classList.remove('hidden'); titleText = "Práctica de Verbos"; needsInit = true; break;
+            case 'traduccion': traduccionGameContainer.classList.remove('hidden'); titleText = "Práctica de Vocabulario"; needsInit = true; break;
+            default: console.warn("showScreen ID desconocido:", screenId); gameSelectionDiv.classList.remove('hidden'); screenId = 'selection';
+        }
+
+        // 3. Llamar a init para juegos importados SI es necesario
+        if (needsInit) {
+            if (screenId === 'verbs') { if (typeof VerbsGame?.init === 'function') { VerbsGame.init(verbsGameContainer); } else { console.error("Error VerbsGame.init"); } }
+            else if (screenId === 'traduccion') { if (typeof TraduccionGame?.init === 'function') { TraduccionGame.init(traduccionGameContainer); } else { console.error("Error TraduccionGame.init"); } }
+        }
+
+        // 4. Actualizar título y estado global
+        if(mainTitle) mainTitle.textContent = titleText;
+        currentGameMode = screenId;
+
+        // 5. Scroll al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
      // --- Función para Resetear Juego Anterior ---
      function resetPreviousGame(gameModeToReset) { /* ... (código v1.6 sin cambios) ... */ console.log(`Intentando resetear juego: ${gameModeToReset}`); stopTimer(); stopQuestionTimer(); switch (gameModeToReset) { case 'matching': case 'matching-setup': case 'matching-game': resetMatchingGame(true); break; case 'fill-blanks': case 'fill-blanks-setup': case 'fill-blanks-game': resetFillBlanksGame(true); break; case 'verb-pattern': case 'verb-pattern-setup': case 'verb-pattern-game': resetVerbPatternGame(true); break; case 'verbs': if (typeof VerbsGame?.reset === 'function') { VerbsGame.reset(); } else { console.warn("VerbsGame.reset no disponible."); } break; case 'traduccion': if (typeof TraduccionGame?.reset === 'function') { TraduccionGame.reset(); } else { console.warn("TraduccionGame.reset no disponible."); } break; case 'selection': break; default: console.warn(`Intento de resetear modo desconocido: ${gameModeToReset}`); } console.log(`Reseteo completado para ${gameModeToReset}`); }
@@ -102,62 +150,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /** Renderiza píldoras con BARAJADO MÚLTIPLE e inicializa SortableJS **/
     function renderMatchingWords() {
-        if (!wordArea || !currentScoreSpan || !totalPairsSpan || typeof conectoresOriginal === 'undefined') {
-            console.error("Matching Error en renderMatchingWords..."); if(wordArea) wordArea.innerHTML = "..."; return;
-        }
-        console.log("Renderizando palabras Matching (v1.7 - Multi-Shuffle)...");
+        if (!wordArea || !currentScoreSpan || !totalPairsSpan || typeof conectoresOriginal === 'undefined') { console.error("Matching Error en renderMatchingWords..."); if(wordArea) wordArea.innerHTML = "..."; return; }
+        console.log("Renderizando palabras Matching (v1.6.1 - Multi-Shuffle)..."); // Versión actualizada
         wordArea.innerHTML = '';
 
-        const englishTerms = [];
-        const spanishTerms = [];
-        const currentConnectors = shuffleArray(conectoresOriginal); // Barajar pares primero
+        const englishTerms = []; const spanishTerms = [];
+        const currentConnectors = shuffleArray(conectoresOriginal);
 
         currentConnectors.forEach(pair => {
             englishTerms.push({ id: pair.id, lang: 'en', text: pair.en });
             spanishTerms.push({ id: pair.id, lang: 'es', text: pair.es });
         });
 
-        let wordsToRender = [...englishTerms, ...spanishTerms]; // Concatenar
+        let wordsToRender = [...englishTerms, ...spanishTerms];
 
-        // ***** CAMBIO PRINCIPAL: Barajar la lista final MÚLTIPLES VECES *****
-        const shufflePasses = 5; // Número de veces que se baraja la lista final
+        // ***** CAMBIO: Barajar la lista final MÚLTIPLES VECES *****
+        const shufflePasses = 5; // Número de pasadas de barajado
         console.log(`Barajando la lista final ${shufflePasses} veces...`);
         for (let i = 0; i < shufflePasses; i++) {
-            wordsToRender = shuffleArray(wordsToRender); // Reasignar el resultado barajado
+            wordsToRender = shuffleArray(wordsToRender);
         }
         console.log("Lista final barajada múltiples veces.");
 
-        scoreMatching = 0;
-        currentScoreSpan.textContent = scoreMatching;
-        totalPairsSpan.textContent = currentConnectors.length;
+        scoreMatching = 0; currentScoreSpan.textContent = scoreMatching; totalPairsSpan.textContent = currentConnectors.length;
 
-        // Crear y añadir píldoras al DOM (igual que antes)
-        wordsToRender.forEach(word => {
-             const pill = document.createElement('div');
-             pill.classList.add('word-pill', `lang-${word.lang}`);
-             pill.textContent = word.text;
-             pill.dataset.id = word.id;
-             pill.dataset.lang = word.lang;
-             wordArea.appendChild(pill);
+        wordsToRender.forEach(word => { /* ... crear y añadir pill ... */
+             const pill = document.createElement('div'); pill.classList.add('word-pill', `lang-${word.lang}`); pill.textContent = word.text; pill.dataset.id = word.id; pill.dataset.lang = word.lang; wordArea.appendChild(pill);
          });
         console.log(`${wordsToRender.length} píldoras renderizadas.`);
 
-        // Inicializar SortableJS (con setTimeout, igual que antes)
+        // Inicializar SortableJS (con setTimeout)
         if (sortableInstance) { sortableInstance.destroy(); sortableInstance = null; }
-        console.log("Programando inicialización de SortableJS con setTimeout(..., 10)");
+        console.log("Programando inicialización de SortableJS...");
         setTimeout(() => {
             console.log("Ejecutando inicialización SortableJS...");
             if (typeof Sortable !== 'undefined') {
                 console.log("Sortable DEFINIDO. Inicializando...");
                 try {
                     sortableInstance = Sortable.create(wordArea, {
-                        animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
-                        dragClass: 'sortable-drag', forceFallback: true, filter: '.correct-match',
-                        preventOnFilter: true,
+                        animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', dragClass: 'sortable-drag', forceFallback: true, filter: '.correct-match', preventOnFilter: true,
                         onStart: (evt) => console.log("DEBUG: Sortable onStart:", evt.item.textContent),
-                        onEnd: (evt) => { /* ... (lógica onEnd sin cambios) ... */ console.log("DEBUG: Sortable onEnd fired."); const movedItem = evt.item; if (!movedItem || currentGameMode !== 'matching-game' || resultsOverlay?.classList.contains('hidden') === false || (!timerInterval && timeLeft <= 0)) { console.log("onEnd: Ignorando."); return; } const prev = movedItem.previousElementSibling, next = movedItem.nextElementSibling; let match = false, target = null; if (prev && prev.style.display !== 'none' && checkMatch(movedItem, prev)) { match = true; target = prev; } if (!match && next && next.style.display !== 'none' && checkMatch(movedItem, next)) { match = true; target = next; } if (match && target) applyCorrectMatch(movedItem, target); else applyIncorrectMatchFeedback(movedItem); }
+                        onEnd: (evt) => { /* ... (lógica onEnd sin cambios de v1.6) ... */ console.log("DEBUG: Sortable onEnd fired."); const movedItem = evt.item; if (!movedItem || currentGameMode !== 'matching-game' || resultsOverlay?.classList.contains('hidden') === false || (!timerInterval && timeLeft <= 0)) { console.log("onEnd: Ignorando."); return; } const prev = movedItem.previousElementSibling, next = movedItem.nextElementSibling; let match = false, target = null; if (prev && prev.style.display !== 'none' && checkMatch(movedItem, prev)) { match = true; target = prev; } if (!match && next && next.style.display !== 'none' && checkMatch(movedItem, next)) { match = true; target = next; } if (match && target) applyCorrectMatch(movedItem, target); else applyIncorrectMatchFeedback(movedItem); }
                     });
-                    console.log("SortableJS inicializado con éxito (v1.7).");
+                    console.log("SortableJS inicializado con éxito (v1.6.1).");
                 } catch (error) { console.error("Error CRÍTICO al inicializar SortableJS:", error); if(wordArea) wordArea.innerHTML += "..."; sortableInstance = null; }
             } else { console.error("Error FATAL: SortableJS NO DEFINIDO después de setTimeout."); if(wordArea) wordArea.innerHTML += "..."; }
         }, 10);
@@ -221,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(verbPatternOptionsDiv) { verbPatternOptionsDiv.addEventListener('click', (event) => { if (event.target.classList.contains('answer-button') && !event.target.disabled && userCanAnswerVerbPattern && (currentGameMode === 'verb-pattern-game')) { handleVerbPatternAnswer(event); } }); } else { console.error("Contenedor '#verb-pattern-options' no encontrado."); }
 
     // --- Inicialización General ---
-    console.log("Aplicación inicializada (v1.7). Mostrando selección de juego.");
+    console.log("Aplicación inicializada (v1.6.1). Mostrando selección de juego.");
     showScreen('selection');
 
 }); // Fin DOMContentLoaded
