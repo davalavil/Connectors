@@ -200,12 +200,15 @@
                 <button id="verbs-btn-past-participle" class="action-button">Rellenar Pasado Participio</button> <!-- ID prefijado -->
                 <button id="verbs-btn-translation" class="action-button">Rellenar Traducción</button> <!-- ID prefijado -->
             </div>
+            <!-- Input número de verbos (opcional, no implementado en JS original) -->
+            <!-- <label for="verbs-num-verbs">Número de verbos:</label>
+            <input type="number" id="verbs-num-verbs" value="10" min="1"> -->
         </div>
 
         <!-- Área del Juego (Tabla) -->
         <div id="verbs-juego" class="game-section"> <!-- ID prefijado -->
              <div class="table-container"> <!-- Reutilizar contenedor tabla -->
-                <table id="verb-table"> <!-- ID original mantenido -->
+                <table id="verb-table"> <!-- ID original mantenido (o prefijar si hay conflicto) -->
                     <thead>
                         <tr>
                             <th>Infinitivo (Inglés)</th>
@@ -225,6 +228,7 @@
         <!-- Acciones del Juego -->
         <div id="verbs-acciones" class="game-controls"> <!-- ID prefijado y clase común -->
             <button id="verbs-btn-check" class="action-button">Comprobar Respuestas</button> <!-- ID prefijado -->
+            <!-- Botón Volver Añadido -->
             <button class="back-to-selection action-button">Volver a Selección</button>
         </div>
 
@@ -243,14 +247,17 @@
 
         <!-- Sección Configuración (Adaptada) -->
         <div class="configuracion-container setup-section"> <!-- Clases comunes -->
+            <!-- Sección Selección Unidades -->
             <div class="configuracion-seccion">
                 <label><strong>Unidades a incluir:</strong></label>
                 <div class="unidades-botones-control">
+                    <!-- Usar clase action-button y btn-control-unidad -->
                     <button id="traduccion-btn-select-all" class="action-button btn-control-unidad">Seleccionar Todas</button> <!-- ID prefijado -->
                     <button id="traduccion-btn-deselect-all" class="action-button btn-control-unidad">Deseleccionar Todas</button> <!-- ID prefijado -->
                 </div>
                 <div id="traduccion-unidades-botones-container" class="botones-container"></div> <!-- ID prefijado -->
             </div>
+            <!-- Sección Número de Palabras -->
             <div class="configuracion-seccion">
                 <label for="traduccion-num-palabras-input"><strong>Número de palabras (<span id="traduccion-num-palabras-valor">10</span>):</strong></label> <!-- IDs prefijados -->
                 <div class="config-slider-container">
@@ -266,17 +273,24 @@
             <button id="traduccion-btn-modo-esp-ing" class="action-button">Español -> Inglés</button> <!-- ID prefijado -->
         </div>
 
+        <!-- Indicador Modo Actual -->
         <h3 id="traduccion-modo-actual">Modo: Inglés -> Español</h3> <!-- ID prefijado y H3 -->
+        <!-- Estado Generación -->
         <div id="traduccion-estado-generacion" class="estado-info feedback-area"></div> <!-- ID prefijado y clases comunes -->
+
+        <!-- Área Principal del Juego -->
         <div id="traduccion-area-juego" class="game-section"></div> <!-- ID prefijado y clase común -->
 
+        <!-- Acciones del Juego -->
         <div class="traduccion-controles controles-acciones game-controls"> <!-- Clases específicas y comunes -->
             <button id="traduccion-btn-copiar" class="action-button">Generar Palabras</button> <!-- ID prefijado, texto cambiado -->
             <button id="traduccion-btn-borrar" class="action-button">Borrar Respuestas</button> <!-- ID prefijado -->
             <button id="traduccion-btn-mostrar-lista" class="action-button">Mostrar/Ocultar Lista</button> <!-- ID prefijado -->
+            <!-- Botón Volver Añadido -->
             <button class="back-to-selection action-button">Volver a Selección</button>
         </div>
 
+        <!-- Lista de Palabras Oculta -->
         <div id="traduccion-lista-palabras" class="hidden"> <!-- ID prefijado y usar .hidden global -->
             <h3>Lista de Referencia</h3> <!-- H3 -->
             <p id="traduccion-lista-info" class="estado-info"></p> <!-- ID prefijado y clase común -->
@@ -287,22 +301,22 @@
     <!-- =========================== -->
     <!-- ===== CARGA DE SCRIPTS ===== -->
     <!-- =========================== -->
+    <!-- (Importante el orden: Librerías -> Datos -> Lógica específica -> Lógica principal) -->
 
     <!-- 1. Librerías Externas -->
-    <!-- ***** LÍNEA MODIFICADA: Eliminados integrity y crossorigin ***** -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js" integrity="sha512-Eezs+g9Lq4TCCq0wae01s97wJeqLNVzDoU5TAPpnXKCUURvLIHNdzM9MnpVoMoqlESCtdOiyXd50O+tPoeTQnA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- 2. Archivos de Datos -->
-    <script src="js/connectors.js"></script>
-    <script src="js/verbPatterns.js"></script>
-    <script src="js/verbs.js"></script>
-    <script src="js/palabras.js"></script>
+    <script src="js/connectors.js"></script>      <!-- Datos juego original Conectores -->
+    <script src="js/verbPatterns.js"></script>    <!-- Datos juego original Patrones Verbales -->
+    <script src="js/verbs.js"></script>           <!-- Datos juego importado Verbos -->
+    <script src="js/palabras.js"></script>        <!-- Datos juego importado Traducción -->
 
     <!-- 3. Lógica Específica de Juegos (Módulos Aislados) -->
-    <script src="js/script_verbs.js"></script>
-    <script src="js/script_traduccion.js"></script>
+    <script src="js/script_verbs.js"></script>       <!-- Lógica aislada juego Verbos -->
+    <script src="js/script_traduccion.js"></script>  <!-- Lógica aislada juego Traducción -->
 
-    <!-- 4. Script Principal (Orquestador - Debe ir el último) -->
+    <!-- 4. Script Principal (Orquestador) -->
     <script src="js/script.js"></script>
 
 </body>
